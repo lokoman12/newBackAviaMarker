@@ -1,6 +1,5 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 import { Line } from './models/line.model';
-import { User } from './models/user.model';
 
 const sequelizeConfig: SequelizeOptions = {
   // dialect: 'mysql',
