@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { TestController } from './controllers/test/test.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import sequelizeConfig from './scripts/db/sequelize.config';  // Импортируем конфигурацию
-import { databaseProviders } from './scripts/db/database.service';
+import sequelizeConfig from './db/sequelize.config';
+import { databaseProviders } from './db/database.service';
+import { LineController } from './controllers/Line/line.controller';
 
 @Module({
-  imports: [SequelizeModule.forRoot(sequelizeConfig)],  // Используем конфигурацию
-  controllers: [TestController],
+  imports: [SequelizeModule.forRoot(sequelizeConfig)],
+  controllers: [TestController, LineController],
   providers: [...databaseProviders],
   exports: [...databaseProviders],
 })

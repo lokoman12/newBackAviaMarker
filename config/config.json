@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "olp",
+    "password": "100278",
+    "port": 23306,
+    "database": "OLP",
+    "host": "46.229.128.194",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "olp",
+    "port": 23306,
+    "password": "100278",
+    "database": "OLP",
+    "host": "46.229.128.194",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "olp",
+    "port": 23306,
+    "password": "100278",
+    "database": "OLP",
+    "host": "46.229.128.194",
+    "dialect": "mysql"
+  }
+}
