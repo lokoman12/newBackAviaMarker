@@ -1,8 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
 import sequelizeConfig from './sequelize.config';
-// @ts-ignore:next-line
-// @ts-ignore
-// import { db } from '../db/models';
 
 export const databaseProviders = [
   {

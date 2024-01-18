@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Line } from 'src/db/models/line.model';
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 
 @Controller('lines')
 export class LineController {
@@ -17,6 +17,7 @@ export class LineController {
   async getAllLines(): Promise<Line[]> {
     try {
       const lines = await this.lineModel.findAll();
+      console.log('Lines:', lines);
       return lines;
       // return [];
     } catch (error) {
