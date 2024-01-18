@@ -1,5 +1,8 @@
 import { Sequelize } from 'sequelize-typescript';
 import sequelizeConfig from './sequelize.config';
+// @ts-ignore:next-line
+// @ts-ignore
+// import { db } from '../db/models';
 
 export const databaseProviders = [
   {
@@ -9,6 +12,7 @@ export const databaseProviders = [
 
       try {
         await sequelize.authenticate();
+        console.log(sequelize._model);
         console.log('Connection to the database has been established successfully.');
       } catch (error) {
         console.error('Unable to connect to the database:', error);

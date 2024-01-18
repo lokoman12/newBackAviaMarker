@@ -9,6 +9,8 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
+console.warn('---> Init db');
+
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
@@ -19,6 +21,7 @@ if (config.use_env_variable) {
 fs
   .readdirSync(__dirname)
   .filter(file => {
+    console.warn('File:', file);
     return (
       file.indexOf('.') !== 0 &&
       file !== basename &&
@@ -32,6 +35,7 @@ fs
   });
 
 Object.keys(db).forEach(modelName => {
+  console.warn('Model:', modelName);
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
