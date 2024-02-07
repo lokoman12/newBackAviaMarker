@@ -1,6 +1,7 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 import { Line } from './models/line.model';
 import { Point } from './models/point.model';
+import { Toi } from './models/toi.model';
 
 const sequelizeConfig: SequelizeOptions = {
   // dialect: 'mysql',
@@ -21,7 +22,7 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
-  models: [Line, Point],
+  models: [Line, Point, Toi],
 };
 
 export default sequelizeConfig;
