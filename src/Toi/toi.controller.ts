@@ -31,6 +31,7 @@ export class ToiController {
             lat: lat,
             lon: lon,
           },
+          curs: item.CRS,
           alt: item.H,
           faza: item.faza,
           Number: item.Number,
