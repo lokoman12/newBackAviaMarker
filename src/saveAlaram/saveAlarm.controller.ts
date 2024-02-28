@@ -16,14 +16,14 @@ export class SaveAlarmController {
   async saveAlarm(
     @Query('lat') lat: number,
     @Query('lon') lon: number,
-    @Query('zone') zone: string,
+    @Query('name') name: string,
   ): Promise<any> {
     try {
       const time = new Date();
       const saveAlarm = await this.alarmModel.create({
         lat: lat,
         lon: lon,
-        zone: zone,
+        name: name,
         time: time,
       });
       return saveAlarm;

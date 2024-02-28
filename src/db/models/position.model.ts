@@ -1,11 +1,10 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: 'alarmAM' })
-export class AlaramAM extends Model {
+@Table({ tableName: 'positionAM' })
+export class PositionAM extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
   })
   id: number;
   @Column({
@@ -18,11 +17,6 @@ export class AlaramAM extends Model {
     allowNull: false,
   })
   lon: number;
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  time: Date;
   @Column({
     type: DataType.STRING,
     allowNull: false,

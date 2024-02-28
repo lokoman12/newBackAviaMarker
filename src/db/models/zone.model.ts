@@ -1,7 +1,12 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: 'alarmAM' })
-export class AlaramAM extends Model {
+
+export interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+@Table({ tableName: 'zoneAM' })
+export class ZoneAM extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -12,17 +17,7 @@ export class AlaramAM extends Model {
     type: DataType.STRING,
     allowNull: false,
   })
-  lat: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  lon: number;
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  time: Date;
+  coordination: string;
   @Column({
     type: DataType.STRING,
     allowNull: false,

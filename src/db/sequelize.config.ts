@@ -3,14 +3,16 @@ import { Line } from './models/line.model';
 import { Point } from './models/point.model';
 import { Toi } from './models/toi.model';
 import { AlaramAM } from './models/alarm.model';
+import { PositionAM } from './models/position.model';
+import { ZoneAM } from './models/zone.model';
 
 const sequelizeConfig: SequelizeOptions = {
   // dialect: 'mysql',
-  // host: '192.168.6.95',
+  // host: '172.',
   // port:  3306,
-  // username: 'bvs',
-  // password: 'bvsbvsbvs',
-  // database: 'BVS',
+  // username: 'olp',
+  // password: '100278',
+  // database: 'OLP',
   // define: {
   //   timestamps: false,
   // },
@@ -23,7 +25,7 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
-  models: [Line, Point, Toi, AlaramAM],
+  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM],
 };
 
 export default sequelizeConfig;
