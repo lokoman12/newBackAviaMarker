@@ -5,6 +5,9 @@ import { Toi } from './models/toi.model';
 import { AlaramAM } from './models/alarm.model';
 import { PositionAM } from './models/position.model';
 import { ZoneAM } from './models/zone.model';
+import { Meteo } from './models/meteo.model';
+import { FlightPlan } from './models/fpln.model';
+
 
 const sequelizeConfig: SequelizeOptions = {
   // dialect: 'mysql',
@@ -25,7 +28,7 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
-  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM],
+  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM, Meteo, FlightPlan],
 };
 
 export default sequelizeConfig;

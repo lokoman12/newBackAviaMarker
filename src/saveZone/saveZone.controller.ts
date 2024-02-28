@@ -1,8 +1,13 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Controller, Post, Body, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { AlaramAM } from 'src/db/models/alarm.model';
-import { Coordinate, ZoneAM } from 'src/db/models/zone.model';
+import { ZoneAM } from 'src/db/models/zone.model';
+
+interface Coord {
+  lat: number,
+  lon: number,
+}
 
 @Controller('saveZone')
 export class SaveZoneController {
@@ -13,17 +18,26 @@ export class SaveZoneController {
   ) {
     this.log.log('Init controller');
   }
+
   @Post()
   async saveZone(
     @Query('name') name: string,
-    @Query('coordination') coordination: string,
+    @Body() coordination: Coord[],
   ): Promise<ZoneAM> {
     try {
-      const saveZone = await this.zoneModel.create({
-        coordination: coordination,
-        name: name,
-      });
-      return saveZone;
+        let zone: ZoneAM | null = await this.zoneModel.findOne({ where: { name: name } });
+  
+        if (zone) {
+          await zone.update({ coordination });
+          return zone;
+        } else {
+          const saveZone = await this.zoneModel.create({
+            name: name,
+            coordination: coordination,
+          });
+          return saveZone;
+        }
+
     } catch (error) {
       console.error('Error saving alarm:', error);
       throw error;

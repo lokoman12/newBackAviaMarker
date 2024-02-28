@@ -1,10 +1,6 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 
-export interface Coordinate {
-  latitude: number;
-  longitude: number;
-}
 @Table({ tableName: 'zoneAM' })
 export class ZoneAM extends Model {
   @Column({
@@ -14,10 +10,10 @@ export class ZoneAM extends Model {
   })
   id: number;
   @Column({
-    type: DataType.STRING,
+    type: DataType.JSON,
     allowNull: false,
   })
-  coordination: string;
+  coordination: object;
   @Column({
     type: DataType.STRING,
     allowNull: false,

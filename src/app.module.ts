@@ -10,19 +10,26 @@ import { SavePositionModule } from './savePosition/user.module';
 import { ZoneModule } from './zone/user.module';
 import { SaveZoneModule } from './saveZone/user.module';
 import { DeleteZoneModule } from './deleteZone/user.module';
+import { PositionModule } from './position/user.module';
+import { MeteoModule } from './meteo/user.module';
+import { FplnModule } from './flightPlan/user.module';
+
 
 @Module({
   imports: [
     SequelizeModule.forRoot(sequelizeConfig),
-    LineModule,
-    PointModule,
+    // LineModule,
+    // PointModule,
     ToiModule,
     AlarmModule,
+    PositionModule,
     SaveAlaramModule,
     SavePositionModule,
     ZoneModule,
     SaveZoneModule,
-    DeleteZoneModule
+    DeleteZoneModule,
+    MeteoModule,
+    FplnModule
   ],
   controllers: [],
 })
