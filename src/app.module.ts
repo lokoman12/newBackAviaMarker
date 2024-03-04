@@ -29,7 +29,7 @@ import { FplnModule } from './flightPlan/user.module';
     SaveZoneModule,
     DeleteZoneModule,
     MeteoModule,
-    FplnModule
+    FplnModule,
   ],
   controllers: [],
 })

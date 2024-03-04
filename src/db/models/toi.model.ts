@@ -9,7 +9,11 @@ export class Toi extends Model {
     allowNull: true,
   })
   id: number;
-
+  @Column({
+    type: DataType.SMALLINT,
+    allowNull: true,
+  })
+  id_Sintez: number;
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
@@ -52,6 +56,11 @@ export class Toi extends Model {
   })
   faza: number;
 
+  @Column({
+    type: DataType.SMALLINT,
+    allowNull: true,
+  })
+  Type: number;
   get CRSConverted(): number {
     return curs(this.getDataValue('CRS'));
   }
