@@ -2,8 +2,10 @@ CREATE TABLE alarmAM (
     id INT AUTO_INCREMENT PRIMARY KEY,
     lat FLOAT,
     lon FLOAT,
+    spped FLOAT,
+    name VARCHAR(255),
+    typeViolation VARCHAR(255),
     time DATETIME,
-    name VARCHAR(255)
 );
 CREATE TABLE positionAM (
     id INT PRIMARY KEY,

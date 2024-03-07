@@ -44,7 +44,6 @@ export class ToiController {
         };
       }));
 
-      // Возвращаем отформатированный массив
       return formattedToi;
     } catch (error) {
       console.error('Error retrieving points:', error);

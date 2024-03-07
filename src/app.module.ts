@@ -18,8 +18,6 @@ import { FplnModule } from './flightPlan/user.module';
 @Module({
   imports: [
     SequelizeModule.forRoot(sequelizeConfig),
-    // LineModule,
-    // PointModule,
     ToiModule,
     AlarmModule,
     PositionModule,

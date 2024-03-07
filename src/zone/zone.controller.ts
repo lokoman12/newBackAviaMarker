@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AlaramAM } from 'src/db/models/alarm.model';
 import { ZoneAM } from 'src/db/models/zone.model';
 
 @Controller('zone')
