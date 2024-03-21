@@ -1,5 +1,6 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { curs } from 'src/Utils/Curs';
+import { speed } from 'src/Utils/Speed';
 
 @Table({ tableName: "toi" })
 export class Toi extends Model {
@@ -45,6 +46,17 @@ export class Toi extends Model {
   CRS: number;
 
   @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  Vx: number;
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  Vy: number;
+
+  @Column({
     type: DataType.STRING,
     allowNull: true,
   })
@@ -61,7 +73,14 @@ export class Toi extends Model {
     allowNull: true,
   })
   Type: number;
+  
   get CRSConverted(): number {
     return curs(this.getDataValue('CRS'));
+  }
+
+  get SpeedConverted(): number {
+    const vx = this.getDataValue('Vx');
+    const vy = this.getDataValue('Vy');
+    return speed(vx, vy);
   }
 }
