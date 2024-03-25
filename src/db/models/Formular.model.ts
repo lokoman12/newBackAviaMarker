@@ -55,9 +55,13 @@ export class Formular extends Model {
   @Column({
     type: DataType.FLOAT,
   })
-  Speed: string;
+  Speed: number;
+  @Column({
+    type: DataType.STRING,
+  })
+  FP_VPP_sign: string;
   @Column({
     type: DataType.FLOAT,
   })
-  FP_VPP_sign: string;
+  poo: string;
 }
