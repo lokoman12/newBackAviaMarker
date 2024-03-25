@@ -13,6 +13,9 @@ import { DeleteZoneModule } from './deleteZone/user.module';
 import { PositionModule } from './position/user.module';
 import { MeteoModule } from './meteo/user.module';
 import { FplnModule } from './flightPlan/user.module';
+import { StripsModule } from './Strips/user.module';
+import { RetaModule } from './Reta/user.module';
+import { RetdModule } from './Retd/user.module';
 
 
 @Module({
@@ -28,6 +31,9 @@ import { FplnModule } from './flightPlan/user.module';
     DeleteZoneModule,
     MeteoModule,
     FplnModule,
+    StripsModule,
+    RetaModule,
+    RetdModule
   ],
   controllers: [],
 })

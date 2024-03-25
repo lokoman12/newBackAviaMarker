@@ -18,3 +18,14 @@ CREATE TABLE zoneAM (
     coordination JSON,
     name VARCHAR(255)
 );
+
+-- Toi,
+--  AlaramAM, 
+--  PositionAM, 
+--  ZoneAM, 
+--  Meteo, 
+--  FlightPlan, 
+--  Formular, 
+--  Strips, 
+--  Reta, 
+--  Retd

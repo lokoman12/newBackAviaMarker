@@ -8,6 +8,9 @@ import { ZoneAM } from './models/zone.model';
 import { Meteo } from './models/meteo.model';
 import { FlightPlan } from './models/fpln.model';
 import { Formular } from './models/Formular.model';
+import { Strips } from './models/strips.model';
+import { Reta } from './models/reta.model';
+import { Retd } from './models/retd.model';
 
 
 const sequelizeConfig: SequelizeOptions = {
@@ -29,7 +32,7 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
-  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM, Meteo, FlightPlan, Formular],
+  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM, Meteo, FlightPlan, Formular, Strips, Reta, Retd],
 };
 
 export default sequelizeConfig;
