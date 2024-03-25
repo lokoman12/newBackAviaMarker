@@ -16,6 +16,7 @@ import { FplnModule } from './flightPlan/user.module';
 import { StripsModule } from './Strips/user.module';
 import { RetaModule } from './Reta/user.module';
 import { RetdModule } from './Retd/user.module';
+import { VppStatusModule } from './VppStatus/user.module';
 
 
 @Module({
@@ -33,7 +34,8 @@ import { RetdModule } from './Retd/user.module';
     FplnModule,
     StripsModule,
     RetaModule,
-    RetdModule
+    RetdModule,
+    VppStatusModule
   ],
   controllers: [],
 })

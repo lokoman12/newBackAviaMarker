@@ -11,6 +11,7 @@ import { Formular } from './models/Formular.model';
 import { Strips } from './models/strips.model';
 import { Reta } from './models/reta.model';
 import { Retd } from './models/retd.model';
+import { VppStatus } from './models/vppStatus.model';
 
 
 const sequelizeConfig: SequelizeOptions = {
@@ -32,7 +33,7 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
-  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM, Meteo, FlightPlan, Formular, Strips, Reta, Retd],
+  models: [Line, Point, Toi, AlaramAM, PositionAM, ZoneAM, Meteo, FlightPlan, Formular, Strips, Reta, Retd, VppStatus],
 };
 
 export default sequelizeConfig;
