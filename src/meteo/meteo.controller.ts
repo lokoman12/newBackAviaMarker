@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Meteo } from 'src/db/models/meteo.model';
+import Meteo from 'src/db/models/meteo.model';
 
 @Controller('meteo')
 export class MeteoController {
@@ -19,7 +19,7 @@ export class MeteoController {
       const meteo = await this.meteoModel.findAll();
       return meteo;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      this.log.error('Error retrieving alarm:', error);
       throw error;
     }
   }

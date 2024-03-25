@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: 'METEO_RECV' })
-export class Meteo extends Model {
+export default class Meteo extends Model {
   @Column({
     type: DataType.DOUBLE,
     primaryKey: true,

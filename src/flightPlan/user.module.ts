@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { FlightPlan } from 'src/db/models/fpln.model';
+import FlightPlan from 'src/db/models/fpln.model';
 import { FlightPlanController } from './flightPlan.controller';
 
 

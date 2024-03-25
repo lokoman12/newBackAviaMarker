@@ -1,7 +1,7 @@
 import { Controller, Delete, Query, Param } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { ZoneAM } from 'src/db/models/zone.model';
+import ZoneAM from 'src/db/models/zone.model';
 
 @Controller('deleteZone')
 export class DeleteZoneController {
@@ -22,7 +22,7 @@ export class DeleteZoneController {
       }
       await zoneToDelete.destroy();
     } catch (error) {
-      console.error('Error deleting zone:', error);
+      this.log.error('Error deleting zone:', error);
       throw error;
     }
   }

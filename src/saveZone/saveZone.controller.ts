@@ -1,8 +1,7 @@
 import { Controller, Post, Body, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AlaramAM } from 'src/db/models/alarm.model';
-import { ZoneAM } from 'src/db/models/zone.model';
+import ZoneAM from 'src/db/models/zone.model';
 
 interface Coord {
   lat: number,
@@ -39,7 +38,7 @@ export class SaveZoneController {
         }
 
     } catch (error) {
-      console.error('Error saving alarm:', error);
+      this.log.error('Error saving alarm:', error);
       throw error;
     }
   }

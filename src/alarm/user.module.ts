@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AlaramAM } from 'src/db/models/alarm.model';
+import AlaramAM from 'src/db/models/alarm.model';
 import { AlarmController } from './alarm.controller';
 
 

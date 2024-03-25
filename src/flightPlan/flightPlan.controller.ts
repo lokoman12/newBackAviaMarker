@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { FlightPlan } from 'src/db/models/fpln.model';
+import FlightPlan from 'src/db/models/fpln.model';
 
 
 @Controller('fpln')
@@ -20,7 +20,7 @@ export class FlightPlanController {
       const fpln = await this.flightPlanModel.findAll();
       return fpln;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      this.log.error('Error retrieving alarm:', error);
       throw error;
     }
   }

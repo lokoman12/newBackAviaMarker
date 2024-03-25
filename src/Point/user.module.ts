@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { PointController } from './point.controller';
-import { Point } from 'src/db/models/point.model';
+import Point from 'src/db/models/point.model';
 
 
 

@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: "Line" })
-export class Line extends Model {
+export default class Line extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

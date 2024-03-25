@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: 'formular' })
-export class Formular extends Model {
+export default class Formular extends Model {
   @Column({
     type: DataType.SMALLINT,
     primaryKey: true,

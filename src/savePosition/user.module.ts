@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { PositionAM } from 'src/db/models/position.model';
+import PositionAM from 'src/db/models/position.model';
 import { SavePositionController } from './savePosition.controller';
 
 

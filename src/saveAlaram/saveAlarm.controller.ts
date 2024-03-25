@@ -1,7 +1,7 @@
 import { Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AlaramAM } from 'src/db/models/alarm.model';
+import AlaramAM from 'src/db/models/alarm.model';
 
 @Controller('saveAlarm')
 export class SaveAlarmController {
@@ -28,7 +28,7 @@ export class SaveAlarmController {
       });
       return saveAlarm;
     } catch (error) {
-      console.error('Error saving alarm:', error);
+      this.log.error('Error saving alarm:', error);
       throw error;
     }
   }

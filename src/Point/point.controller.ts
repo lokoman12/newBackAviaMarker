@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Point } from 'src/db/models/point.model';
+import Point from 'src/db/models/point.model';
 
 @Controller('points')
 export class PointController {
@@ -19,7 +19,7 @@ export class PointController {
       const points = await this.pointModel.findAll();
       return points;
     } catch (error) {
-      console.error('Error retrieving points:', error);
+      this.log.error('Error retrieving points:', error);
       throw error;
     }
   }

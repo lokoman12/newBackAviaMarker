@@ -1,8 +1,7 @@
 import { Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AlaramAM } from 'src/db/models/alarm.model';
-import { PositionAM } from 'src/db/models/position.model';
+import PositionAM from 'src/db/models/position.model';
 
 @Controller('savePosition')
 export class SavePositionController {
@@ -37,7 +36,7 @@ export class SavePositionController {
         return savePosition;
       }
     } catch (error) {
-      console.error('Error saving alarm:', error);
+      this.log.error('Error saving alarm:', error);
       throw error;
     }
   }

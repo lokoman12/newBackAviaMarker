@@ -2,7 +2,7 @@ import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { curs } from 'src/Utils/Curs';
 
 @Table({ tableName: "toi" })
-export class Toi extends Model {
+export default class Toi extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

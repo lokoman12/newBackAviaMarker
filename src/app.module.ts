@@ -13,10 +13,16 @@ import { DeleteZoneModule } from './deleteZone/user.module';
 import { PositionModule } from './position/user.module';
 import { MeteoModule } from './meteo/user.module';
 import { FplnModule } from './flightPlan/user.module';
+import { ConfigModule } from '@nestjs/config';
+import { validate } from './environment/env.validation';
 
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate,
+    }),
     SequelizeModule.forRoot(sequelizeConfig),
     // LineModule,
     // PointModule,

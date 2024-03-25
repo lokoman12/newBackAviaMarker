@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AlaramAM } from 'src/db/models/alarm.model';
-import { PositionAM } from 'src/db/models/position.model';
+import AlaramAM from 'src/db/models/alarm.model';
+import PositionAM from 'src/db/models/position.model';
 
 @Controller('position')
 export class PositionController {

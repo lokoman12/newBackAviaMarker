@@ -1,8 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AlaramAM } from 'src/db/models/alarm.model';
-import { ZoneAM } from 'src/db/models/zone.model';
+import ZoneAM from 'src/db/models/zone.model';
 
 @Controller('zone')
 export class ZoneController {
@@ -20,7 +19,7 @@ export class ZoneController {
       const zone = await this.zoneModel.findAll();
       return zone;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      this.log.error('Error retrieving alarm:', error);
       throw error;
     }
   }

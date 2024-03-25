@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Line } from 'src/db/models/line.model';
+import Line from 'src/db/models/line.model';
 import { Logger } from '@nestjs/common';
 
 @Controller('lines')
@@ -20,7 +20,7 @@ export class LineController {
       return lines;
       // return [];
     } catch (error) {
-      console.error('Error retrieving lines:', error);
+      this.log.error('Error retrieving lines:', error);
       throw error;
     }
   }
