@@ -52,4 +52,12 @@ export class Formular extends Model {
     type: DataType.STRING,
   })
   regnum: string;
+  @Column({
+    type: DataType.FLOAT,
+  })
+  Speed: string;
+  @Column({
+    type: DataType.FLOAT,
+  })
+  FP_VPP_sign: string;
 }

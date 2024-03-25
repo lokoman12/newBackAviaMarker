@@ -31,4 +31,12 @@ export class VppStatus extends Model {
     type: DataType.STRING,
   })
   airport: string;
+  @Column({
+    type: DataType.TINYINT,
+  })
+  RegimL: string;
+  @Column({
+    type: DataType.TINYINT,
+  })
+  RegimR: string;
 }
