@@ -10,11 +10,15 @@ import { SaveZoneModule } from './saveZone/user.module';
 import { DeleteZoneModule } from './deleteZone/user.module';
 import { PositionModule } from './position/user.module';
 import { MeteoModule } from './meteo/user.module';
-import { FplnModule } from './flightPlan/user.module';
+import { AodbModule } from './AODB/user.module';
 import { StripsModule } from './Strips/user.module';
 import { RetaModule } from './Reta/user.module';
 import { RetdModule } from './Retd/user.module';
 import { VppStatusModule } from './VppStatus/user.module';
+import { KafkaService } from './Kafka/service.kafka';
+import { KafkaInitializer } from './Kafka/KafkaInitializer';
+import { KafkaModule } from './Kafka/user.module';
+import { ScoutModule } from './SCOUT/user.module';
 
 
 @Module({
@@ -29,12 +33,15 @@ import { VppStatusModule } from './VppStatus/user.module';
     SaveZoneModule,
     DeleteZoneModule,
     MeteoModule,
-    FplnModule,
+    AodbModule,
     StripsModule,
     RetaModule,
     RetdModule,
-    VppStatusModule
+    VppStatusModule,
+    KafkaModule,
+    ScoutModule
   ],
+
   controllers: [],
 })
 export class AppModule {}
