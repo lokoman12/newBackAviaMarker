@@ -49,6 +49,10 @@ export class KafkaService {
             },
           },
         });
+
+
+
+
         const timeDiffMin = (Number(date) - objForDb.timeUpdate) / 60;
         if (timeDiffMin < 15) {
           await SCOUT.upsert({

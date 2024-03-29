@@ -39,7 +39,7 @@ import { OmnicomModule } from './Omnicom/user.module';
     RetaModule,
     RetdModule,
     VppStatusModule,
-    // KafkaModule,
+    KafkaModule,
     ScoutModule,
     OmnicomModule
   ],
