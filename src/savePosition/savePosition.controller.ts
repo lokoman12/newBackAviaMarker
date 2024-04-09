@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import PositionAM from 'src/db/models/position.model';
 
+
 @Controller('savePosition')
 export class SavePositionController {
   private readonly log = new Logger(SavePositionController.name);

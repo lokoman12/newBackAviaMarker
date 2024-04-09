@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: 'vpp' })
-export class VppStatus extends Model {
+export default class VppStatus extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -11,6 +11,7 @@ export class VppStatus extends Model {
   @Column({
     type: DataType.STRING,
   })
+
   vpp_name: string;
   @Column({
     type: DataType.STRING,
@@ -20,6 +21,7 @@ export class VppStatus extends Model {
   @Column({
     type: DataType.STRING,
   })
+
   Name_T_right: string;
 
   @Column({

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Kafka, Consumer } from 'kafkajs';
 import { Op } from 'sequelize';
 import SCOUT from 'src/db/models/scout.model';
-//import moment from 'moment';
 
 
 @Injectable()
@@ -28,6 +27,7 @@ export class KafkaService {
     await this.consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         let obj = JSON.parse(message.value.toString());
+        console.log(obj)
         let objForDb = {
           id: obj.omnicommId,
           timeUpdate: obj.dataDate,
@@ -49,9 +49,6 @@ export class KafkaService {
             },
           },
         });
-
-
-
 
         const timeDiffMin = (Number(date) - objForDb.timeUpdate) / 60;
         if (timeDiffMin < 15) {

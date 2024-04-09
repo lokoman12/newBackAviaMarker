@@ -1,5 +1,6 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 
+
 const sequelizeConfig: SequelizeOptions = {
   // Пулково
   dialect: 'mysql',

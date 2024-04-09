@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
 
+
 @Controller('zone')
 export class ZoneController {
   private readonly log = new Logger(ZoneController.name);

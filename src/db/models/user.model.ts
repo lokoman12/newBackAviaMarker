@@ -8,16 +8,13 @@ export default class User extends Model {
     autoIncrement: true,
   })
   id: number;
-
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   login: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   password: string;
 

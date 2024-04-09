@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
 
+
 interface Coord {
   lat: number,
   lon: number,

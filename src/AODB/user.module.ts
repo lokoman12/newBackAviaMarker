@@ -4,9 +4,6 @@ import AODB from 'src/db/models/fpln.model';
 import { AODBController } from './flightPlan.controller';
 
 
-
-
-
 @Module({
   imports: [SequelizeModule.forFeature([AODB])],
   controllers: [AODBController],
