@@ -8,6 +8,6 @@ export class KafkaInitializer implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     await this.kafkaService.init();
-    await this.kafkaService.subscribe('omnicomm.changes.dev');
+    await this.kafkaService.subscribe('omnicomm.changes');
   }
 }

@@ -28,6 +28,7 @@ export class KafkaService {
     await this.consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         let obj = JSON.parse(message.value.toString());
+	console.log(obj)
         let objForDb = {
           id: obj.omnicommId,
           timeUpdate: obj.dataDate,
