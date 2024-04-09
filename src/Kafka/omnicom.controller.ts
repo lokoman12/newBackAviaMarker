@@ -1,9 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Toi } from 'src/db/models/toi.model';
+import Toi from 'src/db/models/toi.model';
 import { flatOffsetMeterToLongitudeLatitude } from 'src/Utils/XYtoLanLon';
-import { Formular } from 'src/db/models/Formular.model';
+import Formular from 'src/db/models/Formular.model';
 require('dotenv').config();
 
 @Controller('aodb')

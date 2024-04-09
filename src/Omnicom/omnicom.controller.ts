@@ -1,8 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { AODB } from 'src/db/models/fpln.model';
-import { SCOUT } from 'src/db/models/scout.model';
+import SCOUT from 'src/db/models/scout.model';
 
 
 @Controller('omnicom')

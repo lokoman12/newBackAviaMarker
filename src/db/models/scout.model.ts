@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: 'SCOUT' })
-export class SCOUT extends Model {
+export default class SCOUT extends Model {
   @Column({
     type: DataType.STRING,
     primaryKey: true,

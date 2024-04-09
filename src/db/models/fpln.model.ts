@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: 'AODB' })
-export class AODB extends Model {
+export default class AODB extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

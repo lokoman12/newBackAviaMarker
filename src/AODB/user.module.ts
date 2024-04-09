@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AODB } from 'src/db/models/fpln.model';
+import AODB from 'src/db/models/fpln.model';
 import { AODBController } from './flightPlan.controller';
 
 

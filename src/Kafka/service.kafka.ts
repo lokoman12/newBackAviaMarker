@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Kafka, Consumer } from 'kafkajs';
 import { Op } from 'sequelize';
-import { where } from 'sequelize';
-import { SCOUT } from 'src/db/models/scout.model';
+import SCOUT from 'src/db/models/scout.model';
 //import moment from 'moment';
+
 
 @Injectable()
 export class KafkaService {
@@ -38,10 +38,10 @@ export class KafkaService {
           longitude: obj.location.long,
         };
 
-        const date = (new Date().getTime()/1000).toFixed(0);
+        const date = (new Date().getTime() / 1000).toFixed(0);
 
         const fifteenMinutesAgo = Number(date) - 15 * 60;
-    console.log(fifteenMinutesAgo)
+        console.log(fifteenMinutesAgo)
         await SCOUT.destroy({
           where: {
             t_obn: {
