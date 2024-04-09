@@ -1,10 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { VppStatus } from 'src/db/models/vppStatus.model';
+import VppStatus from 'src/db/models/vppStatus.model';
 import { VppStatusController } from './vppStatus.controller';
-
-
-
 
 
 @Module({

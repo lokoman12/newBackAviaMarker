@@ -11,7 +11,6 @@ export default class VppStatus extends Model {
   @Column({
     type: DataType.STRING,
   })
-
   vpp_name: string;
   @Column({
     type: DataType.STRING,
@@ -21,7 +20,6 @@ export default class VppStatus extends Model {
   @Column({
     type: DataType.STRING,
   })
-
   Name_T_right: string;
 
   @Column({
