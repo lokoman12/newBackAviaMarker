@@ -1,5 +1,6 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
+
 @Table({ tableName: "retd" })
 export class Retd extends Model {
   @Column({

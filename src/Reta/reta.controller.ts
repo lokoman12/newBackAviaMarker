@@ -1,7 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Reta } from 'src/db/models/reta.model';
+import Reta from 'src/db/models/reta.model';
+
 
 @Controller('reta')
 export class RetaController {

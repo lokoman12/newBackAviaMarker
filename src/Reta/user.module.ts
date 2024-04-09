@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Reta } from 'src/db/models/reta.model';
+import Reta from 'src/db/models/reta.model';
 import { RetaController } from './reta.controller';
-
-
 
 
 @Module({

@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Reta } from 'src/db/models/reta.model';
 import VppStatus from 'src/db/models/vppStatus.model';
+
 
 @Controller('vpp')
 export class VppStatusController {
