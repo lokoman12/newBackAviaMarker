@@ -10,7 +10,6 @@ import { SaveZoneModule } from './saveZone/user.module';
 import { DeleteZoneModule } from './deleteZone/user.module';
 import { PositionModule } from './position/user.module';
 import { MeteoModule } from './meteo/user.module';
-import { FplnModule } from './flightPlan/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './environment/env.validation';
 import { AodbModule } from './AODB/user.module';
