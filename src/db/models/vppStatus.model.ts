@@ -1,41 +1,42 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: "Line" })
-export default class Line extends Model {
+@Table({ tableName: 'vpp' })
+export class VppStatus extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   })
   id: number;
+  @Column({
+    type: DataType.STRING,
+  })
+  vpp_name: string;
+  @Column({
+    type: DataType.STRING,
+  })
+  Name_T_left: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
-  name: string;
-
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  time: Date;
+  Name_T_right: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
-  coordinates: string;
+  close_vpp: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
-  distance: string;
-
+  airport: string;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    type: DataType.TINYINT,
   })
-  description: string;
+  RegimL: string;
+  @Column({
+    type: DataType.TINYINT,
+  })
+  RegimR: string;
 }

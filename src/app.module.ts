@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import sequelizeConfig from './db/sequelize.config';
-import { LineModule } from './line/user.module';
-import { PointModule } from './Point/user.module';
 import { ToiModule } from './Toi/user.module';
 import { AlarmModule } from './alarm/user.module';
 import { SaveAlaramModule } from './saveAlaram/user.module';
@@ -15,6 +13,16 @@ import { MeteoModule } from './meteo/user.module';
 import { FplnModule } from './flightPlan/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './environment/env.validation';
+import { AodbModule } from './AODB/user.module';
+import { StripsModule } from './Strips/user.module';
+import { RetaModule } from './Reta/user.module';
+import { RetdModule } from './Retd/user.module';
+import { VppStatusModule } from './VppStatus/user.module';
+import { KafkaService } from './Kafka/service.kafka';
+import { KafkaInitializer } from './Kafka/KafkaInitializer';
+import { KafkaModule } from './Kafka/user.module';
+import { ScoutModule } from './SCOUT/user.module';
+import { OmnicomModule } from './Omnicom/user.module';
 
 
 @Module({
@@ -24,8 +32,6 @@ import { validate } from './environment/env.validation';
       validate,
     }),
     SequelizeModule.forRoot(sequelizeConfig),
-    // LineModule,
-    // PointModule,
     ToiModule,
     AlarmModule,
     PositionModule,
@@ -35,8 +41,16 @@ import { validate } from './environment/env.validation';
     SaveZoneModule,
     DeleteZoneModule,
     MeteoModule,
-    FplnModule,
+    AodbModule,
+    StripsModule,
+    RetaModule,
+    RetdModule,
+    VppStatusModule,
+    KafkaModule,
+    ScoutModule,
+    OmnicomModule
   ],
+
   controllers: [],
 })
 export class AppModule {}

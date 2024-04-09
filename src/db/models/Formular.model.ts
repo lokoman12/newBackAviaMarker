@@ -1,4 +1,5 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { curs } from 'src/Utils/Curs';
 
 @Table({ tableName: 'formular' })
 export default class Formular extends Model {
@@ -17,18 +18,6 @@ export default class Formular extends Model {
   Type_of_Msg: number;
   @Column({
     type: DataType.FLOAT,
-  })
-  H: number;
-  @Column({
-    type: DataType.FLOAT,
-  })
-  H_BAR: number;
-  @Column({
-    type: DataType.FLOAT,
-  })
-  Crs: number;
-  @Column({
-    type: DataType.STRING,
   })
   FP_Callsign: string;
   @Column({
@@ -66,5 +55,13 @@ export default class Formular extends Model {
   @Column({
     type: DataType.FLOAT,
   })
-  speed: number;
+  Speed: number;
+  @Column({
+    type: DataType.STRING,
+  })
+  FP_VPP_sign: string;
+  @Column({
+    type: DataType.FLOAT,
+  })
+  poo: string;
 }
