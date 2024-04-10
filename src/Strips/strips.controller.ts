@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Strips } from 'src/db/models/strips.model';
+import Strips from 'src/db/models/strips.model';
 
 @Controller('strips')
 export class StripsController {

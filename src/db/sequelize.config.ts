@@ -1,4 +1,16 @@
 import { SequelizeOptions } from 'sequelize-typescript';
+import Toi from './models/toi.model';
+import AlaramAM from './models/alarm.model';
+import PositionAM from './models/position.model';
+import ZoneAM from './models/zone.model';
+import Meteo from './models/meteo.model';
+import AODB from './models/fpln.model';
+import Formular from './models/Formular.model';
+import Strips from './models/strips.model';
+import Reta from './models/reta.model';
+import Retd from './models/retd.model';
+import VppStatus from './models/vppStatus.model';
+import SCOUT from './models/scout.model';
 
 console.log('__dirname', __dirname);
 

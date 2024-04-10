@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: "strips" })
-export class Strips extends Model {
+export default class Strips extends Model {
   @Column({ type: DataType.BIGINT, primaryKey: true, allowNull: false, defaultValue: 0 })
   flt_id: number;
 

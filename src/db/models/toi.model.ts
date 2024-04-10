@@ -1,6 +1,5 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { curs } from 'src/Utils/Curs';
-import { speed } from 'src/Utils/Speed';
 
 @Table({ tableName: "toi" })
 export default class Toi extends Model {

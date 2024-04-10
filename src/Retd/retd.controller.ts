@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { Retd } from 'src/db/models/retd.model';
+import Retd from 'src/db/models/retd.model';
 
 
 @Controller('retd')

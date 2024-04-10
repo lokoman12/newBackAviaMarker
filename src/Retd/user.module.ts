@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Retd } from 'src/db/models/retd.model';
+import Retd from 'src/db/models/retd.model';
 import { RetdController } from './retd.controller';
 
 
