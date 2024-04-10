@@ -1,5 +1,7 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 
+console.log('__dirname', __dirname);
+
 const sequelizeConfig: SequelizeOptions = {
   // Пулково
   // dialect: 'mysql',
@@ -22,18 +24,8 @@ const sequelizeConfig: SequelizeOptions = {
   //   timestamps: false,
   // },
   // Алмаз
-  // dialect: 'mysql',
-  // host: '46.229.128.194',
-  // port: 23306,
-  // username: 'olp',
-  // password: '100278',
-  // database: 'OLP',
-  // define: {
-  //   timestamps: false,
-  // },
-  // Local
   dialect: 'mysql',
-  host: '192.168.6.124',
+  host: '192.168.6.109',
   port: 3306,
   username: 'olp',
   password: '100278',
@@ -41,6 +33,16 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
+  // Local
+  // dialect: 'mysql',
+  // host: '192.168.6.124',
+  // port: 3306,
+  // username: 'olp',
+  // password: '100278',
+  // database: 'OLP',
+  // define: {
+  //   timestamps: false,
+  // },
   models: [__dirname + '/models'],
 };
 
