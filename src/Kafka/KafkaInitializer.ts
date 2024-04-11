@@ -1,10 +1,15 @@
 import { OnApplicationBootstrap } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { KafkaService } from './service.kafka';
+import { ApiConfigService } from 'src/config/api.config.service';
+
 
 @Injectable()
 export class KafkaInitializer implements OnApplicationBootstrap {
-  constructor(private readonly kafkaService: KafkaService) {}
+  constructor(
+    private configService: ApiConfigService,
+    private readonly kafkaService: KafkaService,
+  ) { }
 
   async onApplicationBootstrap() {
     await this.kafkaService.init();

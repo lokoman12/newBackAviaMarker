@@ -5,12 +5,12 @@ import Toi from 'src/db/models/toi.model';
 import Formular from 'src/db/models/Formular.model';
 import { KafkaService } from './service.kafka';
 import { KafkaInitializer } from './KafkaInitializer';
-
+import { ConfigModule } from 'src/config/user.module';
 
 
 @Module({
   providers: [KafkaService, KafkaInitializer],
-  imports: [SequelizeModule.forFeature([Toi, Formular])],
+  imports: [ConfigModule, SequelizeModule.forFeature([Toi, Formular])],
   controllers: [ToiController],
   exports: [SequelizeModule],
 })

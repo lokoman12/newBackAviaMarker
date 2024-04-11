@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Kafka, Consumer } from 'kafkajs';
 import { Op } from 'sequelize';
+import { ApiConfigService } from 'src/config/api.config.service';
 import SCOUT from 'src/db/models/scout.model';
 
 
@@ -9,7 +10,9 @@ export class KafkaService {
   private kafka: Kafka;
   private consumer: Consumer;
 
-  constructor() {
+  constructor(
+    private configService: ApiConfigService
+  ) {
     this.kafka = new Kafka({
       clientId: 'my-app',
       brokers: ['a-rpx-appt01.svo.air.loc:9092'],

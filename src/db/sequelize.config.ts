@@ -1,60 +1,18 @@
-import { SequelizeOptions } from 'sequelize-typescript';
-import Toi from './models/toi.model';
-import AlaramAM from './models/alarm.model';
-import PositionAM from './models/position.model';
-import ZoneAM from './models/zone.model';
-import Meteo from './models/meteo.model';
-import AODB from './models/fpln.model';
-import Formular from './models/Formular.model';
-import Strips from './models/strips.model';
-import Reta from './models/reta.model';
-import Retd from './models/retd.model';
-import VppStatus from './models/vppStatus.model';
-import SCOUT from './models/scout.model';
+import { SequelizeModuleOptions } from '@nestjs/sequelize';
 
-console.log('__dirname', __dirname);
 
-const sequelizeConfig: SequelizeOptions = {
+const sequelizeConfig: SequelizeModuleOptions = {
   // Пулково
-  // dialect: 'mysql',
-  // host: '172.16.127.10',
-  // port:  3306,
-  // username: 'olp',
-  // password: '100278',
-  // database: 'OLP',
-  // define: {
-  //   timestamps: false,
-  // },
+  // uri: 'mysql://olp:100278@172.16.127.10:3306/OLP',
   // Шарик
-  // dialect: 'mysql',
-  // host: '10.248.157.162',
-  // port:  3306,
-  // username: 'olp',
-  // password: '100278',
-  // database: 'OLP',
-  // define: {
-  //   timestamps: false,
-  // },
+  // uri: 'mysql://olp:100278@10.248.157.162:3306/OLP',
+  // NGolosin Local
+  // uri: 'mysql://olp:100278@192.168.6.124:3306/OLP',
   // Алмаз
-  dialect: 'mysql',
-  host: '192.168.6.109',
-  port: 3306,
-  username: 'olp',
-  password: '100278',
-  database: 'OLP',
+  uri: 'mysql://olp:100278@192.168.6.109:3306/OLP',
   define: {
     timestamps: false,
   },
-  // Local
-  // dialect: 'mysql',
-  // host: '192.168.6.124',
-  // port: 3306,
-  // username: 'olp',
-  // password: '100278',
-  // database: 'OLP',
-  // define: {
-  //   timestamps: false,
-  // },
   models: [__dirname + '/models'],
 };
 

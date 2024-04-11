@@ -17,20 +17,26 @@ import { StripsModule } from './Strips/user.module';
 import { RetaModule } from './Reta/user.module';
 import { RetdModule } from './Retd/user.module';
 import { VppStatusModule } from './VppStatus/user.module';
-import { KafkaService } from './Kafka/service.kafka';
-import { KafkaInitializer } from './Kafka/KafkaInitializer';
 import { KafkaModule } from './Kafka/user.module';
 import { ScoutModule } from './SCOUT/user.module';
 import { OmnicomModule } from './Omnicom/user.module';
+import { ApiConfigService } from './config/api.config.service';
+import { UsersModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { SettingsModule } from './settings/settings.module';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env',],
       validate,
     }),
     SequelizeModule.forRoot(sequelizeConfig),
+    UsersModule,
+    AuthModule,
+    SettingsModule,
     ToiModule,
     AlarmModule,
     PositionModule,
@@ -49,7 +55,8 @@ import { OmnicomModule } from './Omnicom/user.module';
     ScoutModule,
     OmnicomModule
   ],
+  providers: [ApiConfigService],
 
   controllers: [],
 })
-export class AppModule {}
+export class AppModule { }

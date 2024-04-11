@@ -4,8 +4,6 @@ import { SaveZoneController } from './saveZone.controller';
 import ZoneAM from 'src/db/models/zone.model';
 
 
-
-
 @Module({
   imports: [SequelizeModule.forFeature([ZoneAM])],
   controllers: [SaveZoneController],

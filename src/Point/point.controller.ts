@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Point from 'src/db/models/point.model';
 
+
 @Controller('points')
 export class PointController {
   private readonly log = new Logger(PointController.name);

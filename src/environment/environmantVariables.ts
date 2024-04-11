@@ -1,22 +1,30 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min, validateSync } from 'class-validator';
-import { IsLongerThan as IsDatabaseUrl } from './isDatabaseUrl';
+import { IsEnum, IsNumber, IsString, Max, Min, isEnum } from 'class-validator';
+import { Airports } from "./types";
+
 
 export class EnvironmentVariables {
-  @IsString()
-  @IsNotEmpty()
-  @IsDatabaseUrl('NODE_ENV', {
-    message: "Строка должна быть валидным урлом до базы данных. Пример: mysql://<user>:<password>@<host>:<port>/<database-name>",
-  })
-  DATABASE_URL: string;
-
   @IsNumber()
   @Min(3000)
   @Max(9000)
-  WEB_PORT: number;
+  webPort: number;
 
   @IsString()
-  API_VERSION: string;
+  swaggerApiVersion: string;
 
   @IsString()
-  API_RELATIVE_PATH: string;
+  swaggerApiRelativePath: string;
+
+  @IsNumber()
+  ulli_ctalat: number;
+  @IsNumber()
+  ulli_ctalon: number;
+
+  @IsEnum(Airports)
+  activeAirport: string;
+
+  @IsNumber()
+  uuee_ctalat: number;
+  @IsNumber()
+  uuee_ctalon: number;
 }
+

@@ -14,11 +14,11 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('BackAviaMarker')
     .setDescription('Серверная часть АвиаМаркера')
-    .setVersion(process.env.API_VERSION)
+    .setVersion(process.env.swaggerApiVersion)
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(process.env.API_RELATIVE_PATH, app, document);
+  SwaggerModule.setup(process.env.swaggerApiRelativePath, app, document);
   app.enableCors({ origin: true, credentials: true });
-  await app.listen(parseInt(process.env.WEB_PORT));
+  await app.listen(parseInt(process.env.webPort));
 }
 bootstrap();
