@@ -20,6 +20,7 @@ import { KafkaInitializer } from './Kafka/KafkaInitializer';
 import { KafkaModule } from './Kafka/user.module';
 import { ScoutModule } from './SCOUT/user.module';
 import { OmnicomModule } from './Omnicom/user.module';
+import { PodhodModule } from './podhod/user.module';
 
 
 @Module({
@@ -39,9 +40,10 @@ import { OmnicomModule } from './Omnicom/user.module';
     RetaModule,
     RetdModule,
     VppStatusModule,
-    KafkaModule,
+    // KafkaModule,
     ScoutModule,
-    OmnicomModule
+    OmnicomModule,
+    PodhodModule
   ],
 
   controllers: [],

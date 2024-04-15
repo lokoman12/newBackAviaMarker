@@ -11,6 +11,7 @@ import { Reta } from './models/reta.model';
 import { Retd } from './models/retd.model';
 import { VppStatus } from './models/vppStatus.model';
 import { SCOUT } from './models/scout.model';
+import { Podhod } from './models/podhod.model';
 
 
 const sequelizeConfig: SequelizeOptions = {
@@ -25,8 +26,18 @@ const sequelizeConfig: SequelizeOptions = {
   //   timestamps: false,
   // },
   // Шарик
-    dialect: 'mysql',
-  host: '10.248.157.162',
+  //   dialect: 'mysql',
+  // host: '10.248.157.162',
+  // port:  3306,
+  // username: 'olp',
+  // password: '100278',
+  // database: 'OLP',
+  // define: {
+  //   timestamps: false,
+  // },
+  // Алмаз
+  dialect: 'mysql',
+  host: '192.168.6.109',
   port:  3306,
   username: 'olp',
   password: '100278',
@@ -34,16 +45,6 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
-  // Алмаз
-  // dialect: 'mysql',
-  // host: '46.229.128.194',
-  // port:  23306,
-  // username: 'olp',
-  // password: '100278',
-  // database: 'OLP',
-  // define: {
-  //   timestamps: false,
-  // },
   models: [
     Toi, 
     AlaramAM, 
@@ -56,7 +57,8 @@ const sequelizeConfig: SequelizeOptions = {
     Reta, 
     Retd, 
     VppStatus,
-    SCOUT
+    SCOUT,
+    Podhod
   ],
 };
 
