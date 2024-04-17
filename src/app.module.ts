@@ -21,6 +21,7 @@ import { KafkaModule } from './Kafka/user.module';
 import { ScoutModule } from './SCOUT/user.module';
 import { OmnicomModule } from './Omnicom/user.module';
 import { PodhodModule } from './podhod/user.module';
+import { StandsModule } from './stand_aodb/user.module';
 
 
 @Module({
@@ -43,7 +44,8 @@ import { PodhodModule } from './podhod/user.module';
     // KafkaModule,
     ScoutModule,
     OmnicomModule,
-    PodhodModule
+    PodhodModule,
+    StandsModule
   ],
 
   controllers: [],

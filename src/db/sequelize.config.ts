@@ -12,6 +12,7 @@ import { Retd } from './models/retd.model';
 import { VppStatus } from './models/vppStatus.model';
 import { SCOUT } from './models/scout.model';
 import { Podhod } from './models/podhod.model';
+import { Stands } from './models/stands.model';
 
 
 const sequelizeConfig: SequelizeOptions = {
@@ -58,7 +59,8 @@ const sequelizeConfig: SequelizeOptions = {
     Retd, 
     VppStatus,
     SCOUT,
-    Podhod
+    Podhod,
+    Stands
   ],
 };
 
