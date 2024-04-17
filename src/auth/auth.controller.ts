@@ -1,17 +1,16 @@
 import {
-  Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   Logger,
   Post,
-  Request,
+  Req,
+  Res,
   UseGuards
 } from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
+import { JwtAuthGuard } from './guards/auth.guard';
+import { LocalAuthGuard } from './guards/local.guard';
 import { AuthService } from './auth.service';
-import { Public } from './consts';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -19,17 +18,37 @@ export class AuthController {
 
   constructor(private authService: AuthService) { }
 
-  @Public()
-  @HttpCode(HttpStatus.OK)
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    this.log.debug("login with " + signInDto);
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async login(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<void> {
+    const { access_token } = await this.authService.login(req.user);
+    res
+      .cookie('access_token', access_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+      })
+      .send({ status: 'ok' });
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Req() req) {
     return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('logout')
+  logoff(
+    @Req() req,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    res
+      .clearCookie('access_token')
+      .send({ status: 'ok' });
   }
 }

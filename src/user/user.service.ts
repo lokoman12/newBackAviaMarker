@@ -18,6 +18,10 @@ export class UsersService {
     return this.usersModel.findOne({ where: { login, }, });
   }
 
+  async getUserById(id: number): Promise<User | null> {
+    return this.usersModel.findOne({ where: { id, }, });
+  }
+
   async getUsersByGroupname(name: string): Promise<Array<User>> {
     const group = this.groupModel.findOne({
       where: { name, },

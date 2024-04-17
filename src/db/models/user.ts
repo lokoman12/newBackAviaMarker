@@ -30,11 +30,9 @@ export default class User extends Model {
 
   @BelongsToMany(() => Group, () => UserGroup)
   roles?: Group[];
+
+  @Column({type: DataType.STRING, field: 'refresh_token'})
+  refreshToken: string;
 };
 
-// useBcrypt(User, {
-//   field: 'password',
-//   rounds: 12,
-//   compare: 'authenticate',
-// });
 

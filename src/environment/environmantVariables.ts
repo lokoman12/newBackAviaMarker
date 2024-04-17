@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString, Max, Min, isEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min, isEnum } from 'class-validator';
 import { Airports } from "./types";
 
 
@@ -26,5 +26,9 @@ export class EnvironmentVariables {
   uuee_ctalat: number;
   @IsNumber()
   uuee_ctalon: number;
+
+  @IsString()
+  @IsNotEmpty()
+  jwt_secret: string;
 }
 

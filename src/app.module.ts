@@ -24,6 +24,7 @@ import { ApiConfigService } from './config/api.config.service';
 import { UsersModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
+import { PodhodModule } from './podhod/user.module';
 
 
 @Module({
@@ -53,7 +54,8 @@ import { SettingsModule } from './settings/settings.module';
     VppStatusModule,
     // KafkaModule,
     ScoutModule,
-    OmnicomModule
+    OmnicomModule,
+    PodhodModule
   ],
   providers: [ApiConfigService],
 

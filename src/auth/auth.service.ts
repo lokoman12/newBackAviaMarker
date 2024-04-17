@@ -15,17 +15,33 @@ export class AuthService {
     this.log.log('Init controller');
   }
 
-  async signIn(
-    username: string,
-    pass: string,
-  ): Promise<{ access_token: string }> {
+  async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.getUserByUsername(username);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException();
+    if (user && user.password === pass) {
+      const { password, ...result } = user;
+      return result;
     }
-    const payload = { sub: user.id, username: user.login, };
+    return null;
+  }
+
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: this.jwtService.sign(payload),
     };
   }
+
+  // async signIn(
+  //   username: string,
+  //   pass: string,
+  // ): Promise<{ access_token: string }> {
+  //   const user = await this.usersService.getUserByUsername(username);
+  //   if (user?.password !== pass) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   const payload = { sub: user.id, username: user.login, };
+  //   return {
+  //     access_token: await this.jwtService.signAsync(payload),
+  //   };
+  // }
 }
