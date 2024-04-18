@@ -2,6 +2,8 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import PositionAM from 'src/db/models/position.model';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 
 @Controller('position')
@@ -14,6 +16,7 @@ export class PositionController {
     this.log.log('Init controller');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllAlram(): Promise<PositionAM[]> {
     try {

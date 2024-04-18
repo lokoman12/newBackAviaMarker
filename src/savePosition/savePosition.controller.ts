@@ -2,6 +2,8 @@ import { Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import PositionAM from 'src/db/models/position.model';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 
 @Controller('savePosition')
@@ -14,6 +16,7 @@ export class SavePositionController {
     this.log.log('Init controller');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async savePosition(
     @Query('id') id: number,

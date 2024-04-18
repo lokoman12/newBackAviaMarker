@@ -2,6 +2,8 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Podhod from 'src/db/models/podhod.model';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 
 @Controller('podhod')
@@ -14,6 +16,7 @@ export class PodhodController {
     this.log.log('Init controller');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllPodhod(): Promise<Podhod[]> {
     try {

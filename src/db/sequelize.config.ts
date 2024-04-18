@@ -1,6 +1,5 @@
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
 
-
 const sequelizeConfig: SequelizeModuleOptions = {
   // Пулково
   // uri: 'mysql://olp:100278@172.16.127.10:3306/OLP',

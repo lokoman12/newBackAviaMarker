@@ -2,6 +2,9 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Strips from 'src/db/models/strips.model';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
+
 
 @Controller('strips')
 export class StripsController {
@@ -12,6 +15,7 @@ export class StripsController {
     this.log.log('Init controller');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllStrips(): Promise<any[]> {
     try {

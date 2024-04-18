@@ -25,6 +25,7 @@ import { UsersModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { PodhodModule } from './podhod/user.module';
+import { StandsModule } from './stand_aodb/user.module';
 
 
 @Module({
@@ -55,7 +56,8 @@ import { PodhodModule } from './podhod/user.module';
     // KafkaModule,
     ScoutModule,
     OmnicomModule,
-    PodhodModule
+    PodhodModule,
+    StandsModule
   ],
   providers: [ApiConfigService],
 

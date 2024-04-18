@@ -2,6 +2,8 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import VppStatus from 'src/db/models/vppStatus.model';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 
 @Controller('vpp')
@@ -12,6 +14,7 @@ export class VppStatusController {
     this.log.log('Init controller');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllVppStatus(): Promise<any[]> {
     try {

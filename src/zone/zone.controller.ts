@@ -2,6 +2,8 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 
 @Controller('zone')
@@ -14,6 +16,7 @@ export class ZoneController {
     this.log.log('Init controller');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllZone(): Promise<ZoneAM[]> {
     try {

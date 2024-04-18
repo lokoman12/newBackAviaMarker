@@ -5,6 +5,8 @@ import { flatOffsetMeterToLongitudeLatitude } from 'src/Utils/XYtoLanLon';
 import Toi from 'src/db/models/toi.model';
 import Formular from 'src/db/models/Formular.model';
 import { ApiConfigService } from 'src/config/api.config.service';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 
 @Controller('toi')
@@ -19,6 +21,7 @@ export class ToiController {
     this.log.log('Init controller');
   }
   
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllToi(): Promise<any[]> {
     try {

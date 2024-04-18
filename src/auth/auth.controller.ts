@@ -5,26 +5,41 @@ import {
   Post,
   Req,
   Res,
-  UseGuards
+  UseGuards,
+  UnauthorizedException
 } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/auth.guard';
 import { LocalAuthGuard } from './guards/local.guard';
 import { AuthService } from './auth.service';
+import { UsersService } from '../user/user.service';
+import { LoginTypeResponse } from './types';
 import { Request, Response } from 'express';
+import User from '../db/models/user';
 
 @Controller('auth')
 export class AuthController {
   private readonly log = new Logger(AuthController.name);
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService
+  ) { }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response<LoginTypeResponse>
   ): Promise<void> {
     const { access_token } = await this.authService.login(req.user);
+
+    const user = ((req.user as any)?.dataValues) as User;
+    // if (!user) {
+    //   this.log.warn('Не могу найти пользователя');
+    //   res.clearCookie('access_token')
+    //   throw new UnauthorizedException();
+    // }
+
     res
       .cookie('access_token', access_token, {
         httpOnly: true,
@@ -32,7 +47,13 @@ export class AuthController {
         sameSite: 'lax',
         expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
       })
-      .send({ status: 'ok' });
+      .send({
+        userId: user.id,
+        permissions: {
+          isUser: true,
+          isAdmin: false,
+          isDispatcher: true,
+      }});
   }
 
   @UseGuards(JwtAuthGuard)
