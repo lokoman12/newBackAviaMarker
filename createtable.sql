@@ -74,8 +74,12 @@ CREATE TABLE SCOUT (
   PRIMARY KEY (Serial),
   KEY GarNum (GarNum),
   KEY t_obn (t_obn)
-
-
+);
+CREATE TABLE taxiway (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE,
+    lat FLOAT,
+    lon FLOAT
 );
 -- Toi,
 --  AlaramAM, 

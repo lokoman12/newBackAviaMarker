@@ -13,6 +13,7 @@ import { VppStatus } from './models/vppStatus.model';
 import { SCOUT } from './models/scout.model';
 import { Podhod } from './models/podhod.model';
 import { Stands } from './models/stands.model';
+import { Taxiway } from './models/taxiway.model';
 
 
 const sequelizeConfig: SequelizeOptions = {
@@ -60,7 +61,8 @@ const sequelizeConfig: SequelizeOptions = {
     VppStatus,
     SCOUT,
     Podhod,
-    Stands
+    Stands,
+    Taxiway
   ],
 };
 

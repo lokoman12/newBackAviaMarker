@@ -22,6 +22,7 @@ import { ScoutModule } from './SCOUT/user.module';
 import { OmnicomModule } from './Omnicom/user.module';
 import { PodhodModule } from './podhod/user.module';
 import { StandsModule } from './stand_aodb/user.module';
+import { TaxiwayModule } from './taxiway/user.module';
 
 
 @Module({
@@ -45,7 +46,8 @@ import { StandsModule } from './stand_aodb/user.module';
     ScoutModule,
     OmnicomModule,
     PodhodModule,
-    StandsModule
+    StandsModule,
+    TaxiwayModule
   ],
 
   controllers: [],
