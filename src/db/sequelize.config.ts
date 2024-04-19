@@ -14,6 +14,7 @@ import { SCOUT } from './models/scout.model';
 import { Podhod } from './models/podhod.model';
 import { Stands } from './models/stands.model';
 import { Taxiway } from './models/taxiway.model';
+import { StandsGeo } from './models/standsGeo.model';
 
 
 const sequelizeConfig: SequelizeOptions = {
@@ -62,7 +63,8 @@ const sequelizeConfig: SequelizeOptions = {
     SCOUT,
     Podhod,
     Stands,
-    Taxiway
+    Taxiway,
+    StandsGeo
   ],
 };
 

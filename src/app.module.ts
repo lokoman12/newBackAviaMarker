@@ -23,6 +23,7 @@ import { OmnicomModule } from './Omnicom/user.module';
 import { PodhodModule } from './podhod/user.module';
 import { StandsModule } from './stand_aodb/user.module';
 import { TaxiwayModule } from './taxiway/user.module';
+import { StandGeoModule } from './standGeo/user.module';
 
 
 @Module({
@@ -47,7 +48,8 @@ import { TaxiwayModule } from './taxiway/user.module';
     OmnicomModule,
     PodhodModule,
     StandsModule,
-    TaxiwayModule
+    TaxiwayModule,
+    StandGeoModule
   ],
 
   controllers: [],
