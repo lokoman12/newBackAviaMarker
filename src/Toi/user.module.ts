@@ -3,11 +3,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ToiController } from './toi.controller';
 import Toi from 'src/db/models/toi.model';
 import Formular from 'src/db/models/Formular.model';
-import { ConfigModule } from 'src/config/user.module';
+import { ApiConfigModule } from 'src/config/config.module';
 
 
 @Module({
-  imports: [ConfigModule, SequelizeModule.forFeature([Toi, Formular])],
+  imports: [ApiConfigModule, SequelizeModule.forFeature([Toi, Formular])],
   controllers: [ToiController],
   exports: [SequelizeModule],
 })

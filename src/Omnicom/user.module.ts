@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import SCOUT from 'src/db/models/scout.model';
 import { OmnicomController } from './omnicom.controller';
-import { ConfigModule } from 'src/config/user.module';
+import { ApiConfigModule } from 'src/config/config.module';
 
 
 @Module({
-  imports: [ConfigModule, SequelizeModule.forFeature([SCOUT])],
+  imports: [ApiConfigModule, SequelizeModule.forFeature([SCOUT])],
   controllers: [OmnicomController],
   exports: [SequelizeModule],
 })

@@ -1,5 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min, isEnum } from 'class-validator';
 import { Airports } from "./types";
+import { IsDatabaseUrl } from './isDatabaseUrl';
 
 
 export class EnvironmentVariables {
@@ -26,6 +27,10 @@ export class EnvironmentVariables {
   uuee_ctalat: number;
   @IsNumber()
   uuee_ctalon: number;
+
+  @IsString()
+  @IsDatabaseUrl()
+  dbUri: string;
 
   @IsString()
   @IsNotEmpty()

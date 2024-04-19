@@ -34,6 +34,10 @@ export class ApiConfigService {
     return [this.getUlliCtaLon(), this.getUlliCtaLat()];
   }
 
+  getDbUri(): string {
+    return this.configService.get<string>('dbUri');
+  }
+
   getActiveAirportPosition(): Position {
     const activeAirport = this.configService.get<string>('activeAirport');
     switch (activeAirport) {

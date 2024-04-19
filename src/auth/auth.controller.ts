@@ -29,8 +29,8 @@ export class AuthController {
   @Post('login')
   async login(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response<LoginTypeResponse>
-  ): Promise<void> {
+    @Res({ passthrough: true }) res: Response
+  ) {
     const { access_token } = await this.authService.login(req.user);
 
     const user = ((req.user as any)?.dataValues) as User;
@@ -41,19 +41,32 @@ export class AuthController {
     // }
 
     res
+      .cookie('jwt', access_token, {
+        httpOnly: true,
+        secure: false,
+      });
+
+    res
       .cookie('access_token', access_token, {
         httpOnly: true,
         secure: false,
-        sameSite: 'lax',
-        expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-      })
-      .send({
-        userId: user.id,
-        permissions: {
-          isUser: true,
-          isAdmin: false,
-          isDispatcher: true,
-      }});
+        path: '/',
+        domain: 'http://192.168.6.124'
+        // sameSite: 'lax',
+        // expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+      });
+    res.setHeader('Set-Cookie', 'myCookie=exampleValue');
+
+    this.log.log('AuthController, login: ' + JSON.stringify(req.cookies));
+
+    return {
+      userId: user.id,
+      permissions: {
+        isUser: true,
+        isAdmin: false,
+        isDispatcher: true,
+      }
+    };
   }
 
   @UseGuards(JwtAuthGuard)

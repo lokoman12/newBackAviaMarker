@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import sequelizeConfig from './db/sequelize.config';
 import { ToiModule } from './Toi/user.module';
 import { AlarmModule } from './alarm/user.module';
 import { SaveAlaramModule } from './saveAlaram/user.module';
@@ -10,8 +8,7 @@ import { SaveZoneModule } from './saveZone/user.module';
 import { DeleteZoneModule } from './deleteZone/user.module';
 import { PositionModule } from './position/user.module';
 import { MeteoModule } from './meteo/user.module';
-import { ConfigModule } from '@nestjs/config';
-import { validate } from './environment/env.validation';
+import { ApiConfigModule } from './config/config.module';
 import { AodbModule } from './AODB/user.module';
 import { StripsModule } from './Strips/user.module';
 import { RetaModule } from './Reta/user.module';
@@ -26,16 +23,15 @@ import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { PodhodModule } from './podhod/user.module';
 import { StandsModule } from './stand_aodb/user.module';
+import { CookiesModule } from './cookie/cookies.module';
+import { DatabaseModule } from './db/database.module';
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ['.env',],
-      validate,
-    }),
-    SequelizeModule.forRoot(sequelizeConfig),
+    ApiConfigModule,
+    DatabaseModule,
+    CookiesModule,
     UsersModule,
     AuthModule,
     SettingsModule,

@@ -11,7 +11,6 @@ async function bootstrap() {
       transform: true, stopAtFirstError: true, skipUndefinedProperties: true, skipNullProperties: true,
     })
   )
-  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('BackAviaMarker')
@@ -20,6 +19,9 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(process.env.swaggerApiRelativePath, app, document);
+  
+  // app.use(cors());
+  app.use(cookieParser());
   app.enableCors({ origin: true, credentials: true });
   await app.listen(parseInt(process.env.webPort));
 }
