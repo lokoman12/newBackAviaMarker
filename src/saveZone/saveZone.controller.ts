@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
@@ -22,9 +22,9 @@ export class SaveZoneController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Post()
+  @Post(':name')
   async saveZone(
-    @Query('name') name: string,
+    @Param('name') name: string,
     @Body() coordination: Coord[],
   ): Promise<ZoneAM> {
     try {

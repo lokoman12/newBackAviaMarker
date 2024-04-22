@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { config } from 'dotenv';
 import { AuthDto, CreateUserDto } from 'src/user/user.dto';
-import { JwtTokenType } from './types';
+import { JwtTokenType, SignInDataType } from './types';
 
 @Injectable()
 export class AuthService {
@@ -71,7 +71,7 @@ export class AuthService {
     return tokens;
   }
 
-  async signIn(data: AuthDto) {
+  async signIn(data: AuthDto): Promise<SignInDataType> {
     const user = await this.usersService.findUserByLogin(data.username);
     if (!user) {
       throw new BadRequestException(`User ${data.username} does not exist!`);
@@ -85,6 +85,7 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken);
 
     return {
+      userId: user.id,
       accessToken: tokens.accessToken,
     };
   }

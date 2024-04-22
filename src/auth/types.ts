@@ -4,8 +4,14 @@ export type PermissionsType = {
     isAdmin: boolean;
 };
 
+export type SignInDataType = {
+    userId: number;
+    accessToken: string;
+};
+
 export type LoginTypeResponse = {
     userId: number;
+    accessToken: string;
     permissions: PermissionsType;
 };
 

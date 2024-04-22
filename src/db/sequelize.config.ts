@@ -1,5 +1,6 @@
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
 
+
 const getSequelizeConfig = (uri: string): SequelizeModuleOptions => {
   return {
     uri,

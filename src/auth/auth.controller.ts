@@ -21,6 +21,7 @@ import { AuthDto, CreateUserDto } from 'src/user/user.dto';
 import { RefreshTokenGuard } from './guards/refresh.token.guard';
 import { GetCurrentUserId } from './decorators/get-current-user-id.decorator';
 import { GetCurrentUser } from './decorators/get-current-user.decorator';
+import { LoginTypeResponse } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -56,15 +57,15 @@ export class AuthController {
   async login(
     @Body() data: AuthDto
     , @Req() req: Request
-    , @Res({ passthrough: true }) response: Response
+    , @Res({ passthrough: true }) response: Response<LoginTypeResponse>
   ) {
     this.log.log('LoginController, cookies: ' + req.cookies.test);
-    const { username, password } = data;
+    const { username } = data;
     this.log.warn('Login, user: ' + username);
     response.cookie('test', 123);
-    const { accessToken } = await this.authService.signIn(data);
+    const signInData = await this.authService.signIn(data);
     return {
-      accessToken,
+      ...signInData,
       permissions: {
         isUser: true,
         isDispatcher: true,

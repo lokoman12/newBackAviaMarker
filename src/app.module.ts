@@ -25,6 +25,8 @@ import { PodhodModule } from './podhod/user.module';
 import { StandsModule } from './stand_aodb/user.module';
 import { CookiesModule } from './cookie/cookies.module';
 import { DatabaseModule } from './db/database.module';
+import { TaxiwayModule } from './taxiway/user.module';
+import { StandGeoModule } from './standGeo/user.module';
 
 
 @Module({
@@ -53,7 +55,9 @@ import { DatabaseModule } from './db/database.module';
     ScoutModule,
     OmnicomModule,
     PodhodModule,
-    StandsModule
+    StandsModule,
+    TaxiwayModule,
+    StandGeoModule
   ],
   providers: [ApiConfigService],
 
