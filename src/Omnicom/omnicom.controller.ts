@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import SCOUT from 'src/db/models/scout.model';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 
 
@@ -16,7 +16,7 @@ export class OmnicomController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllAOmnicom(): Promise<SCOUT[]> {
     try {

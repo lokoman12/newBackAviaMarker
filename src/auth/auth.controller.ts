@@ -4,17 +4,23 @@ import {
   Logger,
   Post,
   Req,
-  Res,
   UseGuards,
-  UnauthorizedException
+  Body,
+  HttpStatus,
+  HttpCode,
+  Res,
+  Query
 } from '@nestjs/common';
-import { JwtAuthGuard } from './guards/auth.guard';
-import { LocalAuthGuard } from './guards/local.guard';
+import { AccessTokenGuard } from './guards/access.token.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from '../user/user.service';
-import { LoginTypeResponse } from './types';
+import { Public } from './decorators/public.decorator';
+
 import { Request, Response } from 'express';
-import User from '../db/models/user';
+import { AuthDto, CreateUserDto } from 'src/user/user.dto';
+import { RefreshTokenGuard } from './guards/refresh.token.guard';
+import { GetCurrentUserId } from './decorators/get-current-user-id.decorator';
+import { GetCurrentUser } from './decorators/get-current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -25,64 +31,68 @@ export class AuthController {
     private userService: UsersService
   ) { }
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+  @Post('signup')
+  signin(@Body() data: CreateUserDto) {
+    return this.authService.signUp(data);
+  }
+
+  @Public()
+  @Post('login-get')
+  @HttpCode(HttpStatus.OK)
+  async loginGet(
+    @Query('username') username: string,
+    @Query('password') password: string
+    , @Res({ passthrough: true }) response: Response
   ) {
-    const { access_token } = await this.authService.login(req.user);
+    this.log.warn('Login, user: ' + username);
+    response.cookie('test', 123);
+    const { accessToken } = await this.authService.signIn({ username, password });
+    return { accessToken };
+  }
 
-    const user = ((req.user as any)?.dataValues) as User;
-    // if (!user) {
-    //   this.log.warn('Не могу найти пользователя');
-    //   res.clearCookie('access_token')
-    //   throw new UnauthorizedException();
-    // }
-
-    res
-      .cookie('jwt', access_token, {
-        httpOnly: true,
-        secure: false,
-      });
-
-    res
-      .cookie('access_token', access_token, {
-        httpOnly: true,
-        secure: false,
-        path: '/',
-        domain: 'http://192.168.6.124'
-        // sameSite: 'lax',
-        // expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-      });
-    res.setHeader('Set-Cookie', 'myCookie=exampleValue');
-
-    this.log.log('AuthController, login: ' + JSON.stringify(req.cookies));
-
+  @Public()
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Body() data: AuthDto
+    , @Req() req: Request
+    , @Res({ passthrough: true }) response: Response
+  ) {
+    this.log.log('LoginController, cookies: ' + req.cookies.test);
+    const { username, password } = data;
+    this.log.warn('Login, user: ' + username);
+    response.cookie('test', 123);
+    const { accessToken } = await this.authService.signIn(data);
     return {
-      userId: user.id,
+      accessToken,
       permissions: {
         isUser: true,
-        isAdmin: false,
         isDispatcher: true,
+        isAdmin: true,
       }
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('profile')
-  getProfile(@Req() req) {
+  getProfile(@Req() req: Request) {
     return req.user;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('logout')
-  logoff(
-    @Req() req,
-    @Res({ passthrough: true }) res: Response
+  async logoff(@Req() req) {
+    this.authService.logout(req.user['sub']);
+  }
+
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  @Get('refresh')
+  refreshTokens(
+    @GetCurrentUserId() userId: number,
+    @GetCurrentUser('refreshToken') refreshToken: string
   ) {
-    res
-      .clearCookie('access_token')
-      .send({ status: 'ok' });
+    this.log.log('Refreshm, userId: ' + userId);
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 }

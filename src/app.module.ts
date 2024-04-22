@@ -31,7 +31,7 @@ import { DatabaseModule } from './db/database.module';
   imports: [
     ApiConfigModule,
     DatabaseModule,
-    CookiesModule,
+    // CookiesModule,
     UsersModule,
     AuthModule,
     SettingsModule,

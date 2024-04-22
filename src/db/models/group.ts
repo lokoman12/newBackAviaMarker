@@ -8,9 +8,15 @@ import {
   , Unique
   , AllowNull
 } from 'sequelize-typescript';
-import User from './user';
+import User, { IUser } from './user';
 import UserGroup from './usergroup';
 
+
+export interface IGroup {
+  name: string;
+  comment: string;
+  users?: IUser[];
+}
 
 @Scopes(() => ({
   users: {
@@ -22,7 +28,7 @@ import UserGroup from './usergroup';
   },
 }))
 @Table({ tableName: 'group', timestamps: false, })
-export default class Group extends Model {
+export default class Group extends Model implements IGroup {
   @Unique
   @AllowNull(false)
   @Column({ type: DataType.STRING, })

@@ -34,6 +34,19 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  jwt_secret: string;
+  jwt_access_secret: string;
+
+  @IsString()
+  @IsNotEmpty()
+  jwt_access_expires_in
+
+  @IsString()
+  @IsNotEmpty()
+  jwt_refresh_secret: string;
+
+  @IsString()
+  @IsNotEmpty()
+  jwt_refresh_expires_in
+
 }
 

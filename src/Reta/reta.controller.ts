@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Reta from 'src/db/models/reta.model';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 
 
@@ -14,7 +14,7 @@ export class RetaController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllReta(): Promise<any[]> {
     try {

@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import Group from 'src/db/models/group';
-import User from 'src/db/models/user';
+import User, { IUser } from 'src/db/models/user';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -14,16 +15,31 @@ export class UsersService {
     this.log.log('Init controller');
   }
 
-  async getUserByUsername(login: string): Promise<User | null> {
-    return this.usersModel.findOne({ where: { login, }, });
+  async createUser(userDto: CreateUserDto): Promise<IUser> {
+    this.log.log('Create user: ' + userDto.username);
+    const user = this.usersModel.create(
+      { ...userDto, }
+    );
+    return user;
   }
 
-  async getUserById(id: number): Promise<User | null> {
-    return this.usersModel.findOne({ where: { id, }, });
+  async findAllUsers(): Promise<Array<IUser>> {
+    this.log.log('find all users: ');
+    return this.usersModel.findAll({ raw: true, });
   }
 
-  async getUsersByGroupname(name: string): Promise<Array<User>> {
+  async findUserByLogin(username: string): Promise<IUser | null> {
+    this.log.log('findUser: ', username);
+    return this.usersModel.findOne({ raw: true, where: { username, }, });
+  }
+
+  async findUserById(id: number): Promise<IUser | null> {
+    return this.usersModel.findOne({ raw: true, where: { id, }, });
+  }
+
+  async findUsersByGroupname(name: string): Promise<Array<IUser>> {
     const group = this.groupModel.findOne({
+      raw: true,
       where: { name, },
       include: [
         {
@@ -32,5 +48,26 @@ export class UsersService {
       ],
     });
     return Promise.resolve([]);
+  }
+
+  async updateUser(
+    id: number,
+    updateUserDto: UpdateUserDto
+  ): Promise<IUser> {
+    const user = await this.usersModel.findOne({
+      where: { id, },
+    });
+    if (!user) {
+      throw new BadRequestException(`Can not update user with id: ${id}!`);
+    }
+    user.update(updateUserDto);
+    user.reload();
+    return user.get();
+  }
+
+  async removeUser(id: number): Promise<void> {
+    await this.usersModel.destroy(
+      { where: { id, }, }
+    )
   }
 }

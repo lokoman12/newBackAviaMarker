@@ -2,7 +2,7 @@ import { Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import AlaramAM from 'src/db/models/alarm.model';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 
 
@@ -16,7 +16,7 @@ export class SaveAlarmController {
     this.log.log('Init controller');
   }
   
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Post()
   async saveAlarm(
     @Query('lat') lat: number,

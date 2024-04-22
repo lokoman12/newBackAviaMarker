@@ -2,7 +2,7 @@ import { Controller, Delete, Query, Param } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 
 
@@ -16,7 +16,7 @@ export class DeleteZoneController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   async deleteZone(@Param('id') id: number): Promise<void> {
     try {

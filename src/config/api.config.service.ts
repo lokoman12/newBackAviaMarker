@@ -9,8 +9,18 @@ export class ApiConfigService {
     private configService: ConfigService
   ) { }
 
-  getJwtSecret(): string {
-    return this.configService.get<string>('jwt_secret');
+  getJwtAccessExpiresIn(): string {
+    return this.configService.get<string>('jwt_access_expires_in');
+  }
+  getJwtAccessSecret(): string {
+    return this.configService.get<string>('jwt_access_secret');
+  }
+  getJwtRefreshExpiresIn(): string {
+    return this.configService.get<string>('jwt_refresh_expires_in');
+  }
+
+  getJwtRefreshSecret(): string {
+    return this.configService.get<string>('jwt_refresh_secret');
   }
 
 

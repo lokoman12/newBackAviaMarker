@@ -2,7 +2,7 @@ import { Controller, Post, Body, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 
 
@@ -21,7 +21,7 @@ export class SaveZoneController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Post()
   async saveZone(
     @Query('name') name: string,

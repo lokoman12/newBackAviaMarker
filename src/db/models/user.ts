@@ -1,11 +1,21 @@
-import { Table, Column, Model, DataType, Unique, Default, NotEmpty, PrimaryKey, AllowNull, BelongsToMany } from 'sequelize-typescript';
-import Group from './group';
+import { Table, Column, Model, DataType, Unique, Default, NotEmpty, PrimaryKey, AllowNull, BelongsToMany, AutoIncrement } from 'sequelize-typescript';
+import Group, { IGroup } from './group';
 import UserGroup from './usergroup';
 
+export interface IUser {
+  id: number;
+  username: string;
+  password: string;
+  wrongAttempts: number;
+  lastSeen: Date;
+  roles?: IGroup[];
+  refreshToken?: string;
+}
 
 @Table({ tableName: 'auth' })
-export default class User extends Model {
+export default class User extends Model implements IUser {
   @NotEmpty
+  @AutoIncrement
   @PrimaryKey
   @Column({ type: DataType.INTEGER.UNSIGNED })
   id: number;
@@ -13,7 +23,7 @@ export default class User extends Model {
   @Unique
   @AllowNull(false)
   @Column({ type: DataType.STRING, })
-  login!: string;
+  username!: string;
 
   @AllowNull(false)
   @Column({ type: DataType.STRING, })
@@ -31,8 +41,9 @@ export default class User extends Model {
   @BelongsToMany(() => Group, () => UserGroup)
   roles?: Group[];
 
+  @AllowNull(true)
   @Column({type: DataType.STRING, field: 'refresh_token'})
-  refreshToken: string;
+  refreshToken?: string;
 };
 
 

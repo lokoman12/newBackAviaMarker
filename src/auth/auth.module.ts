@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { ApiConfigModule } from 'src/config/config.module';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './consts';
-import { LocalStrategy } from './strategies/local.strategy';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AccessTokenStrategy } from './strategies/access.token.strategy';
+import { ApiConfigService } from 'src/config/api.config.service';
+import { RefreshTokenStrategy } from './strategies/refresh.token.strategy';
 
 
 @Module({
@@ -15,16 +15,28 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     ApiConfigModule,
     PassportModule,
     UsersModule,
-    JwtModule.register({
-      global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1d', },
-    })
+    JwtModule.registerAsync({
+      imports: [ApiConfigModule],
+      useFactory: async (configService: ApiConfigService) => {
+        return {
+          global: true,
+          secret: configService.getJwtAccessSecret(),
+          signOptions: { expiresIn: configService.getJwtAccessExpiresIn(), },
+        };
+      },
+      inject: [ApiConfigService],
+    }),
   ],
   providers: [
-    AuthService, LocalStrategy, JwtStrategy
+    AuthService, AccessTokenStrategy, RefreshTokenStrategy,
   ],
   controllers: [AuthController],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {
+  private readonly log = new Logger(AuthModule.name);
+
+  constructor() {
+    this.log.debug('Init AuthModule');
+  }
+}
