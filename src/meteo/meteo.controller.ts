@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import Meteo from 'src/db/models/meteo.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('meteo')
@@ -16,7 +17,8 @@ export class MeteoController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllMeteo(): Promise<Meteo[]> {
     try {

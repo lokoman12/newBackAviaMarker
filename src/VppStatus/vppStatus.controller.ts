@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import VppStatus from 'src/db/models/vppStatus.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('vpp')
@@ -14,7 +15,8 @@ export class VppStatusController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllVppStatus(): Promise<any[]> {
     try {

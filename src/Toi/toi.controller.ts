@@ -23,8 +23,8 @@ export class ToiController {
     this.log.log('Init controller');
   }
   
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllToi(@Req() req: Request): Promise<any[]> {
     this.log.log('ToiController, cookie: ' + req.cookies.test + ', ' + JSON.stringify(req.cookies));

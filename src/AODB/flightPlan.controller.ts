@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import AODB from 'src/db/models/fpln.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('aodb')
@@ -16,7 +17,8 @@ export class AODBController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllAodb(): Promise<AODB[]> {
     try {

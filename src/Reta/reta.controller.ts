@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import Reta from 'src/db/models/reta.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('reta')
@@ -14,7 +15,8 @@ export class RetaController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllReta(): Promise<any[]> {
     try {

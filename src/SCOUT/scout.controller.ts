@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import SCOUT from 'src/db/models/scout.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('scout')
@@ -16,7 +17,8 @@ export class SCOUTController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllScout(): Promise<SCOUT[]> {
     try {

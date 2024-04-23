@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import Stands from 'src/db/models/stands.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('stand')
@@ -16,7 +17,8 @@ export class StandController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllStand(): Promise<Stands[]> {
     try {

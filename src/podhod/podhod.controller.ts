@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import Podhod from 'src/db/models/podhod.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('podhod')
@@ -16,7 +17,8 @@ export class PodhodController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllPodhod(): Promise<Podhod[]> {
     try {

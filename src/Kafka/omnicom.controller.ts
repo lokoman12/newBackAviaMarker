@@ -7,6 +7,7 @@ import Formular from 'src/db/models/Formular.model';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('aodb')
@@ -21,7 +22,8 @@ export class ToiController {
     this.log.log('Init controller');
   }
   
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllToi(): Promise<any[]> {
     try {

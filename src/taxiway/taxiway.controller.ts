@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Taxiway from 'src/db/models/taxiway.model';
+import { Public } from 'src/auth/consts';
 
 @Controller('taxiway')
 export class TaxiwayController {
@@ -13,6 +14,7 @@ export class TaxiwayController {
     this.log.log('Init controller');
   }
 
+  @Public()
   @Get()
   async getAllTaxiway(): Promise<Taxiway[]> {
     try {

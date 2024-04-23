@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import Retd from 'src/db/models/retd.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('retd')
@@ -14,7 +15,8 @@ export class RetdController {
     this.log.log('Init controller');
   }
 
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllRetd(): Promise<any[]> {
     try {

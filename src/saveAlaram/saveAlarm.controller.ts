@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import AlaramAM from 'src/db/models/alarm.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/consts';
 
 
 @Controller('saveAlarm')
@@ -16,7 +17,8 @@ export class SaveAlarmController {
     this.log.log('Init controller');
   }
   
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Post()
   async saveAlarm(
     @Query('lat') lat: number,

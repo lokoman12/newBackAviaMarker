@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import AlaramAM from 'src/db/models/alarm.model';
+import { Public } from 'src/auth/consts';
 
 @Controller('alarm')
 export class AlarmController {
@@ -13,6 +14,7 @@ export class AlarmController {
     this.log.log('Init controller');
   }
 
+  @Public()
   @Get()
   async getAllAlram(): Promise<AlaramAM[]> {
     try {
