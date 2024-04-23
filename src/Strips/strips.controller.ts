@@ -16,8 +16,8 @@ export class StripsController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllStrips(): Promise<any[]> {
     try {

@@ -17,8 +17,8 @@ export class OmnicomController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllAOmnicom(): Promise<SCOUT[]> {
     try {

@@ -15,8 +15,8 @@ export class RetaController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllReta(): Promise<any[]> {
     try {

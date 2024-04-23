@@ -17,8 +17,8 @@ export class MeteoController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllMeteo(): Promise<Meteo[]> {
     try {

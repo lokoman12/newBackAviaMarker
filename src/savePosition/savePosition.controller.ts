@@ -17,8 +17,8 @@ export class SavePositionController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Post()
   async savePosition(
     @Query('id') id: number,

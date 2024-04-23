@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Taxiway from 'src/db/models/taxiway.model';
 import { Public } from 'src/auth/consts';
+import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 
 @Controller('taxiway')
 export class TaxiwayController {
@@ -14,7 +15,8 @@ export class TaxiwayController {
     this.log.log('Init controller');
   }
 
-  @Public()
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllTaxiway(): Promise<Taxiway[]> {
     try {

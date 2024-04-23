@@ -7,7 +7,7 @@ import User from './user';
 import Group from './group';
 
 
-@Table({ tableName: '_user_role', timestamps: false, })
+@Table({ tableName: 'user_role', timestamps: false, })
 export default class UserGroup extends Model {
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER.UNSIGNED, })   

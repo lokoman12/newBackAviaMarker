@@ -17,8 +17,8 @@ export class SaveAlarmController {
     this.log.log('Init controller');
   }
   
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Post()
   async saveAlarm(
     @Query('lat') lat: number,

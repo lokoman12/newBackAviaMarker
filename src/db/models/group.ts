@@ -27,7 +27,7 @@ export interface IGroup {
     ],
   },
 }))
-@Table({ tableName: 'group', timestamps: false, })
+@Table({ tableName: 'role', timestamps: false, })
 export default class Group extends Model implements IGroup {
   @Unique
   @AllowNull(false)

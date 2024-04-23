@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import StandsGeo from 'src/db/models/standsGeo.model';
 import { Public } from 'src/auth/consts';
+import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 
 
 @Controller('standGeo')
@@ -15,7 +16,8 @@ export class StandGeoController {
     this.log.log('Init controller');
   }
 
-  @Public()
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllStandsGeo(): Promise<StandsGeo[]> {
     try {

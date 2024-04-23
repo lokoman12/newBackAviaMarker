@@ -17,8 +17,8 @@ export class PodhodController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllPodhod(): Promise<Podhod[]> {
     try {

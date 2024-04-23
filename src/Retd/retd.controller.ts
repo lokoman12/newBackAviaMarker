@@ -15,8 +15,8 @@ export class RetdController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllRetd(): Promise<any[]> {
     try {

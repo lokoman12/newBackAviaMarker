@@ -17,8 +17,8 @@ export class DeleteZoneController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   async deleteZone(@Param('id') id: number): Promise<void> {
     try {

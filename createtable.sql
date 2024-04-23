@@ -14,7 +14,7 @@ CREATE TABLE positionAM (
     name VARCHAR(255)
 );
 CREATE TABLE zoneAM (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT O_INCREMENT PRIMARY KEY,
     coordination JSON,
     name VARCHAR(255)
 );
@@ -98,3 +98,46 @@ CREATE TABLE parks_web (
 --  Strips, 
 --  Reta, 
 --  Retd
+
+
+CREATE TABLE auth (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  username varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  password varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  wrong_attempts smallint(5) unsigned NOT NULL,
+  last_seen datetime DEFAULT NULL,
+  createdAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  refresh_token varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY auth_UN (username)
+);
+
+CREATE TABLE setting (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  name varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  username varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '*',
+  value varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  createdAt datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updatedAt datetime(3) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY setting_UN (name, username)
+);
+
+CREATE TABLE role (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  comment varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY name(name)
+);
+
+CREATE TABLE user_role (
+  userId int unsigned NOT NULL,
+  groupId int unsigned NOT NULL,
+  PRIMARY KEY (userId, groupId),
+  UNIQUE KEY user_group_groupId_userId_unique(userId, groupId),
+  KEY user_role_FK_1(groupId),
+  CONSTRAINT user_role_FK FOREIGN KEY (userId) REFERENCES auth(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT user_role_FK_1 FOREIGN KEY (groupId) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE
+)

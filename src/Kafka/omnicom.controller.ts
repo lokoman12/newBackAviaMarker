@@ -22,8 +22,8 @@ export class ToiController {
     this.log.log('Init controller');
   }
   
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllToi(): Promise<any[]> {
     try {

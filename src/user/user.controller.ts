@@ -25,6 +25,20 @@ export class UserController {
   ) { }
 
   @Public()
+  @Get('/groups')
+  async getAllGroups() {
+    const groups = await this.userService.findAllGroups();
+    return groups;
+  }
+
+  @Public()
+  @Get('/user-by-group')
+  async getUserByGroup() {
+    const groups = await this.userService.findUsersByGroupname('test');
+    return groups;
+  }
+
+  @Public()
   @Get('/')
   async getAllUsers() {
     const users = await this.userService.findAllUsers();

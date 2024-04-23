@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import Group from 'src/db/models/group';
+import Group, { IGroup } from 'src/db/models/group';
 import User, { IUser } from 'src/db/models/user';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 
@@ -21,6 +21,11 @@ export class UsersService {
       { ...userDto, }
     );
     return user;
+  }
+
+  async findAllGroups(): Promise<Array<IGroup>> {
+    this.log.log('find all groups: ');
+    return this.groupModel.findAll({ raw: true, });
   }
 
   async findAllUsers(): Promise<Array<IUser>> {

@@ -15,8 +15,8 @@ export class VppStatusController {
     this.log.log('Init controller');
   }
 
-  @Public()
-  // @UseGuards(AccessTokenGuard)
+  // @Public()
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllVppStatus(): Promise<any[]> {
     try {
