@@ -43,7 +43,7 @@ import { StandGeoModule } from './standGeo/user.module';
     RetaModule,
     RetdModule,
     VppStatusModule,
-    // KafkaModule,
+    KafkaModule,
     ScoutModule,
     OmnicomModule,
     PodhodModule,

@@ -81,6 +81,13 @@ CREATE TABLE taxiway (
     lat FLOAT,
     lon FLOAT
 );
+CREATE TABLE parks_web (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    lat FLOAT,
+    lon FLOAT,
+    geojson JSON
+);
 -- Toi,
 --  AlaramAM, 
 --  PositionAM, 

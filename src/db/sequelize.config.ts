@@ -29,18 +29,8 @@ const sequelizeConfig: SequelizeOptions = {
   //   timestamps: false,
   // },
   // Шарик
-  //   dialect: 'mysql',
-  // host: '10.248.157.162',
-  // port:  3306,
-  // username: 'olp',
-  // password: '100278',
-  // database: 'OLP',
-  // define: {
-  //   timestamps: false,
-  // },
-  // Алмаз
-  dialect: 'mysql',
-  host: '192.168.6.109',
+    dialect: 'mysql',
+  host: '10.248.157.162',
   port:  3306,
   username: 'olp',
   password: '100278',
@@ -48,6 +38,16 @@ const sequelizeConfig: SequelizeOptions = {
   define: {
     timestamps: false,
   },
+  // Алмаз
+  // dialect: 'mysql',
+  // host: '192.168.6.109',
+  // port:  3306,
+  // username: 'olp',
+  // password: '100278',
+  // database: 'OLP',
+  // define: {
+  //   timestamps: false,
+  // },
   models: [
     Toi, 
     AlaramAM, 
