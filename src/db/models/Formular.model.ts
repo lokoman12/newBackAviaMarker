@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
-import { curs } from 'src/Utils/Curs';
+import { curs } from 'src/utils/Curs';
 
 @Table({ tableName: 'formular' })
 export default class Formular extends Model {

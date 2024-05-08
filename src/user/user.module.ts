@@ -6,12 +6,14 @@ import { ApiConfigModule } from 'src/config/config.module';
 import { UsersService } from './user.service';
 import User from 'src/db/models/user';
 import { UserController } from './user.controller';
+import { GroupService } from './group.service';
+import { GroupController } from './group.controller';
 
 
 @Module({
-  providers: [UsersService],
-  imports: [ApiConfigModule, SequelizeModule.forFeature([User, Group, Settings])],
-  controllers: [UserController,],
-  exports: [UsersService],
+  providers: [UsersService, GroupService,],
+  imports: [ApiConfigModule, SequelizeModule.forFeature([User, Group, Settings]),],
+  controllers: [UserController, GroupController,],
+  exports: [UsersService, GroupService,],
 })
 export class UsersModule { }

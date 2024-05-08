@@ -9,6 +9,11 @@ export class ApiConfigService {
     private configService: ConfigService
   ) { }
 
+  getHistoryRecordTablesNumber() {
+    return this.configService.get<number>('historyRecordTablesNumber');
+  }
+
+
   getJwtAccessExpiresIn(): string {
     return this.configService.get<string>('jwt_access_expires_in');
   }
@@ -45,6 +50,10 @@ export class ApiConfigService {
   }
 
   getDbUri(): string {
+    return this.configService.get<string>('dbUri');
+  }
+
+  getDbProperties(): string {
     return this.configService.get<string>('dbUri');
   }
 

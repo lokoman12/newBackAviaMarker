@@ -2,41 +2,24 @@ import {
   Controller,
   Get,
   Logger,
-  Post,
-  UseGuards,
-  Request,
   Body,
   Param,
   Delete,
   Put
 } from '@nestjs/common';
 import { UsersService } from './user.service';
-import { IUser } from '../db/models/user';
-import { AuthGuard } from '@nestjs/passport';
-import { AuthDto, UpdateUserDto } from 'src/user/user.dto';
-import { Public } from 'src/auth/consts';
+import { UpdateUserDto } from 'src/user/user.dto';
+import { GroupService } from './group.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
   private readonly log = new Logger(UserController.name);
 
   constructor(
-    private userService: UsersService
+    private userService: UsersService,
+    private groupService: GroupService
   ) { }
-
-  @Public()
-  @Get('/groups')
-  async getAllGroups() {
-    const groups = await this.userService.findAllGroups();
-    return groups;
-  }
-
-  @Public()
-  @Get('/user-by-group')
-  async getUserByGroup() {
-    const groups = await this.userService.findUsersByGroupname('test');
-    return groups;
-  }
 
   @Public()
   @Get('/')
@@ -52,9 +35,17 @@ export class UserController {
     return user;
   }
 
+
+  @Public()
+  @Get('/:userId/groups')
+  async getGroupsOfUser(@Param('userId') userId: number) {
+    const groups = await this.userService.findGroupsOfUser(userId);
+    return groups;
+  }
+
   @Public()
   @Put('/:id')
-  async updateUser(@Param('id') id: number, dto: UpdateUserDto) {
+  async updateUser(@Param('id') id: number, @Body() dto: UpdateUserDto) {
     const user = await this.userService.updateUser(id, dto);
     return user;
   }

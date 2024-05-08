@@ -14,7 +14,7 @@ import {
 import { AccessTokenGuard } from './guards/access.token.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from '../user/user.service';
-import { Public } from './decorators/public.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 import { Request, Response } from 'express';
 import { AuthDto, CreateUserDto } from 'src/user/user.dto';

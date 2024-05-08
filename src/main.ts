@@ -3,8 +3,13 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+// Расширим dayjs
+import dayjs from './utils/dayjs';
 
+declare const module: any;
+  
 async function bootstrap() {
+
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -24,5 +29,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({ origin: true, credentials: true });
   await app.listen(parseInt(process.env.webPort));
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();

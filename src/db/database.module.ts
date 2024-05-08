@@ -1,8 +1,8 @@
-import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Logger, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { ApiConfigModule } from 'src/config/config.module';
-import getSequelizeConfig from './sequelize.config';
+import { getSequelizeDbConnectionPropertiesConfig } from './sequelize.config';
 
 @Module({
   imports: [
@@ -10,7 +10,7 @@ import getSequelizeConfig from './sequelize.config';
       imports: [ApiConfigModule],
       inject: [ApiConfigService,],
       useFactory: async (configService: ApiConfigService) => {
-        return getSequelizeConfig(configService.getDbUri());
+        return getSequelizeDbConnectionPropertiesConfig(configService.getDbUri());
       },
     }),
   ],

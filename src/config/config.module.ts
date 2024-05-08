@@ -1,6 +1,6 @@
-import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Logger, Module, NestModule } from '@nestjs/common';
 import { ApiConfigService } from './api.config.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { validate } from '../environment/env.validation';
 
 

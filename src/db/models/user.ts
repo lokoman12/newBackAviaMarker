@@ -1,4 +1,16 @@
-import { Table, Column, Model, DataType, Unique, Default, NotEmpty, PrimaryKey, AllowNull, BelongsToMany, AutoIncrement } from 'sequelize-typescript';
+import {
+  Table
+  , Column
+  , Model
+  , DataType
+  , Unique
+  , Default
+  , NotEmpty
+  , PrimaryKey
+  , AllowNull
+  , BelongsToMany
+  , AutoIncrement
+} from 'sequelize-typescript';
 import Group, { IGroup } from './group';
 import UserGroup from './usergroup';
 
@@ -35,15 +47,11 @@ export default class User extends Model implements IUser {
   wrongAttempts: number;
 
   @AllowNull(true)
-  @Column({ type: DataType.DATE, field: 'last_seen'})
+  @Column({ type: DataType.DATE, field: 'last_seen' })
   lastSeen: Date;
 
   @BelongsToMany(() => Group, () => UserGroup)
   roles?: Group[];
-
-  @AllowNull(true)
-  @Column({type: DataType.STRING, field: 'refresh_token'})
-  refreshToken?: string;
 };
 
 

@@ -1,10 +1,7 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import User, { IUser } from 'src/db/models/user';
+import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { UsersService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { ApiConfigService } from 'src/config/api.config.service';
-import { config } from 'dotenv';
 import { AuthDto, CreateUserDto } from 'src/user/user.dto';
 import { JwtTokenType, SignInDataType } from './types';
 

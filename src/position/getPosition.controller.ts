@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import PositionAM from 'src/db/models/position.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
-import { Public } from 'src/auth/consts';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 
 @Controller('position')
