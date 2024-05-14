@@ -27,6 +27,9 @@ import { CookiesModule } from './cookie/cookies.module';
 import { DatabaseModule } from './db/database.module';
 import { TaxiwayModule } from './taxiway/taxiway.module';
 import { StandGeoModule } from './stand-geo/stand.geo.module';
+import { PointModule } from './point/point.module';
+import { LineModule } from './line/line.module';
+import { PolygonsModule } from './polygon/polygon.module';
 
 
 @Module({
@@ -57,7 +60,10 @@ import { StandGeoModule } from './stand-geo/stand.geo.module';
     PodhodModule,
     StandsModule,
     TaxiwayModule,
-    StandGeoModule
+    StandGeoModule,
+    PointModule,
+    LineModule,
+    PolygonsModule
   ],
   providers: [ApiConfigService],
 

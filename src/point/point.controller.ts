@@ -17,8 +17,8 @@ export class PointController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllPoints(): Promise<Point[]> {
     try {
