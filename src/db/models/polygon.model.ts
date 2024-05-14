@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: "Point" })
-export default class Point extends Model {
+@Table({ tableName: 'Polygon' })
+export default class Polygon extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -22,21 +22,15 @@ export default class Point extends Model {
   time: Date;
 
   @Column({
-    type: DataType.FLOAT,
+    type: DataType.STRING,
     allowNull: false,
   })
-  lat: number;
+  square: string;
   @Column({
-    type: DataType.FLOAT,
+    type: DataType.STRING,
     allowNull: false,
   })
-  lon: number;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  radius: number;
+  coordinates: string;
   @Column({
     type: DataType.STRING,
     allowNull: false,
