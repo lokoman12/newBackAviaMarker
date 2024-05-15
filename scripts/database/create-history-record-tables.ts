@@ -1,24 +1,24 @@
 import "reflect-metadata";
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import * as assert from 'assert';
 import { SettingsService } from '../../src/settings/settings.service';
 import { Logger } from '@nestjs/common';
 import { getSequelizeDbConnectionPropertiesConfig } from "src/db/sequelize.config";
 import { Sequelize } from "sequelize";
-
+import * as path from 'path';
 
 const logger = new Logger('Script create-history-record-tables');
 logger.log('Запуск скрипта создания таблиц, хранящих запись истории TOI для ретрансляции');
 
-
 // --- Загружаем настройки
-dotenv.config();
-
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // --- Инициализируем базу
 const dbConfig = getSequelizeDbConnectionPropertiesConfig(process.env.dbUri);
+logger.log(dbConfig);
 const sequelize = new Sequelize({
-  database: dbConfig.protocol,
+  database: dbConfig.database,
+  protocol: dbConfig.protocol,
   dialect: dbConfig.dialect,
   username: dbConfig.username,
   password: dbConfig.password,
@@ -39,7 +39,7 @@ const sequelize = new Sequelize({
 });
 
 // --- Количество таблиц
-const historyRecordTablesNumber = parseInt(process.env.HISTORY_RECORD_TABLES_NUMBER ?? '0');
+const historyRecordTablesNumber = parseInt(process.env.historyRecordTablesNumber ?? '0');
 assert(historyRecordTablesNumber > 0, "Количество таблиц записи для истории TOI должно быть больше нуля!");
 
 // --- Список таблиц истории для третички
@@ -67,7 +67,7 @@ const deleteHistoryRecordTables = async () => {
     `);
     promises.push(dropResult);
   });
-
+  logger.log(`Промисы для удаления: ${promises.length}`);
   try {
     await Promise.all(promises);
     logger.log('Таблицы удалены');
@@ -133,7 +133,7 @@ const deleteToiActualTables = async () => {
 
   toiActualTableNames.forEach(it => {
     const dropResult = sequelize.query(`
-      DROP TABLE IF EXISTS >${it};
+      DROP TABLE IF EXISTS ${it};
     `);
     promises.push(dropResult);
   });
@@ -204,4 +204,5 @@ const createToiActualTables = async () => {
   await createToiActualTables();
 
   logger.log('Окончание работы скрипта создания таблиц, хранящих запись истории TOI и и актуальную третичку по записи для ретрансляции');
+  process.exit(0);
 })();

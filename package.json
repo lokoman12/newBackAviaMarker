@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "db:create-history-tables": "node dist/create-history-record-tables.js",
+    "db:create-history-tables": "node dist/scripts/database/create-history-record-tables.js",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "NODE_ENV=dev nest start",
