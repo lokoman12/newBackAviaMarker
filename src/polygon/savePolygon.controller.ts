@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
@@ -24,24 +24,37 @@ export class SavePolygonController {
   ): Promise<Polygon> {
     try {
       const date = new Date();
-      const coordinate = JSON.parse(coordinates)
-      const polygonSquare = turf.polygon(coordinate);
-      const area = turf.area(polygonSquare);
+      const coords = JSON.parse(coordinates);
+
+      if (!Array.isArray(coords) || coords.length === 0 || !coords[0].hasOwnProperty('latitude') || !coords[0].hasOwnProperty('longitude')) {
+        throw new Error('Invalid coordinates format');
+      }
+
+      // Преобразуем координаты в формат [longitude, latitude]
+      const parsedCoords = coords.map(coord => [parseFloat(coord.longitude), parseFloat(coord.latitude)]);
+
+      // Замыкаем полигон, добавив первую точку в конец
+      if (parsedCoords[0] !== parsedCoords[parsedCoords.length - 1]) {
+        parsedCoords.push(parsedCoords[0]);
+      }
+
+      const polygon = turf.polygon([parsedCoords]);
+      const area = turf.area(polygon);
+
+      this.log.log(`Calculated area: ${area} square meters`);
 
       const data = {
         name,
         time: date,
-        square: JSON.stringify(area),
+        square: area,
         coordinates,
         description,
       };
-      const polygon = await this.polygonModel.create(data);
-      return polygon;
+      const createdPolygon = await this.polygonModel.create(data);
+      return createdPolygon;
     } catch (error) {
       this.log.error('Error creating polygon:', error);
       throw error;
     }
   }
 }
-
-

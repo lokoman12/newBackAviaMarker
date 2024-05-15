@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { Controller, Get, Post, Query } from '@nestjs/common';
+=======
+import { Controller, Post, Query } from '@nestjs/common';
+>>>>>>> main-1
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
@@ -23,9 +27,25 @@ export class SaveLineController {
     @Query('description') description: string
   ): Promise<Line> {
     try {
+<<<<<<< HEAD
       const coordinat = JSON.parse(coordinates);
       const lineString = turf.lineString(coordinat.map(coord => [parseFloat(coord[0]), parseFloat(coord[1])]));
       const totalLength = turf.length(lineString, { units: 'kilometers' });
+=======
+      const coords = JSON.parse(coordinates);
+      if (!Array.isArray(coords) || coords.length === 0 || !coords[0].hasOwnProperty('latitude') || !coords[0].hasOwnProperty('longitude')) {
+        throw new Error('Invalid coordinates format');
+      }
+
+      let totalLength = 0;
+      for (let i = 0; i < coords.length - 1; i++) {
+        const from = turf.point([parseFloat(coords[i].longitude), parseFloat(coords[i].latitude)]);
+        const to = turf.point([parseFloat(coords[i + 1].longitude), parseFloat(coords[i + 1].latitude)]);
+        totalLength += turf.distance(from, to, { units: 'meters' });
+      }
+
+      this.log.log(`Calculated total length: ${totalLength} meters`);
+>>>>>>> main-1
 
       const date = new Date();
       const data = {
