@@ -10,7 +10,7 @@ export interface ISetting {
 }
 
 @Table({ tableName: 'setting' })
-export default class Settings extends Model {
+export default class Settings extends Model implements ISetting {
   private readonly log = new Logger(Settings.name);
 
   @NotEmpty

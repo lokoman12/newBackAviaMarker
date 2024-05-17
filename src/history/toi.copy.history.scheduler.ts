@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 
 @Injectable()
-class TimelineService {
-  private readonly logger = new Logger(TimelineService.name);
+class HistoryService {
+  private readonly logger = new Logger(HistoryService.name);
 
   constructor(
   ) {
@@ -61,4 +61,4 @@ class TimelineService {
   // }
 }
 
-export default TimelineService;
+export default HistoryService;

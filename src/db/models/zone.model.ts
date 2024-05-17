@@ -1,6 +1,5 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-
 @Table({ tableName: 'zoneAM' })
 export default class ZoneAM extends Model {
   @Column({

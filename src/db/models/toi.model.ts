@@ -1,8 +1,21 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { curs } from 'src/utils/Curs';
 
+export interface IToi {
+  id: number;
+  id_Sintez: number;
+  Number: number;
+  X: number;
+  Y: number;
+  H: number;
+  Name: string;
+  CRS: number;
+  faza: number;
+  Type: number;
+}
+
 @Table({ tableName: "toi" })
-export default class Toi extends Model {
+export default class Toi extends Model implements IToi {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -60,8 +73,4 @@ export default class Toi extends Model {
     allowNull: true,
   })
   Type: number;
-  
-  get CRSConverted(): number {
-    return curs(this.getDataValue('CRS'));
-  }
 }

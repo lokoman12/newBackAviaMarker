@@ -10,14 +10,14 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
-import TimelineService from './timelineService';
+import HistoryService from './historyService';
 
-@Controller('timeline')
-export class TimelineController {
-  private readonly log = new Logger(TimelineController.name);
+@Controller('history')
+export class HistoryController {
+  private readonly log = new Logger(HistoryController.name);
 
   constructor(
-    private timelineService: TimelineService,
+    private historyService: HistoryService,
   ) { }
 
   @Public()

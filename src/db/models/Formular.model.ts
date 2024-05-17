@@ -1,8 +1,26 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { curs } from 'src/utils/Curs';
 
+export interface IFormular {
+  id: number;
+  Source_ID: number;
+  Type_of_Msg: number;
+  FP_Callsign: string;
+  tobtg: string;
+  FP_TypeAirCraft: string;
+  tow: string;
+  FP_stand: string;
+  airport_code: string;
+  taxi_out: string;
+  ata: string;
+  regnum: string;
+  Speed: number;
+  FP_VPP_sign: string;
+  poo: string;
+}
+
 @Table({ tableName: 'formular' })
-export default class Formular extends Model {
+export default class Formular extends Model implements IFormular {
   @Column({
     type: DataType.SMALLINT,
     primaryKey: true,
