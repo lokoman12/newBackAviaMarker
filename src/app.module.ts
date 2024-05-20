@@ -30,6 +30,7 @@ import { StandGeoModule } from './stand-geo/stand.geo.module';
 import { PointModule } from './point/point.module';
 import { LineModule } from './line/line.module';
 import { PolygonsModule } from './polygon/polygon.module';
+import { HistoryModule } from './history/history.module';
 
 
 @Module({
@@ -63,7 +64,8 @@ import { PolygonsModule } from './polygon/polygon.module';
     StandGeoModule,
     PointModule,
     LineModule,
-    PolygonsModule
+    PolygonsModule,
+    HistoryModule,
   ],
   providers: [ApiConfigService],
 

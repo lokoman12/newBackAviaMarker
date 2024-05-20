@@ -38,7 +38,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  jwt_access_expires_in
+  jwt_access_expires_in: string
 
   @IsString()
   @IsNotEmpty()
@@ -46,11 +46,14 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  jwt_refresh_expires_in;
+  jwt_refresh_expires_in: string;
 
   @IsNumber()
   @IsPositive()
   historyRecordTablesNumber: number;
 
+  @IsString()
+  @IsNotEmpty()
+  toiCopyToHistoryCronMask: string;
 }
 

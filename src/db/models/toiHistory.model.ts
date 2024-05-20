@@ -1,5 +1,5 @@
 import { Position } from '@turf/turf';
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
 
 export interface IToiHistory {
   id: number;
@@ -8,7 +8,6 @@ export interface IToiHistory {
   X: number;
   Y: number;
   H: number;
-  coordination?: Position;
   CRS: number;
   Name: string;
   faza: number;
@@ -52,9 +51,10 @@ export interface IToiHistoryClient {
 
 @Table({ tableName: "toi_history" })
 export default class ToiHistory extends Model implements IToiHistory {
+  @PrimaryKey
+  @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    primaryKey: true,
     allowNull: false,
   })
   id: number;

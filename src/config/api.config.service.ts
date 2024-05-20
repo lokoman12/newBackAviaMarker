@@ -13,6 +13,10 @@ export class ApiConfigService {
     return this.configService.get<number>('historyRecordTablesNumber');
   }
 
+  getToiCopyToHistoryCronMask() {
+    return this.configService.get<string>('toiCopyToHistoryCronMask');
+  }
+
 
   getJwtAccessExpiresIn(): string {
     return this.configService.get<string>('jwt_access_expires_in');
