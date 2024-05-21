@@ -11,30 +11,29 @@ export default class Line extends Model {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   name: string;
 
   @Column({
     type: DataType.DATE,
-    allowNull: false,
   })
   time: Date;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   coordinates: string;
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
   })
   distance: number;
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   description: string;
+  @Column({
+    type: DataType.STRING,
+  })
+  project: string;
 }
