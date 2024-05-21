@@ -1,5 +1,6 @@
 import { Logger } from "@nestjs/common";
-import dayjs from "dayjs";
+import dayjs from "../utils/dayjs";
+import { DATE_TIME_FORMAT } from "src/auth/consts";
 
 export class TimelineRecordDto {
   private readonly logger = new Logger(TimelineRecordDto.name);
@@ -41,7 +42,7 @@ export class TimelineRecordDto {
       const json = JSON.parse(valueString);
       return new TimelineRecordDto(
         json.login, 
-        dayjs.utc(json.startTime).toDate(), dayjs.utc(json.endTime).toDate(), dayjs.utc(json.currentTime).toDate(),
+        dayjs.utc(json.startTime, DATE_TIME_FORMAT).toDate(), dayjs.utc(json.endTime, DATE_TIME_FORMAT).toDate(), dayjs.utc(json.currentTime, DATE_TIME_FORMAT).toDate(),
         json.velocity, json.tableNumber
       );
     } catch (e) {

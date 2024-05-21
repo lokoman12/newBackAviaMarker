@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Table, Column, Model, DataType, Unique, Default, NotEmpty, PrimaryKey, AllowNull } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Unique, NotEmpty, PrimaryKey, AllowNull, AutoIncrement } from 'sequelize-typescript';
 
 export interface ISetting {
   id: number;
@@ -15,6 +15,7 @@ export default class Settings extends Model implements ISetting {
 
   @NotEmpty
   @PrimaryKey
+  @AutoIncrement
   @Column({ type: DataType.INTEGER.UNSIGNED })
   id: number;
 

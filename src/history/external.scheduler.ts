@@ -7,14 +7,16 @@ export class ExternalScheduler {
 
   constructor(
     private readonly scheduler: ToadScheduler
-  ) { }
+  ) { 
+    this.logger.log('Сервис инициализирован!')
+  }
 
   addJob(taskId: string, cronExpression: string, callback: () => Promise<void>) {
     const task = new AsyncTask(
       taskId,
       () => {
         return callback().then(() => {
-          this.logger.log(`Джоба ${taskId} завершена`);
+          // this.logger.log(`Джоба ${taskId} завершена`);
         })
       },
       (e: Error) => {
@@ -42,6 +44,7 @@ export class ExternalScheduler {
       this.logger.warn(`Джобы ${taskId} нет в системе!`);
       return;
     }
+    this.logger.log('Пробуем удалить')
     this.scheduler.stopById(taskId);
   }
 

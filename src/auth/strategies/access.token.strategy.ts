@@ -21,7 +21,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    this.log.log('Access strategy, validate', JSON.stringify(payload));
+    // this.log.log('Access strategy, validate', JSON.stringify(payload));
     return payload;
   }
 }

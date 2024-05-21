@@ -40,7 +40,7 @@ export default class ToiService {
         where: {
           Number: {
             [Op.not]: 0,
-          }
+          },
         }
       });
 
@@ -48,7 +48,9 @@ export default class ToiService {
         toi.map(async (item) => {
           const formular = await this.formularModel.findOne({
             raw: true,
-            where: { id: item.id_Sintez, },
+            where: { 
+              id: item.id_Sintez, 
+            },
           });
 
           return {
@@ -58,7 +60,7 @@ export default class ToiService {
         })
       );
 
-      return formattedToi;
+      return formattedToi.filter(it => it.formular.Source_ID != null);
     } catch (error) {
       this.log.error('Error retrieving points:', error);
       throw error;
@@ -82,7 +84,7 @@ export default class ToiService {
         curs: toiItem.toi.CRS,
         alt: toiItem.toi.H,
         type: toiItem.toi.Type,
-        formular: [toiItem.formular]
+        formular: [toiItem.formular],
       };
     });
   }

@@ -29,6 +29,7 @@ export const getSequelizeDbConnectionPropertiesConfig = (uri: string): Sequelize
       define: {
         timestamps: false,
       },
+      logging: false,
     }
 
     return {

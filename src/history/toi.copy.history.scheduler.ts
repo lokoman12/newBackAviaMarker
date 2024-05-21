@@ -19,18 +19,17 @@ export default class ToiCopyToHistoryScheduler {
   ) {
     this.logger.log('Сервис инициализирован!')
 
-    // this.externalScheduler.addJob(
-    //   ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
-    //   this.configService.getToiCopyToHistoryCronMask(),
-    //   this.toiCopyToHistory
-    // );
+    this.externalScheduler.addJob(
+      ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
+      configService.getToiCopyToHistoryCronMask(),
+      this.toiCopyToHistory.bind(this)
+    );
   }
 
   public async toiCopyToHistory() {
+    // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const toiListForHistory = await this.toiService.getActualToi();
     const promises = [];
-    
-    this.logger.log(`Try to insert, ${toiListForHistory.length} rocords`);
     
     toiListForHistory.forEach(it => {
       const time = Date.now();

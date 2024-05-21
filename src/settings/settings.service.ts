@@ -5,10 +5,9 @@ import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT, RECORD_SETTING_PROPERTY_NAME, TO
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
 
-
 @Injectable()
 export class SettingsService {
-  private readonly log = new Logger(SettingsService.name);
+  private readonly logger = new Logger(SettingsService.name);
 
   public static getRecordHistoryTableNameByIndex(tableNumber: number) {
     return `${TOI_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
@@ -21,7 +20,7 @@ export class SettingsService {
   constructor(
     @InjectModel(Settings) private readonly settingsModel: typeof Settings
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   async getSetting(id: number): Promise<Settings | null> {
@@ -95,7 +94,7 @@ export class SettingsService {
       },
       attributes: ['value',],
     });
-
+    this.logger.log(`getTypedSettingsByName: ${result}`);
     return result != null ? result.map(it => mapFunction(it.value)).filter(it => it != null) : [];
   }
 
@@ -113,15 +112,26 @@ export class SettingsService {
   }
 
   async updateSettingValueByPropertyNameAndUsername(dto: UpdateSettingsDto): Promise<void> {
-    await this.settingsModel.update(
-      { value: dto.value, },
-      {
-        where: {
-          name: dto.name,
-          username: dto.username,
-        },
-      }
-    );
+    this.logger.log(`setRecordStatus ${dto.name}, ${dto.username}`);
+
+    const item = {
+      name: dto.name,
+      username: dto.username,
+      groupname: dto.groupname,
+      value: dto.value,
+    };
+    const where = {
+      name: dto.name,
+      username: dto.username,
+    };
+
+    const model = await this.settingsModel.findOne({ raw: true, where, });
+    this.logger.log(1);
+    if (model) {
+      await this.settingsModel.update(item, { where, });
+    } else {
+      await this.settingsModel.create(item);
+    }
   }
 
   async removeSetting(id: number): Promise<void> {
@@ -139,9 +149,7 @@ export class SettingsService {
   async removeRecordingSettingsByUsername(username: string): Promise<void> {
     await this.settingsModel.destroy({
       where: {
-        name: {
-          startsWith: RECORD_SETTING_PROPERTY_NAME,
-        },
+        name: RECORD_SETTING_PROPERTY_NAME,
         username,
       },
     });

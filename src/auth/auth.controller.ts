@@ -62,7 +62,6 @@ export class AuthController {
     this.log.log('LoginController, cookies: ' + req.cookies.test);
     const { username } = data;
     this.log.warn('Login, user: ' + username);
-    response.cookie('test', 123);
     const signInData = await this.authService.signIn(data);
     return {
       ...signInData,
