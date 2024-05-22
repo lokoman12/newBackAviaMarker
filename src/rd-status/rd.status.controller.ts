@@ -5,26 +5,27 @@ import VppStatus from 'src/db/models/vppStatus.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
+import RdStatus from 'src/db/models/rdStatus';
 
 
-@Controller('vpp')
-export class VppStatusController {
-  private readonly log = new Logger(VppStatusController.name);
+@Controller('rdStatus')
+export class RdStatusController {
+  private readonly log = new Logger(RdStatusController.name);
 
-  constructor(@InjectModel(VppStatus) private readonly vppStatusModel: typeof VppStatus) {
+  constructor(@InjectModel(RdStatus) private readonly rdStatusModel: typeof RdStatus) {
     this.log.log('Init controller');
   }
 
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllVppStatus(): Promise<any[]> {
+  async getAllRdStatus(): Promise<any[]> {
     try {
-      const vppStatus = await this.vppStatusModel.findAll();
+      const rdStatus = await this.rdStatusModel.findAll();
 
-      return vppStatus;
+      return rdStatus;
     } catch (error) {
-      console.error('Error retrieving points:', error);
+      console.error('Error retrieving rd:', error);
       throw error;
     }
   }

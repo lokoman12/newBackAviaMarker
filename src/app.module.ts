@@ -31,6 +31,7 @@ import { PointModule } from './point/point.module';
 import { LineModule } from './line/line.module';
 import { PolygonsModule } from './polygon/polygon.module';
 import { HistoryModule } from './history/history.module';
+import { RdStatusModule } from './rd-status/rd.module';
 
 
 @Module({
@@ -66,6 +67,7 @@ import { HistoryModule } from './history/history.module';
     LineModule,
     PolygonsModule,
     HistoryModule,
+    RdStatusModule
   ],
   providers: [ApiConfigService],
 

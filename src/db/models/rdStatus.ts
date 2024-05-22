@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: 'Line' })
-export default class Line extends Model {
+@Table({ tableName: 'rdd' })
+export default class RdStatus extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -10,30 +10,27 @@ export default class Line extends Model {
   id: number;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
   })
-  name: string;
-
-  @Column({
-    type: DataType.DATE,
-  })
-  time: Date;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  coordinates: string;
+  id_vpp: string;
 
   @Column({
     type: DataType.INTEGER,
   })
-  distance: number;
+  id_rd: string;
+
   @Column({
     type: DataType.STRING,
   })
-  description: string;
+  name_rd: string;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  close_rd: string;
+
   @Column({
     type: DataType.STRING,
   })
-  project: string;
+  airport: string;
 }
