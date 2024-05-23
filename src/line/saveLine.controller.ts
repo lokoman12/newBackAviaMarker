@@ -1,4 +1,4 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
@@ -34,9 +34,9 @@ export class SaveLineController {
     @Query('coordinates') coordinates: string,
     @Query('project') project: string,
     @Query('mode') mode: string,
-    @Query('photo') photo?: string,
     @Query('name') name?: string,
     @Query('description') description?: string,
+    @Body('photo') photo?: string
   ): Promise<Line> {
     try {
       const coords = JSON.parse(coordinates);
@@ -65,14 +65,14 @@ export class SaveLineController {
       this.log.log(`Calculated total length: ${totalLength} meters`);
 
       const date = new Date();
-      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
+      // const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const data = {
         name: name || '',
         time: date,
         distance: totalLength,
         coordinates,
         mode,
-        photo: photoBuffer,
+        photo: photo || '',
         description: description || '',
         project,
       };

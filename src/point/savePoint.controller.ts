@@ -1,11 +1,13 @@
-import { Body, Controller, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Point from 'src/db/models/point.model';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
-import { Buffer } from 'buffer'; // Импортируем модуль buffer
-import { FileInterceptor } from '@nestjs/platform-express';
+
+interface IBody {
+  photo?: string;
+}
 
 @Controller('savePoints')
 export class SavePointController {
@@ -29,47 +31,38 @@ export class SavePointController {
     required: false,
     type: String,
   })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        }
-      }
-    }
-  })
+  // @ApiBody({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       photo: {
+  //         type: 'string',
+  //         format: 'binary',
+  //       }
+  //     }
+  //   }
+  // })
   @Public()
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
   async createPoint(
-    @UploadedFile() file,
     @Query('lat') lat: number,
     @Query('lon') lon: number,
     @Query('radius') radius: number,
     @Query('project') project: string,
     @Query('mode') mode: string,
-    @Body('photo') photo?: string, 
     @Query('name') name?: string,
     @Query('description') description?: string,
+    @Body('photo') photo?: string
   ): Promise<Point> {
+    this.log.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${photo?.length}`)
+
     try {
       if (lat == null || lon == null) {
         throw new Error('Широта и долгота являются обязательными полями');
       }
 
-      const { fieldname, originalname, encoding, size, filename } = file
-      this.log.log(`Received fieldname: ${fieldname}, originalname: ${originalname}, size: ${size}, encoding: ${encoding}`);
-      
-      file.buffer; // Двоичные данные тут
-      
       const date = new Date();
 
-      // Приведение photo к строке и декодирование base64 строки в buffer
-      const photoBuffer = file.buffer.toString('base64');
-      
       const data = {
         name: name || '',
         time: date,
@@ -77,7 +70,7 @@ export class SavePointController {
         lon,
         radius,
         mode,
-        photo: photoBuffer,
+        photo: photo || '',
         description: description || '',
         project: project || '',
       };

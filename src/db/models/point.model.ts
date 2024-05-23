@@ -45,7 +45,7 @@ export default class Point extends Model {
   })
   mode: string;
   @Column({
-    type: DataType.BLOB,
+    type: DataType.TEXT,
   })
-  photo: Buffer;
+  photo: string;
 }

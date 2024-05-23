@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser';
 // Расширим dayjs
 import dayjs from './utils/dayjs';
 
@@ -26,6 +27,8 @@ async function bootstrap() {
   SwaggerModule.setup(process.env.swaggerApiRelativePath, app, document);
   
   // app.use(cors());
+  app.use(bodyParser.json({limit: '10mb'}));
+  app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
   app.use(cookieParser());
   app.enableCors({ origin: true, credentials: true });
   await app.listen(parseInt(process.env.webPort));

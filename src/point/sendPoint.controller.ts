@@ -26,16 +26,17 @@ export class SendPointController {
       // const url = '/home/ngolosin/projects/my-lemz-repos/screenshot_20240523_134632.jpg';
 
       const imageFile = fs.readFileSync(imagePath);
-      const blob = new Blob([imageFile], {
-        type: 'image/jpeg',
-      });
-      const formData = new FormData();
-      formData.append('file', blob, 'file.jpg');
+      // const blob = new Blob([imageFile], {
+      //   type: 'image/jpeg',
+      // });
+      // const formData = new FormData();
+      // formData.append('file', blob, 'file.jpg');
 
-      await axios.post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const photo = imageFile.toString('base64');
+      await axios.post(url, {
+        x: 1,
+        y: 'a',
+        photo,
       });
 
       this.logger.log('Sent');
