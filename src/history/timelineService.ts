@@ -47,8 +47,8 @@ class TimelineService {
       if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
         try {
           await this.historyService.prepareHistoryForRecordTable(nextFreeTableNumber, startTime, endTime);
-          const dto = new TimelineRecordDto(login, startTime, endTime, startTime, velocity, nextFreeTableNumber);
-          await this.recordStatusService.setRecordStatus(dto);
+          // const dto = new TimelineRecordDto(login, startTime, endTime, startTime, velocity, nextFreeTableNumber);
+          // await this.recordStatusService.setRecordStatus(dto);
           const taskName = getCopyHistoryName(nextFreeTableNumber);
           this.logger.log(`Следующий свободный номер таблицы истории: ${nextFreeTableNumber}`);
           return nextFreeTableNumber;
