@@ -40,4 +40,12 @@ export default class Point extends Model {
     type: DataType.STRING,
   })
   project: string;
+  @Column({
+    type: DataType.STRING,
+  })
+  mode: string;
+  @Column({
+    type: DataType.BLOB,
+  })
+  photo: Buffer;
 }
