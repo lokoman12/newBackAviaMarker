@@ -23,11 +23,18 @@ export class SaveLineController {
     required: false,
     type: String,
   })
+  @ApiQuery({
+    name: 'photo',
+    required: false,
+    type: String,
+  })
   @Public()
   @Post()
   async createLine(
     @Query('coordinates') coordinates: string,
     @Query('project') project: string,
+    @Query('mode') mode: string,
+    @Query('photo') photo?: string,
     @Query('name') name?: string,
     @Query('description') description?: string,
   ): Promise<Line> {
@@ -58,13 +65,16 @@ export class SaveLineController {
       this.log.log(`Calculated total length: ${totalLength} meters`);
 
       const date = new Date();
+      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const data = {
-        name: name || "",
+        name: name || '',
         time: date,
         distance: totalLength,
         coordinates,
-        description: description || "",
-        project
+        mode,
+        photo: photoBuffer,
+        description: description || '',
+        project,
       };
       const line = await this.lineModel.create(data);
       return line;

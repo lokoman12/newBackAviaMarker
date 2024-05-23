@@ -37,7 +37,7 @@ export class SavePointController {
     @Query('radius') radius: number,
     @Query('project') project: string,
     @Query('mode') mode: string,
-    @Query('photo') photo?: string, // Ожидаем строку в base64
+    @Query('photo') photo?: string, 
     @Query('name') name?: string,
     @Query('description') description?: string,
   ): Promise<Point> {

@@ -25,16 +25,24 @@ export class SavePolygonController {
     required: false,
     type: String,
   })
+  @ApiQuery({
+    name: 'photo',
+    required: false,
+    type: String,
+  })
   @Public()
   @Post()
   async createPolygon(
     @Query('project') project: string,
     @Query('coordinates') coordinates: string,
+    @Query('mode') mode: string,
+    @Query('photo') photo?: string,
     @Query('name') name?: string,
     @Query('description') description?: string,
   ): Promise<Polygon> {
     try {
       const date = new Date();
+      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const coords = JSON.parse(coordinates);
 
       if (
@@ -67,6 +75,8 @@ export class SavePolygonController {
         time: date,
         square: area,
         coordinates,
+        mode,
+        photo: photoBuffer,
         description: description || "",
         project
       };
