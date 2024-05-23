@@ -1,9 +1,9 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Point from 'src/db/models/point.model';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import { Buffer } from 'buffer'; // Импортируем модуль buffer
 
 @Controller('savePoints')
@@ -24,10 +24,9 @@ export class SavePointController {
     required: false,
     type: String,
   })
-  @ApiQuery({
-    name: 'photo',
+  @ApiBody({
     required: false,
-    type: String, // Ожидаем строку в base64
+    type: String,
   })
   @Public()
   @Post()
@@ -37,7 +36,7 @@ export class SavePointController {
     @Query('radius') radius: number,
     @Query('project') project: string,
     @Query('mode') mode: string,
-    @Query('photo') photo?: string, 
+    @Body('photo') photo?: string, 
     @Query('name') name?: string,
     @Query('description') description?: string,
   ): Promise<Point> {
@@ -50,7 +49,6 @@ export class SavePointController {
 
       // Приведение photo к строке и декодирование base64 строки в buffer
       const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
-
       const data = {
         name: name || '',
         time: date,
