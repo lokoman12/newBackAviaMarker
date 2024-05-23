@@ -1,9 +1,10 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Point from 'src/db/models/point.model';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
+import { Buffer } from 'buffer'; // Импортируем модуль buffer
 
 @Controller('savePoints')
 export class SavePointController {
@@ -12,6 +13,7 @@ export class SavePointController {
   constructor(@InjectModel(Point) private readonly pointModel: typeof Point) {
     this.log.log('Init controller');
   }
+
   @ApiQuery({
     name: 'name',
     required: false,
@@ -22,6 +24,10 @@ export class SavePointController {
     required: false,
     type: String,
   })
+  @ApiBody({
+    required: false,
+    type: String,
+  })
   @Public()
   @Post()
   async createPoint(
@@ -29,6 +35,8 @@ export class SavePointController {
     @Query('lon') lon: number,
     @Query('radius') radius: number,
     @Query('project') project: string,
+    @Query('mode') mode: string,
+    @Body('photo') photo?: string, 
     @Query('name') name?: string,
     @Query('description') description?: string,
   ): Promise<Point> {
@@ -36,16 +44,23 @@ export class SavePointController {
       if (lat == null || lon == null) {
         throw new Error('Широта и долгота являются обязательными полями');
       }
+
       const date = new Date();
+
+      // Приведение photo к строке и декодирование base64 строки в buffer
+      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const data = {
-        name: name !== undefined ? name : '',
+        name: name || '',
         time: date,
         lat,
         lon,
         radius,
-        description: description !== undefined ? description : '',
+        mode,
+        photo: photoBuffer,
+        description: description || '',
         project: project || '',
       };
+
       const point = await this.pointModel.create(data);
       return point;
     } catch (error) {
@@ -53,5 +68,4 @@ export class SavePointController {
       throw error;
     }
   }
-
 }
