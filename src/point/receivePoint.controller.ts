@@ -20,28 +20,27 @@ export class ReceivePointController {
   //   required: false,
   //   type: String,
   // })
-  // @ApiConsumes('multipart/form-data')
-  // @ApiBody({
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       file: {
-  //         type: 'string',
-  //         format: 'binary',
-  //       }
-  //     }
-  //   }
-  // })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        }
+      }
+    }
+  })
   @Public()
   @UseInterceptors(FileInterceptor('file'))
   async createPointCheckSaveFile(
     @UploadedFile() file,
-    // @Req() request: Request,
     @Query('name') name?: string,
   ): Promise<object> {
     const { fieldname, originalname, encoding, size, filename } = file
     this.logger.log(`Received fieldname: ${fieldname}, originalname: ${originalname}, size: ${size}, encoding: ${encoding}`);
-    // this.logger.log(request);
+    this.logger.log(file.buffer.toString('base64'));
     try {
       return {};
     } catch (error) {

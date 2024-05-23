@@ -68,7 +68,8 @@ export class SavePointController {
       const date = new Date();
 
       // Приведение photo к строке и декодирование base64 строки в buffer
-      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
+      const photoBuffer = file.buffer.toString('base64');
+      
       const data = {
         name: name || '',
         time: date,
