@@ -2,35 +2,32 @@ import {
   Controller,
   Get,
   Logger,
+  NotAcceptableException,
   ParseIntPipe,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Request, Response } from 'express';
-import HistoryService from './historyService';
-import ToiCopyToHistoryScheduler from './toi.copy.history.scheduler';
+import { Request } from 'express';
 import { ParseDatePipe } from 'src/pipes/parseDatePipe';
 import ToiHistory from 'src/db/models/toiHistory.model';
 import { Op } from 'sequelize';
-import dayjs from '../utils/dayjs';
 import { RecordStatusService } from './record.status.service';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
+import { SettingsService } from 'src/settings/settings.service';
+import { ApiConfigService } from 'src/config/api.config.service';
+import TimelineService from './timelineService';
 
 @Controller('history')
 export class HistoryController {
   private readonly logger = new Logger(HistoryController.name);
 
   constructor(
-    private historyService: HistoryService,
-    private scheduler: ToiCopyToHistoryScheduler,
-    private recordStatusService: RecordStatusService
+    private recordStatusService: RecordStatusService,
+    private timelineService: TimelineService
   ) { }
 
-  @Public()
   @Get('/')
   async getFormular(
     @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,
@@ -51,6 +48,15 @@ export class HistoryController {
     return result;
   }
 
+  @Get('/get-recorded-formular')
+  async getCurrentFormularFromRecord(
+    @Req() req: Request
+  ) {
+    const { username } = req.user as User;
+    const result = this.timelineService.getCurrentFormularFromRecord(username);
+    return result;
+  }
+
   @UseGuards(AccessTokenGuard)
   @Get("/set-record")
   async setRecordStatus(
@@ -61,7 +67,7 @@ export class HistoryController {
   ) {
     const { username } = req.user as User;
     this.logger.log(`Username from token: ${username}`);
-    const result = await this.recordStatusService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
+    const result = await this.timelineService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
     return result;
   }
 

@@ -7,7 +7,8 @@ import { omit } from 'lodash';
 import { SettingsService } from "src/settings/settings.service";
 import dayjs from "../utils/dayjs";
 import { DATE_TIME_FORMAT } from "src/auth/consts";
-import { SQL_DATE_TIME_FORMAT } from "./timelineService";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME, SQL_DATE_TIME_FORMAT } from "./consts";
+import { difference, head } from 'lodash';
 
 export interface IHistoryClient {
   id: number;
@@ -24,11 +25,37 @@ class HistoryService {
   private readonly logger = new Logger(HistoryService.name);
 
   constructor(
-    private configService: ApiConfigService,
-    private settingsService: SettingsService,
+    private readonly settingsService: SettingsService,
+    private readonly configService: ApiConfigService,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
     this.logger.log('Сервис инициализирован!')
+  }
+
+  async getNextFreeTableNumber() {
+    let usedTableNumbers = await this.settingsService
+      .getAllSettingsByName(RECORD_SETTING_PROPERTY_NAME);
+    usedTableNumbers = usedTableNumbers
+      .map(it => parseInt(it.value))
+      .filter(it => !isNaN(it)) as Array<number>;
+
+    // Все имеющиеся номера
+    const allTableNumbers = Array.from(
+      { length: this.configService.getHistoryRecordTablesNumber() },
+      (_, index) => index
+    ) as Array<number>;
+    // Свободные
+    const freeTableNumbers = difference(allTableNumbers, usedTableNumbers)
+      .sort((x, y) => x - y);
+
+    let nextFreeTableNumber;
+    if (freeTableNumbers.length > 0) {
+      nextFreeTableNumber = head(freeTableNumbers);
+    } else {
+      nextFreeTableNumber = NO_FREE_HISTORY_RECORD_TABLE;
+    }
+
+    return nextFreeTableNumber
   }
 
   async getHistory(
