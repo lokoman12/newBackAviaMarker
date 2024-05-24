@@ -78,13 +78,14 @@ export class ReceivePointController {
         }
       });
       if (!!createdPolygon) {
-        const photo = createdPolygon.photo;
-        const x = Buffer.from(photo, 'base64');
-        console.log(x)
-        fs.writeFileSync(
-          '/home/ngolosin/projects/my-lemz-repos/screenshot2.jpg',
-          x
-        );
+        // const photo = createdPolygon.photo;
+        // const photo = createdPolygon.photo;
+        // const x = Buffer.from(photo, 'base64');
+        // console.log(x)
+        // fs.writeFileSync(
+        //   '/home/ngolosin/projects/my-lemz-repos/screenshot2.jpg',
+        //   x
+        // );
       } else {
         this.logger.log('Пусто');
       }

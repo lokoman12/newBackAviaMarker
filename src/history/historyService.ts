@@ -109,21 +109,23 @@ class HistoryService {
 
     const insertSql = `
   INSERT into ${tableName} (
-    id, Number, time, X, Y, H,
+    Qwerty123
+    Number, time, X, Y, H,
     CRS, id_Sintez, Name, faza,
     Source_ID,  Type_of_Msg, Speed, FP_Callsign,
     tobtg, FP_TypeAirCraft, tow,
     FP_Stand, airport_code, taxi_out, ata, regnum
   )
     SELECT 
-      id, Number, time, X, Y, H,
+      Number, time, X, Y, H,
       CRS, id_Sintez, Name, faza,
       Source_ID,  Type_of_Msg, Speed, FP_Callsign,
       tobtg, FP_TypeAirCraft, tow,
       FP_Stand, airport_code, taxi_out, ata, regnum FROM toi_history
     WHERE Name != "" AND Number != 0 
       AND time <= STR_TO_DATE('${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}') 
-      AND time >= STR_TO_DATE('${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}');`;
+      AND time >= STR_TO_DATE('${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}')
+    ORDER BY time;`;
     this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
     this.logger.log(`sql: ${insertSql}`);
 

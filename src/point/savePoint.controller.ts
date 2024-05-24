@@ -3,17 +3,17 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Point from 'src/db/models/point.model';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
-
-interface IBody {
-  photo?: string;
-}
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
+import Photo from 'src/db/models/photo.model';
+import { GeoType } from '../photo/types';
 
 @Controller('savePoints')
 export class SavePointController {
   private readonly log = new Logger(SavePointController.name);
 
-  constructor(@InjectModel(Point) private readonly pointModel: typeof Point) {
+  constructor(
+    @InjectModel(Point) private readonly pointModel: typeof Point,
+    @InjectModel(Photo) private readonly photoModel: typeof Photo) {
     this.log.log('Init controller');
   }
 
@@ -52,9 +52,9 @@ export class SavePointController {
     @Query('mode') mode: string,
     @Query('name') name?: string,
     @Query('description') description?: string,
-    @Body('photo') photo?: string
-  ): Promise<Point> {
-    this.log.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${photo?.length}`)
+    @Body('photo') imageData?: string
+  ): Promise<void> {
+    this.log.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${imageData?.length}`)
 
     try {
       if (lat == null || lon == null) {
@@ -70,13 +70,19 @@ export class SavePointController {
         lon,
         radius,
         mode,
-        photo: photo || '',
         description: description || '',
         project: project || '',
       };
-
       const point = await this.pointModel.create(data);
-      return point;
+
+      if (imageData?.length > 0) {
+        const data = {
+          id: point.id,
+          type: GeoType.point,
+          photo: imageData,
+        };
+        await this.photoModel.create(data);
+      }
     } catch (error) {
       this.log.error('Ошибка при создании точки:', error);
       throw error;
