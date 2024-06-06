@@ -22,8 +22,8 @@ export class SaveZoneController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Post(':name')
   async saveZone(
     @Param('name') name: string,

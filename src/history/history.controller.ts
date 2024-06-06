@@ -51,7 +51,7 @@ export class HistoryController {
     return result;
   }
 
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Get("/set-record")
   async setRecordStatus(
     @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,

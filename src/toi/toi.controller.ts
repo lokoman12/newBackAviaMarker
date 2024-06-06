@@ -17,7 +17,7 @@ export class ToiController {
   }
 
   @Public()
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllToi(@Req() req: Request): Promise<any[]> {
     const formattedToi = this.toiService.getActualClientToi();

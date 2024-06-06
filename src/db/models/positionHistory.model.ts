@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: 'positionAM' })
-export default class PositionAM extends Model {
+@Table({ tableName: 'position_history' })
+export default class PositionHistory extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -37,4 +37,9 @@ export default class PositionAM extends Model {
     allowNull: false,
   })
   status: string;
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  time_save: string;
 }
