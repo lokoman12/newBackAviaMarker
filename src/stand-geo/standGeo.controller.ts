@@ -16,8 +16,8 @@ export class StandGeoController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllStandsGeo(): Promise<StandsGeo[]> {
     try {
