@@ -9,9 +9,22 @@ CREATE TABLE alarmAM (
 );
 CREATE TABLE positionAM (
     id INT PRIMARY KEY,
+    name VARCHAR(255),
     lat FLOAT,
     lon FLOAT,
-    name VARCHAR(255)
+    speed FLOAT,
+    status VARCHAR(255),
+    time DateTime
+);
+CREATE TABLE position_history (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    lat FLOAT,
+    lon FLOAT,
+    speed FLOAT,
+    status VARCHAR(255),
+    time DateTime,
+    time_save DateTime
 );
 CREATE TABLE zoneAM (
     id INT O_INCREMENT PRIMARY KEY,
@@ -88,18 +101,6 @@ CREATE TABLE parks_web (
     lon FLOAT,
     geojson JSON
 );
--- Toi,
---  AlaramAM, 
---  PositionAM, 
---  ZoneAM, 
---  Meteo, 
---  FlightPlan, 
---  Formular, 
---  Strips, 
---  Reta, 
---  Retd
-
-
 CREATE TABLE auth (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   username varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -140,4 +141,16 @@ CREATE TABLE user_role (
   KEY user_role_FK_1(groupId),
   CONSTRAINT user_role_FK FOREIGN KEY (userId) REFERENCES auth(id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT user_role_FK_1 FOREIGN KEY (groupId) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+CREATE TABLE Line (
+
+)
+CREATE TABLE Point (
+
+)
+CREATE TABLE Polygon (
+
+)
+CREATE TABLE Photo (
+
 )

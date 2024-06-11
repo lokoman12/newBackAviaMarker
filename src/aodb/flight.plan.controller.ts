@@ -17,8 +17,8 @@ export class AODBController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllAodb(): Promise<AODB[]> {
     try {

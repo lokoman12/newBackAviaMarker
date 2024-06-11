@@ -15,8 +15,8 @@ export class TaxiwayController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllTaxiway(): Promise<Taxiway[]> {
     try {
