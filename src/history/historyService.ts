@@ -7,7 +7,7 @@ import { omit } from 'lodash';
 import { SettingsService } from "src/settings/settings.service";
 import dayjs from "../utils/dayjs";
 import { DATE_TIME_FORMAT } from "src/auth/consts";
-import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME, SQL_DATE_TIME_FORMAT } from "./consts";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "./consts";
 import { difference, head } from 'lodash';
 
 export interface IHistoryClient {
@@ -107,25 +107,42 @@ class HistoryService {
       throw new Error(e);
     }
 
+    // В нашем mysql почему-то не работают оконные (over partition) функции
+    // Потому, чтобы нумеровать строки с одинаковым временем, использую
+    // @id := if(...)
+    // Внешний select под insert'ом отбрасывает лишнюю колонку prevTime,
+    // нужную только для нумерования строк по группам одинакового времени
     const insertSql = `
-  INSERT into ${tableName} (
-    Qwerty123
-    Number, time, X, Y, H,
+  INSERT INTO ${tableName} (
+    step, time, Number, X, Y, H,
     CRS, id_Sintez, Name, faza,
     Source_ID,  Type_of_Msg, Speed, FP_Callsign,
     tobtg, FP_TypeAirCraft, tow,
     FP_Stand, airport_code, taxi_out, ata, regnum
   )
-    SELECT 
-      Number, time, X, Y, H,
-      CRS, id_Sintez, Name, faza,
-      Source_ID,  Type_of_Msg, Speed, FP_Callsign,
-      tobtg, FP_TypeAirCraft, tow,
-      FP_Stand, airport_code, taxi_out, ata, regnum FROM toi_history
-    WHERE Name != "" AND Number != 0 
-      AND time <= STR_TO_DATE('${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}') 
-      AND time >= STR_TO_DATE('${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}')
-    ORDER BY time;`;
+  SELECT 	
+  step, time,
+  Number, X, Y, H,
+  CRS, id_Sintez, Name, faza,
+  Source_ID,  Type_of_Msg, Speed, FP_Callsign,
+  tobtg, FP_TypeAirCraft, tow,
+  FP_Stand, airport_code, taxi_out, ata, regnum
+FROM (
+  SELECT 
+    @id := if(@prev_time = time, @id, @id + 1) AS step,
+    @prev_time := time AS prevTime, time,
+    Number, X, Y, H,
+    CRS, id_Sintez, Name, faza,
+    Source_ID,  Type_of_Msg, Speed, FP_Callsign,
+    tobtg, FP_TypeAirCraft, tow,
+    FP_Stand, airport_code, taxi_out, ata, regnum
+  FROM toi_history
+  , (select @id := 0, @prev_time := null) AS t
+  WHERE Name != '' AND Number != 0 
+    AND time <= '${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}'
+    AND time >= '${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}'
+  ORDER BY time
+) history_record`;
     this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
     this.logger.log(`sql: ${insertSql}`);
 

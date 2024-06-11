@@ -85,8 +85,9 @@ const createHistoryRecordTables = async () => {
   historyTableNames.forEach((it, _) => {
     const sql = `CREATE TABLE IF NOT EXISTS ${it} (
       id int(11) NOT NULL AUTO_INCREMENT,
-      Number smallint(6) NOT NULL,
+      step int(11) NOT NULL,
       time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+      Number smallint(6) NOT NULL,
       X int(11) NOT NULL DEFAULT '0',
       Y int(11) NOT NULL DEFAULT '0',
       H smallint(6) NOT NULL DEFAULT '0',

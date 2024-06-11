@@ -10,6 +10,9 @@ export class TimelineRecordDto {
     readonly startTime: Date,
     readonly endTime: Date,
     readonly currentTime: Date,
+    readonly startId: number,
+    readonly endId: number,
+    readonly currentId: number,
     readonly velocity: number,
     readonly tableNumber: number
   ) { }
@@ -20,6 +23,9 @@ export class TimelineRecordDto {
       startTime: this.startTime,
       endTime: this.endTime,
       currentTime: this.currentTime,
+      startId: this.startId,
+      endId: this.endId,
+      currentId: this.currentId,
       velocity: this.velocity,
       tableNumber: this.tableNumber,
     };
@@ -31,6 +37,9 @@ export class TimelineRecordDto {
       startTime: this.startTime,
       endTime: this.endTime,
       currentTime: this.currentTime,
+      startId: this.startId,
+      endId: this.endId,
+      currentId: this.currentId,
       velocity: this.velocity,
       tableNumber: this.tableNumber,
     });
@@ -42,7 +51,12 @@ export class TimelineRecordDto {
       const json = JSON.parse(valueString);
       return new TimelineRecordDto(
         json.login, 
-        dayjs.utc(json.startTime, DATE_TIME_FORMAT).toDate(), dayjs.utc(json.endTime, DATE_TIME_FORMAT).toDate(), dayjs.utc(json.currentTime, DATE_TIME_FORMAT).toDate(),
+        dayjs.utc(json.startTime, DATE_TIME_FORMAT).toDate(),
+        dayjs.utc(json.endTime, DATE_TIME_FORMAT).toDate(),
+        dayjs.utc(json.currentTime, DATE_TIME_FORMAT).toDate(),
+        json.startId,
+        json.endId,
+        json.currentId,
         json.velocity, json.tableNumber
       );
     } catch (e) {
