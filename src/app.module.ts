@@ -32,6 +32,7 @@ import { LineModule } from './line/line.module';
 import { PolygonsModule } from './polygon/polygon.module';
 import { HistoryModule } from './history/history.module';
 import { RdStatusModule } from './rd-status/rd.module';
+import { GetpositionModule } from './get-position-history/Getposition.module';
 
 
 @Module({
@@ -67,7 +68,8 @@ import { RdStatusModule } from './rd-status/rd.module';
     LineModule,
     PolygonsModule,
     HistoryModule,
-    RdStatusModule
+    RdStatusModule,
+    GetpositionModule
   ],
   providers: [ApiConfigService],
 

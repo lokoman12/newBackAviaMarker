@@ -31,29 +31,16 @@ export class SavePositionController {
     @Query('status') status: string,
   ): Promise<PositionAM> {
     try {
-      let date = new Date().getTime()
-      if(lat != null && lon != null){
-        const savePosition = await this.positionHistoryModel.create({
-          id: id,
-          lat: lat,
-          lon: lon,
-          name: name,
-          status: status,
-          speed: speed,
-          time: date,
-          time_save: date
-        });
-        return savePosition;
-      }
-     
-
+      const date = new Date().getTime();
 
       let position: PositionAM | null = await this.positionModel.findOne({ where: { id: id, name: name } });
+
       if (position) {
+        // Если запись существует, обновить ее
         await position.update({ lat: lat, lon: lon, status: status, speed: speed, time: date });
-        return position;
       } else {
-        const savePosition = await this.positionModel.create({
+        // Если запись не существует, создать новую запись
+        position = await this.positionModel.create({
           id: id,
           lat: lat,
           lon: lon,
@@ -62,8 +49,21 @@ export class SavePositionController {
           speed: speed,
           time: date
         });
-        return savePosition;
       }
+
+      // Сохранить данные в positionHistoryModel
+      await this.positionHistoryModel.create({
+        id: id,
+        lat: lat,
+        lon: lon,
+        name: name,
+        status: status,
+        speed: speed,
+        time: date,
+        time_save: date
+      });
+
+      return position;
     } catch (error) {
       this.log.error('Error saving alarm:', error);
       throw error;
