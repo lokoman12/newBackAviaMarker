@@ -7,7 +7,8 @@ import { omit } from 'lodash';
 import { SettingsService } from "src/settings/settings.service";
 import dayjs from "../utils/dayjs";
 import { DATE_TIME_FORMAT } from "src/auth/consts";
-import { SQL_DATE_TIME_FORMAT } from "./timelineService";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME, SQL_DATE_TIME_FORMAT } from "./consts";
+import { difference, head } from 'lodash';
 
 export interface IHistoryClient {
   id: number;
@@ -24,11 +25,37 @@ class HistoryService {
   private readonly logger = new Logger(HistoryService.name);
 
   constructor(
-    private configService: ApiConfigService,
-    private settingsService: SettingsService,
+    private readonly settingsService: SettingsService,
+    private readonly configService: ApiConfigService,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
     this.logger.log('Сервис инициализирован!')
+  }
+
+  async getNextFreeTableNumber() {
+    let usedTableNumbers = await this.settingsService
+      .getAllSettingsByName(RECORD_SETTING_PROPERTY_NAME);
+    usedTableNumbers = usedTableNumbers
+      .map(it => parseInt(it.value))
+      .filter(it => !isNaN(it)) as Array<number>;
+
+    // Все имеющиеся номера
+    const allTableNumbers = Array.from(
+      { length: this.configService.getHistoryRecordTablesNumber() },
+      (_, index) => index
+    ) as Array<number>;
+    // Свободные
+    const freeTableNumbers = difference(allTableNumbers, usedTableNumbers)
+      .sort((x, y) => x - y);
+
+    let nextFreeTableNumber;
+    if (freeTableNumbers.length > 0) {
+      nextFreeTableNumber = head(freeTableNumbers);
+    } else {
+      nextFreeTableNumber = NO_FREE_HISTORY_RECORD_TABLE;
+    }
+
+    return nextFreeTableNumber
   }
 
   async getHistory(
@@ -82,21 +109,23 @@ class HistoryService {
 
     const insertSql = `
   INSERT into ${tableName} (
-    id, Number, time, X, Y, H,
+    Qwerty123
+    Number, time, X, Y, H,
     CRS, id_Sintez, Name, faza,
     Source_ID,  Type_of_Msg, Speed, FP_Callsign,
     tobtg, FP_TypeAirCraft, tow,
     FP_Stand, airport_code, taxi_out, ata, regnum
   )
     SELECT 
-      id, Number, time, X, Y, H,
+      Number, time, X, Y, H,
       CRS, id_Sintez, Name, faza,
       Source_ID,  Type_of_Msg, Speed, FP_Callsign,
       tobtg, FP_TypeAirCraft, tow,
       FP_Stand, airport_code, taxi_out, ata, regnum FROM toi_history
     WHERE Name != "" AND Number != 0 
       AND time <= STR_TO_DATE('${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}') 
-      AND time >= STR_TO_DATE('${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}');`;
+      AND time >= STR_TO_DATE('${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}')
+    ORDER BY time;`;
     this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
     this.logger.log(`sql: ${insertSql}`);
 

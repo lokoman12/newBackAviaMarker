@@ -1,19 +1,22 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import Polygon from 'src/db/models/polygon.model';
 import * as turf from '@turf/turf';
 import { ApiQuery } from '@nestjs/swagger';
+import { GeoType } from 'src/photo/types';
+import Photo from 'src/db/models/photo.model';
 
 @Controller('savePolygon')
 export class SavePolygonController {
-  private readonly log = new Logger(SavePolygonController.name);
+  private readonly logger = new Logger(SavePolygonController.name);
 
   constructor(
     @InjectModel(Polygon) private readonly polygonModel: typeof Polygon,
+    @InjectModel(Photo) private readonly photoModel: typeof Photo
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
   @ApiQuery({
     name: 'name',
@@ -36,13 +39,12 @@ export class SavePolygonController {
     @Query('project') project: string,
     @Query('coordinates') coordinates: string,
     @Query('mode') mode: string,
-    @Query('photo') photo?: string,
     @Query('name') name?: string,
     @Query('description') description?: string,
-  ): Promise<Polygon> {
+    @Body('photo') imageData?: string
+  ): Promise<void> {
     try {
       const date = new Date();
-      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const coords = JSON.parse(coordinates);
 
       if (
@@ -68,7 +70,7 @@ export class SavePolygonController {
       const polygon = turf.polygon([parsedCoords]);
       const area = turf.area(polygon);
 
-      this.log.log(`Calculated area: ${area} square meters`);
+      this.logger.log(`Calculated area: ${area} square meters`);
 
       const data = {
         name: name || "",
@@ -76,14 +78,22 @@ export class SavePolygonController {
         square: area,
         coordinates,
         mode,
-        photo: photoBuffer,
         description: description || "",
         project
       };
       const createdPolygon = await this.polygonModel.create(data);
-      return createdPolygon;
+      this.logger.log(`createdPolygon: ${JSON.stringify(createdPolygon)}`);
+      
+      if (imageData?.length > 0) {
+        const data = {
+          id: createdPolygon.id,
+          type: GeoType.polygon,
+          photo: imageData,
+        };
+        await this.photoModel.create(data);
+      }
     } catch (error) {
-      this.log.error('Error creating polygon:', error);
+      this.logger.error('Error creating polygon:', error);
       throw error;
     }
   }

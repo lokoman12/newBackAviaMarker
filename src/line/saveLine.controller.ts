@@ -1,17 +1,22 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import Line from 'src/db/models/line.model';
 import * as turf from '@turf/turf';
 import { ApiQuery } from '@nestjs/swagger';
+import { GeoType } from 'src/photo/types';
+import Photo from 'src/db/models/photo.model';
 
 @Controller('saveLine')
 export class SaveLineController {
-  private readonly log = new Logger(SaveLineController.name);
+  private readonly logger = new Logger(SaveLineController.name);
 
-  constructor(@InjectModel(Line) private readonly lineModel: typeof Line) {
-    this.log.log('Init controller');
+  constructor(
+    @InjectModel(Line) private readonly lineModel: typeof Line,
+    @InjectModel(Photo) private readonly photoModel: typeof Photo
+  ) {
+    this.logger.log('Init controller');
   }
   @ApiQuery({
     name: 'name',
@@ -34,10 +39,10 @@ export class SaveLineController {
     @Query('coordinates') coordinates: string,
     @Query('project') project: string,
     @Query('mode') mode: string,
-    @Query('photo') photo?: string,
     @Query('name') name?: string,
     @Query('description') description?: string,
-  ): Promise<Line> {
+    @Body('photo') imageData?: string
+  ): Promise<void> {
     try {
       const coords = JSON.parse(coordinates);
       if (
@@ -62,24 +67,30 @@ export class SaveLineController {
         totalLength += turf.distance(from, to, { units: 'meters' });
       }
 
-      this.log.log(`Calculated total length: ${totalLength} meters`);
+      this.logger.log(`Calculated total length: ${totalLength} meters`);
 
       const date = new Date();
-      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const data = {
         name: name || '',
         time: date,
         distance: totalLength,
         coordinates,
         mode,
-        photo: photoBuffer,
         description: description || '',
         project,
       };
       const line = await this.lineModel.create(data);
-      return line;
+
+      if (imageData?.length > 0) {
+        const data = {
+          id: line.id,
+          type: GeoType.line,
+          photo: imageData,
+        };
+        await this.photoModel.create(data);
+      }
     } catch (error) {
-      this.log.error('Error creating line:', error);
+      this.logger.error('Error creating line:', error);
       throw error;
     }
   }

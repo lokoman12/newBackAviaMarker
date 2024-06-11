@@ -1,11 +1,11 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
 
 @Table({ tableName: 'Polygon' })
 export default class Polygon extends Model {
+  @PrimaryKey
+  @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
   })
   id: number;
 
@@ -39,8 +39,4 @@ export default class Polygon extends Model {
     type: DataType.STRING,
   })
   mode: string;
-  @Column({
-    type: DataType.BLOB,
-  })
-  photo: Buffer;
 }

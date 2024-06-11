@@ -4,13 +4,16 @@ import { Logger } from '@nestjs/common';
 import Point from 'src/db/models/point.model';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ApiBody, ApiQuery } from '@nestjs/swagger';
-import { Buffer } from 'buffer'; // Импортируем модуль buffer
+import Photo from 'src/db/models/photo.model';
+import { GeoType } from '../photo/types';
 
 @Controller('savePoints')
 export class SavePointController {
   private readonly log = new Logger(SavePointController.name);
 
-  constructor(@InjectModel(Point) private readonly pointModel: typeof Point) {
+  constructor(
+    @InjectModel(Point) private readonly pointModel: typeof Point,
+    @InjectModel(Photo) private readonly photoModel: typeof Photo) {
     this.log.log('Init controller');
   }
 
@@ -28,6 +31,17 @@ export class SavePointController {
     required: false,
     type: String,
   })
+  // @ApiBody({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       photo: {
+  //         type: 'string',
+  //         format: 'binary',
+  //       }
+  //     }
+  //   }
+  // })
   @Public()
   @Post()
   async createPoint(
@@ -36,10 +50,12 @@ export class SavePointController {
     @Query('radius') radius: number,
     @Query('project') project: string,
     @Query('mode') mode: string,
-    @Body('photo') photo?: string, 
     @Query('name') name?: string,
     @Query('description') description?: string,
-  ): Promise<Point> {
+    @Body('photo') imageData?: string
+  ): Promise<void> {
+    this.log.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${imageData?.length}`)
+
     try {
       if (lat == null || lon == null) {
         throw new Error('Широта и долгота являются обязательными полями');
@@ -47,8 +63,6 @@ export class SavePointController {
 
       const date = new Date();
 
-      // Приведение photo к строке и декодирование base64 строки в buffer
-      const photoBuffer = photo ? Buffer.from(photo as string, 'base64') : null;
       const data = {
         name: name || '',
         time: date,
@@ -56,16 +70,23 @@ export class SavePointController {
         lon,
         radius,
         mode,
-        photo: photoBuffer,
         description: description || '',
         project: project || '',
       };
-
       const point = await this.pointModel.create(data);
-      return point;
+
+      if (imageData?.length > 0) {
+        const data = {
+          id: point.id,
+          type: GeoType.point,
+          photo: imageData,
+        };
+        await this.photoModel.create(data);
+      }
     } catch (error) {
       this.log.error('Ошибка при создании точки:', error);
       throw error;
     }
   }
+
 }
