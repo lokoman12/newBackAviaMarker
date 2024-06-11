@@ -15,8 +15,8 @@ export class AlarmController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllAlram(): Promise<AlaramAM[]> {
     try {

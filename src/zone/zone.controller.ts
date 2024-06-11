@@ -17,8 +17,8 @@ export class ZoneController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllZone(): Promise<ZoneAM[]> {
     try {

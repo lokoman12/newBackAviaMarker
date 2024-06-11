@@ -17,8 +17,8 @@ export class PositionController {
     this.log.log('Init controller');
   }
 
-  // @Public()
-  @UseGuards(AccessTokenGuard)
+  @Public()
+  // @UseGuards(AccessTokenGuard)
   @Get()
   async getAllAlram(): Promise<PositionAM[]> {
     try {

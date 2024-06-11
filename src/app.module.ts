@@ -33,6 +33,7 @@ import { PolygonsModule } from './polygon/polygon.module';
 import { HistoryModule } from './history/history.module';
 import { RdStatusModule } from './rd-status/rd.module';
 import { PhotoModule } from './photo/photo.module';
+import { GetpositionModule } from './get-position-history/Getposition.module';
 
 
 @Module({
@@ -70,6 +71,7 @@ import { PhotoModule } from './photo/photo.module';
     HistoryModule,
     RdStatusModule,
     PhotoModule,
+    GetpositionModule
   ],
   providers: [ApiConfigService],
 

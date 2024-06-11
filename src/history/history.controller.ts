@@ -48,16 +48,7 @@ export class HistoryController {
     return result;
   }
 
-  @Get('/get-recorded-formular')
-  async getCurrentFormularFromRecord(
-    @Req() req: Request
-  ) {
-    const { username } = req.user as User;
-    const result = this.timelineService.getCurrentFormularFromRecord(username);
-    return result;
-  }
-
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Get("/set-record")
   async setRecordStatus(
     @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,
