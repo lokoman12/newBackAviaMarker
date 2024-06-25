@@ -4,6 +4,7 @@ import {
   Logger,
   NotAcceptableException,
   ParseIntPipe,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -18,6 +19,8 @@ import User from 'src/db/models/user';
 import { SettingsService } from 'src/settings/settings.service';
 import { ApiConfigService } from 'src/config/api.config.service';
 import TimelineService from './timelineService';
+import { ActualClientToi } from 'src/toi/toi.service';
+import HistoryService from './historyService';
 
 @Controller('history')
 export class HistoryController {
@@ -25,7 +28,8 @@ export class HistoryController {
 
   constructor(
     private recordStatusService: RecordStatusService,
-    private timelineService: TimelineService
+    private timelineService: TimelineService,
+    private historyService: HistoryService
   ) { }
 
   @Get('/')
@@ -48,7 +52,19 @@ export class HistoryController {
     return result;
   }
 
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
+  @Get("/record")
+  async getRecordStatus(
+    @Req() req: Request
+  ) {
+    const { username } = req.user as User;
+    this.logger.log(`Username from token: ${username}`);
+
+    const result = await this.recordStatusService.getRecordStatus(username);
+    return result;
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get("/set-record")
   async setRecordStatus(
     @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,
@@ -56,9 +72,13 @@ export class HistoryController {
     @Query("velocity", new ParseIntPipe) velocity: number,
     @Req() req: Request
   ) {
+    this.logger.log(`${JSON.stringify(req.user as User)}`)
     const { username } = req.user as User;
     this.logger.log(`Username from token: ${username}`);
+    this.logger.log(`Request: ${timeStart}, ${timeEnd}, ${velocity}`);
     const result = await this.timelineService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
+    this.logger.log(`Request: ${timeStart}, ${timeEnd}, ${velocity}`);
+
     return result;
   }
 
@@ -70,6 +90,18 @@ export class HistoryController {
     const { username } = req.user as User;
     this.logger.log(`Username from token: ${username}`);
     await this.recordStatusService.resetRecordStatus(username);
+    return;
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get("/toi-from-history")
+  async getAllToi(
+    @Req() req: Request
+  ): Promise<Array<ActualClientToi>> {
+    const { username } = req.user as User;
+    this.logger.log(`Username from token: ${username}`);
+    await this.historyService.getCurrentHistory(username);
+
     return;
   }
 }

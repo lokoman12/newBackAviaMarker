@@ -59,12 +59,13 @@ export class AuthController {
     , @Req() req: Request
     , @Res({ passthrough: true }) response: Response<LoginTypeResponse>
   ) {
-    this.log.log('LoginController, cookies: ' + req.cookies.test);
+    // this.log.log('LoginController, cookies: ' + req.cookies.test);
     const { username } = data;
     this.log.warn('Login, user: ' + username);
     const signInData = await this.authService.signIn(data);
     return {
       ...signInData,
+      username,
       permissions: {
         isUser: true,
         isDispatcher: true,

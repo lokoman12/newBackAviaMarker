@@ -36,7 +36,7 @@ class TimelineService {
     return [];
   }
 
-  async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number): Promise<number> {
+  async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number): Promise<TimelineRecordDto> {
     // Проверяем, вдруг юзер уже получает историю, а значит - за ним закреплена таблица
     const inRecordStatus = await this.recordStatusService.isInRecordStatus(login);
 
@@ -47,11 +47,22 @@ class TimelineService {
       if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
         try {
           await this.historyService.prepareHistoryForRecordTable(nextFreeTableNumber, startTime, endTime);
-          // const dto = new TimelineRecordDto(login, startTime, endTime, startTime, velocity, nextFreeTableNumber);
-          // await this.recordStatusService.setRecordStatus(dto);
-          const taskName = getCopyHistoryName(nextFreeTableNumber);
-          this.logger.log(`Следующий свободный номер таблицы истории: ${nextFreeTableNumber}`);
-          return nextFreeTableNumber;
+
+          // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
+          const { startId, endId, } = await this.historyService.getRecordStatusInfo(
+            nextFreeTableNumber,
+          );
+
+          // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
+          const recordDto = new TimelineRecordDto(
+            login, startTime, endTime, startTime,
+            startId, endId, startId,
+            velocity, nextFreeTableNumber)
+          await this.recordStatusService.setRecordStatus(recordDto);
+
+          this.logger.log(`History info: nextFreeTableNumber: ${nextFreeTableNumber}, startId: ${startId}, endId: ${endId}`);
+
+          return recordDto;
         } catch (e) {
           throw new NotAcceptableException('Не смогли захватить следующую свободную таблицу истории');
         }

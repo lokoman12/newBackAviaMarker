@@ -6,6 +6,18 @@ import { TimelineRecordDto } from "./timeline.record.dto";
 import { UpdateSettingsDto } from "src/settings/types";
 import { RECORD_SETTING_PROPERTY_NAME } from "./consts";
 
+export interface TimelineStartRecordRequest {
+  timeStart: number,
+  timeEnd: number,
+  velocity: number
+}
+
+export interface TimelineStartRecordResponse {
+  allRecs: number,
+  startId: number,
+  endId: number
+}
+
 @Injectable()
 export class RecordStatusService {
   private readonly logger = new Logger(RecordStatusService.name);
@@ -45,6 +57,8 @@ export class RecordStatusService {
       } as UpdateSettingsDto;
 
       await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
+    } else {
+      
     }
   }
 
