@@ -8,6 +8,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AccessTokenStrategy } from './strategies/access.token.strategy';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { RefreshTokenStrategy } from './strategies/refresh.token.strategy';
+import { HistoryModule } from 'src/history/history.module';
+import { RecordStatusService } from 'src/history/record.status.service';
 
 
 @Module({
@@ -15,8 +17,9 @@ import { RefreshTokenStrategy } from './strategies/refresh.token.strategy';
     ApiConfigModule,
     PassportModule,
     UsersModule,
+    HistoryModule,
     JwtModule.registerAsync({
-      imports: [ApiConfigModule],
+      imports: [ApiConfigModule,],
       useFactory: async (configService: ApiConfigService) => {
         return {
           global: true,
@@ -24,7 +27,7 @@ import { RefreshTokenStrategy } from './strategies/refresh.token.strategy';
           signOptions: { expiresIn: configService.getJwtAccessExpiresIn(), },
         };
       },
-      inject: [ApiConfigService],
+      inject: [ApiConfigService,],
     }),
   ],
   providers: [

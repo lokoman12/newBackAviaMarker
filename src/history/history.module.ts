@@ -18,6 +18,6 @@ import TimelineService from './timelineService';
   providers: [HistoryService, ExternalScheduler, ToadScheduler, TimelineService, RecordStatusService, ToiCopyToHistoryScheduler, ToiService],
   imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory]), ToiModule],
   controllers: [HistoryController,],
-  exports: [HistoryService, ExternalScheduler, ToiCopyToHistoryScheduler, TimelineService],
+  exports: [HistoryService, ExternalScheduler, ToiCopyToHistoryScheduler, TimelineService, RecordStatusService,],
 })
 export class HistoryModule { }
