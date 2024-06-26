@@ -49,6 +49,41 @@ export interface IToiHistoryClient {
   tow: string;  
 }
 
+export type LatLngType = {
+  lat: number;
+  lon: number;
+};
+
+export type FormularType = {
+  id: number;
+  Source_ID: number;
+  Type_of_Msg: number;
+  FP_Callsign: string;
+  FP_VPP_sign: string;
+  poo: string;
+  tobtg: string;
+  FP_TypeAirCraft: string;
+  tow: string;
+  FP_stand: string;
+  airport_code: string;
+  taxi_out: string;
+  ata: string;
+  regnum: string;
+  Speed: number;
+};
+
+export interface IToiHistoryClientNew {
+  id: number;
+  coordinates: LatLngType;
+  Name?: string;
+  curs: number;
+  alt: number;
+  faza: number;
+  Number: number;
+  type: number;
+  formular: Array<FormularType>;
+};
+
 @Table({ tableName: "toi_history" })
 export default class ToiHistory extends Model implements IToiHistory {
   @PrimaryKey

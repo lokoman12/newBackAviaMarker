@@ -1,7 +1,8 @@
+import { pick } from 'lodash';
 import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { ApiConfigService } from "src/config/api.config.service";
-import ToiHistory, { IToiHistoryClient } from "src/db/models/toiHistory.model";
+import ToiHistory, { IToiHistory, IToiHistoryClient } from "src/db/models/toiHistory.model";
 import { flatOffsetMeterToLongitudeLatitude } from "src/utils/XYtoLanLon";
 import { omit } from 'lodash';
 import { SettingsService } from "src/settings/settings.service";
@@ -11,6 +12,7 @@ import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "./co
 import { difference, head } from 'lodash';
 import { ActualClientToi } from "src/toi/toi.service";
 import { RecordStatusService, TimelineStartRecordResponse } from "./record.status.service";
+import { QueryTypes } from "sequelize";
 
 export interface IHistoryClient {
   id: number;
@@ -98,10 +100,35 @@ class HistoryService {
       throw new NotAcceptableException(`Can not get status for user with login ${login}`);
     }
     const nextId = status.currentId + 1;
-    // const currentStep: number,
-    // const currentDate: Date
-
-    return [];
+    const tableName = SettingsService.getRecordHistoryTableNameByIndex(status.tableNumber);
+    const getHistorySql = `
+  SELECT *
+  FROM ${tableName}
+  WHERE step = '${nextId}'`;
+    this.logger.log(getHistorySql);
+    const records = await this.toiHistoryModel.sequelize.query(
+      getHistorySql,
+      { raw: true, model: ToiHistory, mapToModel: true, type: QueryTypes.SELECT, }
+    );
+    
+    return records.map(toiItem => {
+      const [lat, lon] = flatOffsetMeterToLongitudeLatitude(
+        this.configService.getActiveAirportPosition(),
+        toiItem.Y,
+        toiItem.X
+      );
+      return {
+        ...toiItem,
+        coordinates: {
+          lat: lat,
+          lon: lon,
+        },
+        curs: toiItem.CRS,
+        alt: toiItem.H,
+        type: 0,
+        formular: [],
+      };
+    });
   }
 
   /**

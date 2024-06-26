@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ParseDatePipe } from 'src/pipes/parseDatePipe';
-import ToiHistory from 'src/db/models/toiHistory.model';
+import ToiHistory, { IToiHistory } from 'src/db/models/toiHistory.model';
 import { Op } from 'sequelize';
 import { RecordStatusService } from './record.status.service';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
@@ -27,9 +27,9 @@ export class HistoryController {
   private readonly logger = new Logger(HistoryController.name);
 
   constructor(
-    private recordStatusService: RecordStatusService,
-    private timelineService: TimelineService,
-    private historyService: HistoryService
+    private readonly recordStatusService: RecordStatusService,
+    private readonly timelineService: TimelineService,
+    private readonly historyService: HistoryService
   ) { }
 
   @Get('/')
@@ -53,7 +53,7 @@ export class HistoryController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get("/record")
+  @Get("/get-record")
   async getRecordStatus(
     @Req() req: Request
   ) {
@@ -100,8 +100,7 @@ export class HistoryController {
   ): Promise<Array<ActualClientToi>> {
     const { username } = req.user as User;
     this.logger.log(`Username from token: ${username}`);
-    await this.historyService.getCurrentHistory(username);
-
-    return;
+    const result = await this.historyService.getCurrentHistory(username);
+    return result;
   }
 }

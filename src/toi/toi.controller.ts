@@ -22,7 +22,7 @@ export class ToiController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllToi(@Req() req: Request): Promise<any[]> {
+  async getAllToi(@Req() req: Request): Promise<Array<any>> {
     // const jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerTokenconst();
     // const jwtExtractor = ExtractJwt.fromAuthHeaderAsBearerToken();
     // const jwtToken = jwtExtractor(req)
