@@ -38,9 +38,7 @@ export class RecordStatusService {
 
   async isInRecordStatus(login: string): Promise<boolean> {
     const recordStatus = await this.getRecordStatus(login);
-    const result = recordStatus != null;
-
-    return result;
+    return recordStatus != null;
   }
 
   /**
@@ -48,19 +46,19 @@ export class RecordStatusService {
    */
   public async setRecordStatus(dto: TimelineRecordDto): Promise<void> {
     const isRecording = await this.isInRecordStatus(dto.login);
+    this.logger.log(`isRecording: ${isRecording}`);
     // Сохраняем, если ещё не в статусе записи
-    if (!isRecording) {
-      const valueToSave = {
-        name: RECORD_SETTING_PROPERTY_NAME,
-        username: dto.login,
-        groupname: ALL_GROUPS_SETTING_VALUE,
-        value: dto.asJsonString(),
-      } as UpdateSettingsDto;
+    // if (!isRecording) {
+    const valueToSave = {
+      name: RECORD_SETTING_PROPERTY_NAME,
+      username: dto.login,
+      groupname: ALL_GROUPS_SETTING_VALUE,
+      value: dto.asJsonString(),
+    } as UpdateSettingsDto;
 
-      await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
-    } else {
-
-    }
+    await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
+    // } else {
+    // }
   }
 
   /**
@@ -83,6 +81,7 @@ export class RecordStatusService {
       currentStatus.startTime, currentStatus.endTime, nextCurrentTime,
       currentStatus.endId, currentStatus.startId, nextCurrentStep,
       currentStatus.velocity, currentStatus.tableNumber);
+    this.logger.log(`nextStatus: ${nextStatus.asJsonString()}`);
     await this.setRecordStatus(nextStatus);
   }
 
