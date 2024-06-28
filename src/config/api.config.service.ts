@@ -85,4 +85,10 @@ export class ApiConfigService {
   getKafkaSubscribeTopic(): string {
     return this.configService.get<string>('kafka_subscribeTopic');
   }
+  getHowDaySave(): number {
+    return this.configService.get<number>('historyDaySave');
+  }
+  getToiCheckToHistoryCronMask() {
+    return this.configService.get<string>('toiCheckToHistoryCronMask');
+  }
 };

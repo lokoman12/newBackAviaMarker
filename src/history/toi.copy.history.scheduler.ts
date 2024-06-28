@@ -22,7 +22,7 @@ export default class ToiCopyToHistoryScheduler {
 
     this.externalScheduler.addJob(
       ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
-      this.configService.getToiCopyToHistoryCronMask(),
+      this.configService.getToiCheckToHistoryCronMask(),
       this.toiCopyToHistory.bind(this)
     );
   }

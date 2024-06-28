@@ -54,6 +54,16 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  toiCheckToHistoryCronMask: string;
+
+  @IsString()
+  @IsNotEmpty()
   toiCopyToHistoryCronMask: string;
+
+  @IsNumber()
+  @IsPositive()
+  historyDaySave: number;
+
+  
 }
 
