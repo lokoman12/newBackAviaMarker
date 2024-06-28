@@ -24,8 +24,7 @@ import { GetCurrentUserId } from './decorators/get-current-user-id.decorator';
 import { GetCurrentUser } from './decorators/get-current-user.decorator';
 import { LoginTypeResponse } from './types';
 import User from 'src/db/models/user';
-import { AccessDeniedError } from 'sequelize';
-import { RecordStatusService } from 'src/history/record.status.service';
+import { RecordStatusService } from 'src/user-history/record.status.service';
 
 @Controller('auth')
 export class AuthController {

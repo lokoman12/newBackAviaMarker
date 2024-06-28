@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
 import { ActualClientToi } from 'src/toi/toi.service';
-import HistoryService from './historyService';
+import HistoryService from './history.service';
 
 @Controller('history')
 export class HistoryController {

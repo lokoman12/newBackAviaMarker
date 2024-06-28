@@ -34,8 +34,7 @@ import { HistoryModule } from './history/history.module';
 import { RdStatusModule } from './rd-status/rd.module';
 import { PhotoModule } from './photo/photo.module';
 import { GetpositionModule } from './get-position-history/Getposition.module';
-import { CheckHistoryModule } from './checkHistory/checkHistory.module';
-
+import { UserHistoryModule } from './user-history/user.history.module';
 
 @Module({
   imports: [
@@ -73,7 +72,7 @@ import { CheckHistoryModule } from './checkHistory/checkHistory.module';
     RdStatusModule,
     PhotoModule,
     GetpositionModule,
-    CheckHistoryModule
+    UserHistoryModule,
   ],
   providers: [ApiConfigService],
 

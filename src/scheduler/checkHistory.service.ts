@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/sequelize';
 import ToiHistory from 'src/db/models/toiHistory.model';
 import { Op } from 'sequelize';
 import { ApiConfigService } from 'src/config/api.config.service';
 import dayjs from '../utils/dayjs';
-import { ExternalScheduler } from 'src/history/external.scheduler';
+import { ExternalScheduler } from 'src/scheduler/external.scheduler';
+
 @Injectable()
 export class CheckHistoryService {
   private readonly log = new Logger(CheckHistoryService.name);
@@ -25,7 +25,7 @@ export class CheckHistoryService {
   }
 
   async handleDailyCheck() {
-    this.log.log('Running daily check for ToiHistory records.');
+    this.log.log('Running daily check of ToiHistory records');
 
     try {
       const lastHistoryEntry = await this.toiHistoryModel.findOne({

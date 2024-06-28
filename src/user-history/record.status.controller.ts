@@ -12,7 +12,7 @@ import { ParseDatePipe } from 'src/pipes/parseDatePipe';
 import { RecordStatusService } from './record.status.service';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
-import TimelineService from './timelineService';
+import HistoryUserService from './history.user.service';
 
 @Controller('record-status')
 export class RecordStatusController {
@@ -20,7 +20,7 @@ export class RecordStatusController {
 
   constructor(
     private readonly recordStatusService: RecordStatusService,
-    private readonly timelineService: TimelineService,
+    private readonly historyUserService: HistoryUserService,
   ) { }
 
   @UseGuards(AccessTokenGuard)
@@ -46,7 +46,7 @@ export class RecordStatusController {
     const { username } = req.user as User;
     this.logger.log(`/set, username from token: ${username}`);
     this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
-    const result = await this.timelineService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
+    const result = await this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
     this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
 
     return result;

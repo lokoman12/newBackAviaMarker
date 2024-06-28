@@ -1,29 +1,18 @@
 import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { ApiConfigService } from "src/config/api.config.service";
-import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
-import { SettingsService } from "src/settings/settings.service";
-import dayjs from "../utils/dayjs";
-import { DATE_TIME_FORMAT } from "src/auth/consts";
-import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "./consts";
-import { difference, head } from 'lodash';
-import { ActualClientToi } from "src/toi/toi.service";
 import { RecordStatusService, TimelineStartRecordResponse } from "./record.status.service";
-import { QueryTypes } from "sequelize";
-
-export interface IHistoryClient {
-  id: number;
-  idFormular: number;
-  coordination: Array<number>;
-  H: number;
-  callsign: string;
-  status: number;
-  time: string;
-}
+import { TimelineRecordDto } from "./timeline.record.dto";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
+import ToiHistory from "src/db/models/toiHistory.model";
+import { InjectModel } from "@nestjs/sequelize";
+import { SettingsService } from "src/settings/settings.service";
+import { ApiConfigService } from "src/config/api.config.service";
+import { difference, head } from "lodash";
+import { DATE_TIME_FORMAT } from "src/auth/consts";
+import dayjs from "../utils/dayjs";
 
 @Injectable()
-class HistoryService {
-  private readonly logger = new Logger(HistoryService.name);
+class HistoryUserService {
+  private readonly logger = new Logger(HistoryUserService.name);
 
   constructor(
     private readonly settingsService: SettingsService,
@@ -60,58 +49,6 @@ class HistoryService {
     return nextFreeTableNumber
   }
 
-  async getHistoryFromStartTillEnd(
-    timeStart: Date,
-    timeEnd: Date
-  ): Promise<Array<IToiHistory>> {
-    const dbHistoryResult = await this.toiHistoryModel.findAll({
-      raw: true,
-      where: {
-        time: {
-          gte: timeStart,
-          lt: timeEnd,
-        },
-      },
-    });
-    return dbHistoryResult;
-  }
-
-  async getCurrentHistory(
-    login: string
-  ): Promise<Array<ActualClientToi>> {
-    // Текущее состояние воспроизведения записи пользователя
-    const status = await this.recordStatusService.getRecordStatus(login);
-    if (!status) {
-      this.logger.error(`Can not get status for user with login ${login}`);
-      throw new NotAcceptableException(`Can not get status for user with login ${login}`);
-    }
-
-    // Новый текущий шаг
-    const nextId = status.currentId + 1;
-    // Получим имя таблицы истории для залогиненного пользователя
-    const tableName = SettingsService.getRecordHistoryTableNameByIndex(status.tableNumber);
-
-    const getHistorySql = `
-      SELECT *
-      FROM ${tableName}
-      WHERE step = '${nextId}'`;
-    this.logger.log(getHistorySql);
-
-    // Получим значения для первого и последнего шагов сформированной для пользователя истории
-    const records = await this.toiHistoryModel.sequelize.query(
-      getHistorySql,
-      { raw: true, model: ToiHistory, mapToModel: true, type: QueryTypes.SELECT, }
-    );
-
-    // Обновим текущие шаг и время
-    this.logger.log(`$status.currentId: ${status.currentId}, nextId: ${nextId}`);
-    await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
-      login, nextId, records?.[0].time
-    );
-
-    return records;
-  }
-
   /**
    * Скопируем в свободную таблицу с заданным индексом tableNumber историю
    * от даты timeStart по дату timeEnd. Таблица должна уже существовать. Даты
@@ -120,7 +57,7 @@ class HistoryService {
    * @param timeStart 
    * @param timeEnd 
    */
-  async prepareHistoryForRecordTable(
+  private async prepareUserHistoryTable(
     tableNumber: number,
     timeStart: Date,
     timeEnd: Date
@@ -179,19 +116,17 @@ FROM (
   }
 
   /**
- * 
- * @param tableNumber 
- * @param timeStart 
- * @param timeEnd 
- */
-  async getRecordStatusInfo(
+* 
+* @param tableNumber 
+*/
+  private async getUserHistoryInfo(
     tableNumber: number,
   ): Promise<TimelineStartRecordResponse> {
     const tableName = SettingsService.getRecordHistoryTableNameByIndex(tableNumber);
     const infoSql = `
-    SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId
-    FROM ${tableName}
-    `;
+      SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId
+      FROM ${tableName}
+      `;
 
     try {
       await this.toiHistoryModel.sequelize.query(infoSql);
@@ -202,6 +137,44 @@ FROM (
       throw new Error(e);
     }
   }
+
+  async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number): Promise<TimelineRecordDto> {
+    // Проверяем, вдруг юзер уже получает историю, а значит - за ним закреплена таблица
+    const inRecordStatus = await this.recordStatusService.isInRecordStatus(login);
+
+    // Пробуем найти и выделить свободную таблицу
+    if (!inRecordStatus) {
+      // Ищём свободный номер таблицы
+      const nextFreeTableNumber = await this.getNextFreeTableNumber();
+      if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
+        try {
+          await this.prepareUserHistoryTable(nextFreeTableNumber, startTime, endTime);
+
+          // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
+          const { startId, endId, } = await this.getUserHistoryInfo(
+            nextFreeTableNumber,
+          );
+
+          // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
+          const recordDto = new TimelineRecordDto(
+            login, startTime, endTime, startTime,
+            startId, endId, startId,
+            velocity, nextFreeTableNumber)
+          await this.recordStatusService.setRecordStatus(recordDto);
+
+          this.logger.log(`History info: nextFreeTableNumber: ${nextFreeTableNumber}, startId: ${startId}, endId: ${endId}`);
+
+          return recordDto;
+        } catch (e) {
+          this.logger.error('Не смогли захватить следующую свободную таблицу истории');
+          throw new NotAcceptableException('Не смогли захватить следующую свободную таблицу истории');
+        }
+      }
+    } else {
+      this.logger.error(`Пользователь ${login} уже захватил таблицу`);
+      throw new NotAcceptableException(`Пользователь ${login} уже захватил таблицу`);
+    }
+  }
 }
 
-export default HistoryService;
+export default HistoryUserService;

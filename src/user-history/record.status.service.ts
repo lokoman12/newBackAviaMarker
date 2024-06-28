@@ -1,10 +1,9 @@
 import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import { ALL_GROUPS_SETTING_VALUE } from "src/auth/consts";
 import { SettingsService } from "src/settings/settings.service";
-import { getCopyHistoryName } from "./utis";
 import { TimelineRecordDto } from "./timeline.record.dto";
 import { UpdateSettingsDto } from "src/settings/types";
-import { RECORD_SETTING_PROPERTY_NAME } from "./consts";
+import { RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import dayjs from "../utils/dayjs";
 
 export interface TimelineStartRecordRequest {

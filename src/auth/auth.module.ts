@@ -9,14 +9,14 @@ import { AccessTokenStrategy } from './strategies/access.token.strategy';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { RefreshTokenStrategy } from './strategies/refresh.token.strategy';
 import { HistoryModule } from 'src/history/history.module';
-import { RecordStatusService } from 'src/history/record.status.service';
-
+import { UserHistoryModule } from 'src/user-history/user.history.module';
 
 @Module({
   imports: [
     ApiConfigModule,
     PassportModule,
     UsersModule,
+    UserHistoryModule,
     HistoryModule,
     JwtModule.registerAsync({
       imports: [ApiConfigModule,],

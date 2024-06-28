@@ -11,6 +11,6 @@ import ToiService from './toi.service';
   imports: [ApiConfigModule, SequelizeModule.forFeature([Toi, Formular])],
   providers: [ToiService],
   controllers: [ToiController],
-  exports: [SequelizeModule],
+  exports: [SequelizeModule, ToiService],
 })
 export class ToiModule { }

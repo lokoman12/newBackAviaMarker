@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
-import { RECORD_SETTING_PROPERTY_NAME, TOI_ACTUAL_TEMPLATE_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
+import { RECORD_SETTING_PROPERTY_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
 
 @Injectable()
 export class SettingsService {
@@ -13,10 +13,6 @@ export class SettingsService {
   public static getRecordHistoryTableNameByIndex(tableNumber: number) {
     return `${TOI_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
   }
-
-  // public static getToiActualTableNameByIndex(tableNumber: number) {
-  //   return `${TOI_ACTUAL_TEMPLATE_NAME}${tableNumber}`;
-  // }
 
   constructor(
     @InjectModel(Settings) private readonly settingsModel: typeof Settings

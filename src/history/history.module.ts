@@ -1,24 +1,19 @@
 import { Module } from '@nestjs/common';
-import HistoryService from './historyService';
-import { ExternalScheduler } from './external.scheduler';
 import { ApiConfigModule } from 'src/config/config.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { HistoryController } from './history.controller';
 import { SettingsModule } from 'src/settings/settings.module';
-import { RecordStatusService } from './record.status.service';
 import Toi from 'src/db/models/toi.model';
 import ToiHistory from 'src/db/models/toiHistory.model';
-import { ToadScheduler } from 'toad-scheduler';
-import ToiCopyToHistoryScheduler from './toi.copy.history.scheduler';
 import { ToiModule } from 'src/toi/toi.module';
-import ToiService from 'src/toi/toi.service';
-import TimelineService from './timelineService';
-import { RecordStatusController } from './record.status.controller';
+import { RecordStatusController } from '../user-history/record.status.controller';
+import HistoryService from './history.service';
+import { UserHistoryModule } from 'src/user-history/user.history.module';
 
 @Module({
-  providers: [HistoryService, ExternalScheduler, ToadScheduler, TimelineService, RecordStatusService, ToiCopyToHistoryScheduler, ToiService],
-  imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory]), ToiModule],
+  providers: [HistoryService,],
+  imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory]), ToiModule, UserHistoryModule],
   controllers: [HistoryController, RecordStatusController,],
-  exports: [HistoryService, ExternalScheduler, ToiCopyToHistoryScheduler, TimelineService, RecordStatusService,],
+  exports: [HistoryService, ],
 })
 export class HistoryModule { }
