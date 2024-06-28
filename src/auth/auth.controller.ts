@@ -9,7 +9,8 @@ import {
   HttpStatus,
   HttpCode,
   Res,
-  Query
+  Query,
+  BadRequestException
 } from '@nestjs/common';
 import { AccessTokenGuard } from './guards/access.token.guard';
 import { AuthService } from './auth.service';
@@ -22,14 +23,18 @@ import { RefreshTokenGuard } from './guards/refresh.token.guard';
 import { GetCurrentUserId } from './decorators/get-current-user-id.decorator';
 import { GetCurrentUser } from './decorators/get-current-user.decorator';
 import { LoginTypeResponse } from './types';
+import User from 'src/db/models/user';
+import { AccessDeniedError } from 'sequelize';
+import { RecordStatusService } from 'src/history/record.status.service';
 
 @Controller('auth')
 export class AuthController {
   private readonly log = new Logger(AuthController.name);
 
   constructor(
-    private authService: AuthService,
-    private userService: UsersService
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+    private readonly recordStatusService: RecordStatusService
   ) { }
 
   @Post('signup')
@@ -46,8 +51,10 @@ export class AuthController {
     , @Res({ passthrough: true }) response: Response
   ) {
     this.log.warn('Login, user: ' + username);
-    response.cookie('test', 123);
     const { accessToken } = await this.authService.signIn({ username, password });
+    // При логине сбрасываем статус воспроизведения истории, если был включен
+    await this.recordStatusService.resetRecordStatus(username);
+
     return { accessToken };
   }
 
@@ -59,12 +66,15 @@ export class AuthController {
     , @Req() req: Request
     , @Res({ passthrough: true }) response: Response<LoginTypeResponse>
   ) {
-    this.log.log('LoginController, cookies: ' + req.cookies.test);
+    // this.log.log('LoginController, cookies: ' + req.cookies.test);
     const { username } = data;
     this.log.warn('Login, user: ' + username);
     const signInData = await this.authService.signIn(data);
+    // При логине сбрасываем статус воспроизведения истории, если был включен
+    await this.recordStatusService.resetRecordStatus(username);
     return {
       ...signInData,
+      username,
       permissions: {
         isUser: true,
         isDispatcher: true,
@@ -76,6 +86,11 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get('profile')
   getProfile(@Req() req: Request) {
+    const { username } = req.user as User;
+    var user = this.userService.findUserByLogin(username);
+    if (!user) {
+      throw new BadRequestException(`Can not find user by login ${username}`);
+    }
     return req.user;
   }
 

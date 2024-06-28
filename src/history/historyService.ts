@@ -1,14 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { ApiConfigService } from "src/config/api.config.service";
-import ToiHistory, { IToiHistoryClient } from "src/db/models/toiHistory.model";
-import { flatOffsetMeterToLongitudeLatitude } from "src/utils/XYtoLanLon";
-import { omit } from 'lodash';
+import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
 import { SettingsService } from "src/settings/settings.service";
 import dayjs from "../utils/dayjs";
 import { DATE_TIME_FORMAT } from "src/auth/consts";
-import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME, SQL_DATE_TIME_FORMAT } from "./consts";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "./consts";
 import { difference, head } from 'lodash';
+import { ActualClientToi } from "src/toi/toi.service";
+import { RecordStatusService, TimelineStartRecordResponse } from "./record.status.service";
+import { QueryTypes } from "sequelize";
 
 export interface IHistoryClient {
   id: number;
@@ -27,6 +28,7 @@ class HistoryService {
   constructor(
     private readonly settingsService: SettingsService,
     private readonly configService: ApiConfigService,
+    private readonly recordStatusService: RecordStatusService,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
     this.logger.log('Сервис инициализирован!')
@@ -58,10 +60,10 @@ class HistoryService {
     return nextFreeTableNumber
   }
 
-  async getHistory(
+  async getHistoryFromStartTillEnd(
     timeStart: Date,
     timeEnd: Date
-  ): Promise<Array<IToiHistoryClient>> {
+  ): Promise<Array<IToiHistory>> {
     const dbHistoryResult = await this.toiHistoryModel.findAll({
       raw: true,
       where: {
@@ -71,16 +73,43 @@ class HistoryService {
         },
       },
     });
+    return dbHistoryResult;
+  }
 
-    const activeAirportPosition = this.configService.getActiveAirportPosition();
-    const result = dbHistoryResult.map((it) => {
-      return Object.assign(omit(it, ['X', 'Y', 'H']), {
-        coordination: flatOffsetMeterToLongitudeLatitude(
-          activeAirportPosition, it.Y, it.X
-        ),
-      });
-    }) as Array<IToiHistoryClient>;
-    return result;
+  async getCurrentHistory(
+    login: string
+  ): Promise<Array<ActualClientToi>> {
+    // Текущее состояние воспроизведения записи пользователя
+    const status = await this.recordStatusService.getRecordStatus(login);
+    if (!status) {
+      this.logger.error(`Can not get status for user with login ${login}`);
+      throw new NotAcceptableException(`Can not get status for user with login ${login}`);
+    }
+
+    // Новый текущий шаг
+    const nextId = status.currentId + 1;
+    // Получим имя таблицы истории для залогиненного пользователя
+    const tableName = SettingsService.getRecordHistoryTableNameByIndex(status.tableNumber);
+
+    const getHistorySql = `
+      SELECT *
+      FROM ${tableName}
+      WHERE step = '${nextId}'`;
+    this.logger.log(getHistorySql);
+
+    // Получим значения для первого и последнего шагов сформированной для пользователя истории
+    const records = await this.toiHistoryModel.sequelize.query(
+      getHistorySql,
+      { raw: true, model: ToiHistory, mapToModel: true, type: QueryTypes.SELECT, }
+    );
+
+    // Обновим текущие шаг и время
+    this.logger.log(`$status.currentId: ${status.currentId}, nextId: ${nextId}`);
+    await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
+      login, nextId, records?.[0].time
+    );
+
+    return records;
   }
 
   /**
@@ -107,31 +136,67 @@ class HistoryService {
       throw new Error(e);
     }
 
+    // В нашем mysql почему-то не работают оконные (over partition) функции
+    // Потому, чтобы нумеровать строки с одинаковым временем, использую
+    // @id := if(...)
+    // Внешний select под insert'ом отбрасывает лишнюю колонку prevTime,
+    // нужную только для нумерования строк по группам одинакового времени
     const insertSql = `
-  INSERT into ${tableName} (
-    Qwerty123
-    Number, time, X, Y, H,
-    CRS, id_Sintez, Name, faza,
-    Source_ID,  Type_of_Msg, Speed, FP_Callsign,
-    tobtg, FP_TypeAirCraft, tow,
-    FP_Stand, airport_code, taxi_out, ata, regnum
+  INSERT INTO ${tableName} (
+    step, time, 
+    coordinates,
+    Name, curs, alt, faza, Number, type,
+    formular
   )
-    SELECT 
-      Number, time, X, Y, H,
-      CRS, id_Sintez, Name, faza,
-      Source_ID,  Type_of_Msg, Speed, FP_Callsign,
-      tobtg, FP_TypeAirCraft, tow,
-      FP_Stand, airport_code, taxi_out, ata, regnum FROM toi_history
-    WHERE Name != "" AND Number != 0 
-      AND time <= STR_TO_DATE('${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}') 
-      AND time >= STR_TO_DATE('${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}', '${SQL_DATE_TIME_FORMAT}')
-    ORDER BY time;`;
-    this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
+  SELECT 	
+  step, time, 
+  coordinates,
+  Name, curs, alt, faza, Number, type,
+  formular
+FROM (
+  SELECT 
+    @id := if(@prev_time = time, @id, @id + 1) AS step,
+    @prev_time := time AS prevTime, time,
+    coordinates,
+    Name, curs, alt, faza, Number, type,
+    formular
+  FROM toi_history
+  , (select @id := 0, @prev_time := null) AS t
+  WHERE Name != '' AND Number != 0 
+    AND time <= '${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}'
+    AND time >= '${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}'
+  ORDER BY time
+) history_record`;
     this.logger.log(`sql: ${insertSql}`);
+    this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
 
     try {
-      const [records] = await this.toiHistoryModel.sequelize.query(insertSql);
-      this.logger.log(`History record rowCount ${records.length}`);
+      await this.toiHistoryModel.sequelize.query(insertSql);
+    } catch (e) {
+      this.logger.error(`Ошибка при вставке истории в таблицу ${tableName}`, e);
+      throw new Error(e);
+    }
+  }
+
+  /**
+ * 
+ * @param tableNumber 
+ * @param timeStart 
+ * @param timeEnd 
+ */
+  async getRecordStatusInfo(
+    tableNumber: number,
+  ): Promise<TimelineStartRecordResponse> {
+    const tableName = SettingsService.getRecordHistoryTableNameByIndex(tableNumber);
+    const infoSql = `
+    SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId
+    FROM ${tableName}
+    `;
+
+    try {
+      await this.toiHistoryModel.sequelize.query(infoSql);
+      const [records] = await this.toiHistoryModel.sequelize.query(infoSql) as Array<TimelineStartRecordResponse>;
+      return records?.[0];
     } catch (e) {
       this.logger.error(`Ошибка при вставке истории в таблицу ${tableName}`, e);
       throw new Error(e);

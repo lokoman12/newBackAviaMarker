@@ -13,11 +13,12 @@ import ToiCopyToHistoryScheduler from './toi.copy.history.scheduler';
 import { ToiModule } from 'src/toi/toi.module';
 import ToiService from 'src/toi/toi.service';
 import TimelineService from './timelineService';
+import { RecordStatusController } from './record.status.controller';
 
 @Module({
   providers: [HistoryService, ExternalScheduler, ToadScheduler, TimelineService, RecordStatusService, ToiCopyToHistoryScheduler, ToiService],
   imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory]), ToiModule],
-  controllers: [HistoryController,],
-  exports: [HistoryService, ExternalScheduler, ToiCopyToHistoryScheduler, TimelineService],
+  controllers: [HistoryController, RecordStatusController,],
+  exports: [HistoryService, ExternalScheduler, ToiCopyToHistoryScheduler, TimelineService, RecordStatusService,],
 })
 export class HistoryModule { }

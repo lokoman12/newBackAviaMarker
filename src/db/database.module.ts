@@ -3,6 +3,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { ApiConfigModule } from 'src/config/config.module';
 import { getSequelizeDbConnectionPropertiesConfig } from './sequelize.config';
+import { Sequelize } from 'sequelize-typescript';
 
 @Module({
   imports: [
@@ -18,11 +19,21 @@ import { getSequelizeDbConnectionPropertiesConfig } from './sequelize.config';
 export class DatabaseModule implements NestModule {
   private readonly log = new Logger(DatabaseModule.name);
 
-  constructor() {
+  constructor(private readonly sequelize: Sequelize) {
     this.log.debug('Init DatabaseModule');
   }
 
+  async onModuleInit() {
+    this.log.debug('Initialize');
+    // try {
+    //   await this.sequelize.sync({ alter: true, });
+    //   this.log.debug('Database synchronized.');
+    // } catch (error) {
+    //   this.log.error('Error during database synchronization:', error);
+    // }
+  }
+
   configure() {
-    this.log.debug('DatabaseModule configure');
+    this.log.debug('Configure');
   }
 }

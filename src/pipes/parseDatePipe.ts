@@ -5,7 +5,6 @@ import { DATE_TIME_FORMAT } from "src/auth/consts";
 @Injectable()
 export class ParseDatePipe implements PipeTransform<string | Date | undefined | null> {
   private readonly logger = new Logger(ParseDatePipe.name);
-
   
   constructor(private readonly required: boolean = true) { }
 
@@ -21,8 +20,7 @@ export class ParseDatePipe implements PipeTransform<string | Date | undefined | 
     if (typeof value === 'function') {
       value = value();
     }
-
-    const transformedValue = dayjs(value, DATE_TIME_FORMAT);
+    const transformedValue = dayjs.utc(value, DATE_TIME_FORMAT);
     if (!transformedValue.isValid()) {
       throw new BadRequestException('Invalid date');
     }

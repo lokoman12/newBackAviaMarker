@@ -10,6 +10,7 @@ export type SignInDataType = {
 };
 
 export type LoginTypeResponse = {
+    username: string,
     userId: number;
     accessToken: string;
     permissions: PermissionsType;
