@@ -1,53 +1,18 @@
 import { Position } from '@turf/turf';
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
 
 export interface IToiHistory {
-  id: number;
-  id_Sintez: number;
-  Number: number;
-  X: number;
-  Y: number;
-  H: number;
-  CRS: number;
-  Name: string;
+  id?: number;
+  coordinates: LatLngType;
+  Name?: string;
+  curs: number;
+  alt: number;
   faza: number;
-  time?: Date;
-  FP_Callsign?: string;
-  FP_Stand?: string;
-  FP_TypeAirCraft?: string;
-  Source_ID: number;
-  Speed: number;
-  Type_of_Msg: number;
-  airport_code: string;
-  ata: string;
-  regnum: string;
-  taxi_out: string;
-  tobtg: string;
-  tow: string;  
-}
-
-export interface IToiHistoryClient {
-  id: number;
-  id_Sintez: number;
   Number: number;
-  coordination: Position;
-  CRS: number;
-  Name: string;
-  faza: number;
+  type: number;
+  formular: Array<FormularType>;
   time?: Date;
-  FP_Callsign?: string;
-  FP_Stand?: string;
-  FP_TypeAirCraft?: string;
-  Source_ID: number;
-  Speed: number;
-  Type_of_Msg: number;
-  airport_code: string;
-  ata: string;
-  regnum: string;
-  taxi_out: string;
-  tobtg: string;
-  tow: string;  
-}
+};
 
 export type LatLngType = {
   lat: number;
@@ -72,75 +37,57 @@ export type FormularType = {
   Speed: number;
 };
 
-export interface IToiHistoryClientNew {
-  id: number;
-  coordinates: LatLngType;
-  Name?: string;
-  curs: number;
-  alt: number;
-  faza: number;
-  Number: number;
-  type: number;
-  formular: Array<FormularType>;
-};
-
 @Table({ tableName: "toi_history" })
 export default class ToiHistory extends Model implements IToiHistory {
   @PrimaryKey
   @AutoIncrement
+  @AllowNull(false)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
   })
   id: number;
 
+  @AllowNull(false)
   @Column({
-    type: DataType.SMALLINT,
-    allowNull: false,
+    type: DataType.JSON,
   })
-  id_Sintez: number;
+  coordinates: LatLngType;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  Number: number;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  X: number;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  Y: number;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  H: number;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  CRS: number;
-
+  @AllowNull(true)
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   Name: string;
 
+  @AllowNull(false)
+  @Column({
+    type: DataType.FLOAT,
+  })
+  curs: number;
+
+  @AllowNull(false)
+  @Column({
+    type: DataType.FLOAT,
+  })
+  alt: number;
+
+  @AllowNull(false)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
   })
   faza: number;
+
+  @AllowNull(false)
+  @Column({
+    type: DataType.INTEGER,
+  })
+  Number: number;
+
+  @AllowNull(false)
+  @Column({
+    type: DataType.INTEGER,
+  })
+  type: number;
 
   @Column({
     type: DataType.DATE,
@@ -148,75 +95,9 @@ export default class ToiHistory extends Model implements IToiHistory {
   })
   time: Date;
 
+  @AllowNull(false)
   @Column({
-    type: DataType.STRING,
-    allowNull: true,
+    type: DataType.JSON,
   })
-  FP_Callsign: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  FP_Stand: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  FP_TypeAirCraft: string;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  Source_ID: number;
-
-  @Column({
-    type: DataType.FLOAT,
-    allowNull: false,
-  })
-  Speed: number;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  Type_of_Msg: number;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  airport_code: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  ata: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  regnum: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  taxi_out: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  tobtg: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  tow: string;
+  formular: Array<FormularType>;
 }

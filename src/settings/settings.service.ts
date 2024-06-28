@@ -14,9 +14,9 @@ export class SettingsService {
     return `${TOI_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
   }
 
-  public static getToiActualTableNameByIndex(tableNumber: number) {
-    return `${TOI_ACTUAL_TEMPLATE_NAME}${tableNumber}`;
-  }
+  // public static getToiActualTableNameByIndex(tableNumber: number) {
+  //   return `${TOI_ACTUAL_TEMPLATE_NAME}${tableNumber}`;
+  // }
 
   constructor(
     @InjectModel(Settings) private readonly settingsModel: typeof Settings

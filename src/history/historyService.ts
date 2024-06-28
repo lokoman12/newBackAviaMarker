@@ -1,10 +1,7 @@
-import { pick } from 'lodash';
 import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { ApiConfigService } from "src/config/api.config.service";
-import ToiHistory, { IToiHistory, IToiHistoryClient } from "src/db/models/toiHistory.model";
-import { flatOffsetMeterToLongitudeLatitude } from "src/utils/XYtoLanLon";
-import { omit } from 'lodash';
+import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
 import { SettingsService } from "src/settings/settings.service";
 import dayjs from "../utils/dayjs";
 import { DATE_TIME_FORMAT } from "src/auth/consts";
@@ -23,10 +20,6 @@ export interface IHistoryClient {
   status: number;
   time: string;
 }
-
-// type HistoryInfoType {
-
-// }
 
 @Injectable()
 class HistoryService {
@@ -70,7 +63,7 @@ class HistoryService {
   async getHistoryFromStartTillEnd(
     timeStart: Date,
     timeEnd: Date
-  ): Promise<Array<IToiHistoryClient>> {
+  ): Promise<Array<IToiHistory>> {
     const dbHistoryResult = await this.toiHistoryModel.findAll({
       raw: true,
       where: {
@@ -80,55 +73,43 @@ class HistoryService {
         },
       },
     });
-
-    const activeAirportPosition = this.configService.getActiveAirportPosition();
-    const result = dbHistoryResult.map((it) => {
-      return Object.assign(omit(it, ['X', 'Y', 'H']), {
-        coordination: flatOffsetMeterToLongitudeLatitude(
-          activeAirportPosition, it.Y, it.X
-        ),
-      });
-    }) as Array<IToiHistoryClient>;
-    return result;
+    return dbHistoryResult;
   }
 
   async getCurrentHistory(
     login: string
   ): Promise<Array<ActualClientToi>> {
+    // Текущее состояние воспроизведения записи пользователя
     const status = await this.recordStatusService.getRecordStatus(login);
     if (!status) {
+      this.logger.error(`Can not get status for user with login ${login}`);
       throw new NotAcceptableException(`Can not get status for user with login ${login}`);
     }
+
+    // Новый текущий шаг
     const nextId = status.currentId + 1;
+    // Получим имя таблицы истории для залогиненного пользователя
     const tableName = SettingsService.getRecordHistoryTableNameByIndex(status.tableNumber);
+
     const getHistorySql = `
-  SELECT *
-  FROM ${tableName}
-  WHERE step = '${nextId}'`;
+      SELECT *
+      FROM ${tableName}
+      WHERE step = '${nextId}'`;
     this.logger.log(getHistorySql);
+
+    // Получим значения для первого и последнего шагов сформированной для пользователя истории
     const records = await this.toiHistoryModel.sequelize.query(
       getHistorySql,
       { raw: true, model: ToiHistory, mapToModel: true, type: QueryTypes.SELECT, }
     );
-    
-    return records.map(toiItem => {
-      const [lat, lon] = flatOffsetMeterToLongitudeLatitude(
-        this.configService.getActiveAirportPosition(),
-        toiItem.Y,
-        toiItem.X
-      );
-      return {
-        ...toiItem,
-        coordinates: {
-          lat: lat,
-          lon: lon,
-        },
-        curs: toiItem.CRS,
-        alt: toiItem.H,
-        type: 0,
-        formular: [],
-      };
-    });
+
+    // Обновим текущие шаг и время
+    this.logger.log(`$status.currentId: ${status.currentId}, nextId: ${nextId}`);
+    await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
+      login, nextId, records?.[0].time
+    );
+
+    return records;
   }
 
   /**
@@ -162,28 +143,23 @@ class HistoryService {
     // нужную только для нумерования строк по группам одинакового времени
     const insertSql = `
   INSERT INTO ${tableName} (
-    step, time, Number, X, Y, H,
-    CRS, id_Sintez, Name, faza,
-    Source_ID,  Type_of_Msg, Speed, FP_Callsign,
-    tobtg, FP_TypeAirCraft, tow,
-    FP_Stand, airport_code, taxi_out, ata, regnum
+    step, time, 
+    coordinates,
+    Name, curs, alt, faza, Number, type,
+    formular
   )
   SELECT 	
-  step, time,
-  Number, X, Y, H,
-  CRS, id_Sintez, Name, faza,
-  Source_ID,  Type_of_Msg, Speed, FP_Callsign,
-  tobtg, FP_TypeAirCraft, tow,
-  FP_Stand, airport_code, taxi_out, ata, regnum
+  step, time, 
+  coordinates,
+  Name, curs, alt, faza, Number, type,
+  formular
 FROM (
   SELECT 
     @id := if(@prev_time = time, @id, @id + 1) AS step,
     @prev_time := time AS prevTime, time,
-    Number, X, Y, H,
-    CRS, id_Sintez, Name, faza,
-    Source_ID,  Type_of_Msg, Speed, FP_Callsign,
-    tobtg, FP_TypeAirCraft, tow,
-    FP_Stand, airport_code, taxi_out, ata, regnum
+    coordinates,
+    Name, curs, alt, faza, Number, type,
+    formular
   FROM toi_history
   , (select @id := 0, @prev_time := null) AS t
   WHERE Name != '' AND Number != 0 

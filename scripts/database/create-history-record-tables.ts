@@ -48,13 +48,6 @@ const historyTableNames = Array.from(
   (_, index) => SettingsService.getRecordHistoryTableNameByIndex(index)
 );
 
-// --- Список таблиц актуальной третички
-const toiActualTableNames = Array.from(
-  { length: historyRecordTablesNumber },
-  (_, index) => SettingsService.getToiActualTableNameByIndex(index)
-);
-
-
 // --- Таблицы записи третички из истории
 const deleteHistoryRecordTables = async () => {
   logger.log('Удалим таблицы истории перед созданием');
@@ -87,26 +80,18 @@ const createHistoryRecordTables = async () => {
       id int(11) NOT NULL AUTO_INCREMENT,
       step int(11) NOT NULL,
       time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
-      Number smallint(6) NOT NULL,
-      X int(11) NOT NULL DEFAULT '0',
-      Y int(11) NOT NULL DEFAULT '0',
-      H smallint(6) NOT NULL DEFAULT '0',
-      CRS float NOT NULL DEFAULT '0',
-      id_Sintez smallint(6) NOT NULL DEFAULT '0',
-      Name varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
-      faza tinyint(3) unsigned NOT NULL,
-      Source_ID smallint(6) NOT NULL DEFAULT '0',
-      Type_of_Msg tinyint(3) unsigned NOT NULL DEFAULT '0',
-      Speed float NOT NULL DEFAULT '0',
-      FP_Callsign varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT '',
-      tobtg varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      FP_TypeAirCraft varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT '',
-      tow varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      FP_Stand varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT '',
-      airport_code varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      taxi_out varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      ata varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      regnum varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+
+      coordinates json NOT NULL,
+
+      Name varchar(255) COLLATE utf8_bin DEFAULT NULL,
+      curs float NOT NULL,
+      alt float NOT NULL,
+      faza int(11) NOT NULL,
+      Number int(11) NOT NULL,
+      type int(11) NOT NULL,
+
+      formular json NOT NULL,
+
       PRIMARY KEY (id)
     );`
 
@@ -125,84 +110,9 @@ const createHistoryRecordTables = async () => {
   }
 };
 
-
-// --- Таблицы актуальной третички по записи из истории
-const deleteToiActualTables = async () => {
-  logger.log('Удалим таблицы актуальной третички по истории перед созданием');
-
-  let promises: Array<Promise<any>> = [];
-
-  toiActualTableNames.forEach(it => {
-    const dropResult = sequelize.query(`
-      DROP TABLE IF EXISTS ${it};
-    `);
-    promises.push(dropResult);
-  });
-
-  try {
-    await Promise.all(promises);
-    logger.log('Таблицы удалены');
-  } catch (e) {
-    logger.log('Не смогли дропнуть все таблицы!', e.message);
-    assert(false, 'Нет смысла работать дальше, проверьте причину неудачного удаления таблиц');
-  }
-  return promises;
-}
-
-const createToiActualTables = async () => {
-  logger.log('Пробуем создать таблицы актуальной третички по истории TOI');
-
-  let promises: Array<Promise<any>> = [];
-  toiActualTableNames.forEach((it, _) => {
-    const sql = `CREATE TABLE IF NOT EXISTS ${it} (
-      id int NOT NULL AUTO_INCREMENT,
-      Number smallint NOT NULL,
-      X int NOT NULL DEFAULT '0',
-      Y int NOT NULL DEFAULT '0',
-      H smallint NOT NULL DEFAULT '0',
-      CRS float NOT NULL DEFAULT '0',
-      id_Sintez smallint NOT NULL DEFAULT '0',
-      Name varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-      faza tinyint unsigned NOT NULL,
-      Source_ID smallint NOT NULL DEFAULT '0',
-      Type_of_Msg tinyint unsigned NOT NULL DEFAULT '0',
-      Speed float NOT NULL DEFAULT '0',
-      FP_Callsign varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
-      tobtg varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      FP_TypeAirCraft varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
-      tow varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      FP_Stand varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
-      airport_code varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      taxi_out varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      ata varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      regnum varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-      PRIMARY KEY (id),
-      KEY Number_IDX (Number) USING BTREE
-    );`
-
-    logger.log('Создаём таблицу', it);
-    const createTableResult = sequelize.query(sql);
-    promises.push(createTableResult);
-    return promises;
-  });
-
-  try {
-    await Promise.all(promises);
-    logger.log('Таблицы созданы');
-  } catch (e) {
-    logger.log('Не смогли создать все таблицы!', e.message);
-    assert(false, 'Нет смысла работать дальше, проверьте причину неудачного создания таблиц');
-  }
-};
-
-
-// ---
 (async () => {
   await deleteHistoryRecordTables();
   await createHistoryRecordTables();
-
-  await deleteToiActualTables();
-  await createToiActualTables();
 
   logger.log('Окончание работы скрипта создания таблиц, хранящих запись истории TOI и и актуальную третичку по записи для ретрансляции');
   process.exit(0);

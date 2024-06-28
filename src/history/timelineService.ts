@@ -2,7 +2,6 @@ import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import HistoryService from "./historyService";
 import { RecordStatusService } from "./record.status.service";
 import { TimelineRecordDto } from "./timeline.record.dto";
-import { getCopyHistoryName } from "./utis";
 import { NO_FREE_HISTORY_RECORD_TABLE } from "./consts";
 import ToiHistory from "src/db/models/toiHistory.model";
 import { InjectModel } from "@nestjs/sequelize";
@@ -22,6 +21,7 @@ class TimelineService {
   async getCurrentFormularFromRecord(login: string) {
     const recordStatus = await this.recordStatusService.getRecordStatus(login);
     if (!recordStatus) {
+      this.logger.error('Текущий пользователь не находится в статусе воспроизведения записи');
       throw new NotAcceptableException('Текущий пользователь не находится в статусе воспроизведения записи');
     }
 
@@ -64,10 +64,12 @@ class TimelineService {
 
           return recordDto;
         } catch (e) {
+          this.logger.error('Не смогли захватить следующую свободную таблицу истории');
           throw new NotAcceptableException('Не смогли захватить следующую свободную таблицу истории');
         }
       }
     } else {
+      this.logger.error(`Пользователь ${login} уже захватил таблицу`);
       throw new NotAcceptableException(`Пользователь ${login} уже захватил таблицу`);
     }
   }
