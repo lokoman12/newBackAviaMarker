@@ -5,10 +5,11 @@ import { Op } from 'sequelize';
 import { ApiConfigService } from 'src/config/api.config.service';
 import dayjs from '../utils/dayjs';
 import { ExternalScheduler } from 'src/scheduler/external.scheduler';
+import { DATE_TIME_FORMAT } from 'src/auth/consts';
 
 @Injectable()
 export class CheckHistoryService {
-  private readonly log = new Logger(CheckHistoryService.name);
+  private readonly logger = new Logger(CheckHistoryService.name);
 
   constructor(
     private configService: ApiConfigService,
@@ -16,39 +17,31 @@ export class CheckHistoryService {
     @InjectModel(ToiHistory)
     private readonly toiHistoryModel: typeof ToiHistory,
   ) {
-    this.log.log('Init controller');
+    this.logger.log(`Init controller`);
     this.externalScheduler.addJob(
       'cleanTableHistory',
       this.configService.getToiCheckToHistoryCronMask(),
       this.handleDailyCheck.bind(this),
     );
+    this.logger.log('Сервис инициализирован!')
   }
 
   async handleDailyCheck() {
-    this.log.log('Running daily check of ToiHistory records');
+    this.logger.log('++++++++ Running daily check of ToiHistory records +++++++++++++');
 
     try {
-      const lastHistoryEntry = await this.toiHistoryModel.findOne({
-        order: [['time', 'ASC']],
-      });
-
-      if (!lastHistoryEntry) {
-        this.log.log('No history entries found.');
-        return;
-      }
-
-      const startTime = dayjs
-        .utc(lastHistoryEntry.time)
+      const startTime = dayjs.utc()
         .subtract(this.configService.getHowDaySave(), 'days');
+      this.logger.log(`Delete all records from history before: ${startTime.format(DATE_TIME_FORMAT)}`);
       await this.toiHistoryModel.destroy({
         where: {
           time: {
-            [Op.lte]: startTime,
+            [Op.lt]: startTime.toDate(),
           },
         },
       });
     } catch (error) {
-      this.log.error('Error during daily check:', error);
+      this.logger.error('Error during daily check:', error);
     }
   }
 }

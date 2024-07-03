@@ -123,7 +123,6 @@ export class SettingsService {
     };
 
     const model = await this.settingsModel.findOne({ raw: true, where, });
-    this.logger.log(1);
     if (model) {
       await this.settingsModel.update(item, { where, });
     } else {

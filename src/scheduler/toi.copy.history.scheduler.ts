@@ -18,13 +18,13 @@ export default class ToiCopyToHistoryScheduler {
     private toiService: ToiService,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
-    this.logger.log('Сервис инициализирован!')
-
+    this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
       ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
       this.configService.getToiCheckToHistoryCronMask(),
       this.toiCopyToHistory.bind(this)
     );
+    this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async toiCopyToHistory() {

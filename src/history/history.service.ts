@@ -71,9 +71,9 @@ class HistoryService {
     );
 
     // Обновим текущие шаг и время
-    this.logger.log(`$status.currentId: ${status.currentId}, nextId: ${nextId}`);
+    this.logger.log(`$status.currentId: ${status.currentId}, nextId: ${nextId}, record[0].time: ${records?.[0]?.time || status.currentTime}`);
     await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
-      login, nextId, records?.[0].time
+      login, nextId, records?.[0]?.time || status.currentTime
     );
 
     return records;

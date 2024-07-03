@@ -35,6 +35,7 @@ import { RdStatusModule } from './rd-status/rd.module';
 import { PhotoModule } from './photo/photo.module';
 import { GetpositionModule } from './get-position-history/Getposition.module';
 import { UserHistoryModule } from './user-history/user.history.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { UserHistoryModule } from './user-history/user.history.module';
     PhotoModule,
     GetpositionModule,
     UserHistoryModule,
+    SchedulerModule,
   ],
   providers: [ApiConfigService],
 
