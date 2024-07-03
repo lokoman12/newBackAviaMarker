@@ -21,13 +21,14 @@ export default class ToiCopyToHistoryScheduler {
     this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
       ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
-      this.configService.getToiCheckToHistoryCronMask(),
+      this.configService.  getToiCopyToHistoryCronMask(),
       this.toiCopyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async toiCopyToHistory() {
+    this.logger.log('Копирование в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const toiListForHistory = await this.toiService.getActualClientToi();
     const promises = [];
