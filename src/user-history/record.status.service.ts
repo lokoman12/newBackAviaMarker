@@ -67,12 +67,14 @@ export class RecordStatusService {
     // Получим текущий статус
     const currentStatus = await this.getRecordStatus(login);
     if (!currentStatus) {
-      this.logger.error(`Can not get status for user with login ${login}`);
-      throw new NotAcceptableException(`Can not get status for user with login ${login}`);
+      const message = `Перед обновлённом статуса пользователя ${login} статус не должен быть пустым`;
+      this.logger.error(message);
+      throw new NotAcceptableException(message);
     }
     if (!dayjs.utc(nextCurrentTime).isValid()) {
-      this.logger.error(`Next current time must have valid datatime value ${nextCurrentTime}`);
-      throw new NotAcceptableException(`Next current time must have valid datatime value ${nextCurrentTime}`);
+      const message = `Next current time must have valid datatime value ${nextCurrentTime}`;
+      this.logger.error(message);
+      throw new NotAcceptableException(message);
     }
     // Обновим текущие шаг и время
     const nextStatus = new TimelineRecordDto(
