@@ -17,7 +17,7 @@ export class KafkaService {
       clientId: 'my-app',
       brokers: ['a-rpx-appt01.svo.air.loc:9092'],
     });
-
+    this.kafka.admin().deleteGroups(['vega_consumer_group']).then((ok)=> console.log('Groups has been deleted'))
     this.consumer = this.kafka.consumer({ groupId: 'vega_consumer_group' });
   }
 
@@ -26,7 +26,7 @@ export class KafkaService {
   }
 
   async subscribe(topic: string): Promise<void> {
-    await this.consumer.subscribe({ topic, fromBeginning: false });
+    await this.consumer.subscribe({ topic, fromBeginning: false});
     await this.consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         let obj = JSON.parse(message.value.toString());
