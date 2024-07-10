@@ -45,6 +45,20 @@ export class SettingsService {
     return resultByLogin;
   }
 
+  async getRecordSettingByUser(login: string): Promise<any> {
+    const resultByLogin = await this.settingsModel.findOne({
+      where: {
+        username: {
+          [Op.in]: [login,],
+        },
+        name: RECORD_SETTING_PROPERTY_NAME,
+      },
+      attributes: ['id', 'name', 'value',],
+    });
+
+    return resultByLogin;
+  }
+
   async getAllSettingsByName(name: string): Promise<Array<any>> {
     const result = await this.settingsModel.findAll({
       where: { name, },
@@ -92,7 +106,7 @@ export class SettingsService {
       attributes: ['value',],
     });
     this.logger.log(`getTypedSettingsByName: ${result}`);
-    return result != null ? result.map(it => mapFunction(it.value)).filter(it => it != null) : [];
+    return result != null ? result.map(it => mapFunction(it.value)).filter(it => it != null) : null;
   }
 
   async createSetting(dto: CreateSettingsDto): Promise<void> {

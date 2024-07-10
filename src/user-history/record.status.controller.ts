@@ -32,7 +32,12 @@ export class RecordStatusController {
     this.logger.log(`/get, username from token: ${username}`);
 
     const result = await this.recordStatusService.getRecordStatus(username);
-    return result;
+    return result !== null ? {
+      ...result,
+      startTime: result.startTime.getTime(),
+      endTime: result.endTime.getTime(),
+      currentTime: result.currentTime.getTime(),
+    } : null;
   }
 
   @UseGuards(AccessTokenGuard)
@@ -49,6 +54,19 @@ export class RecordStatusController {
     const result = await this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
     this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
 
+    return result;
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get("/set-current-step")
+  async setCurrentStep(
+    @Query("currentId") currentId: number,
+    @Req() req: Request
+  ) {
+    const { username } = req.user as User;
+    this.logger.log(`/set, username from token: ${username}`);
+
+    const result = this.recordStatusService.updateCurrentStepAndTime(username, currentId);
     return result;
   }
 

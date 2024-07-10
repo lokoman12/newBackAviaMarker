@@ -107,4 +107,27 @@ export class RecordStatusService {
     );
     return result;
   }
+
+  async updateCurrentStepAndTime(login: string, currentId: number): Promise<any> {
+    const record = await this.getRecordStatus(login);
+    if (record) {
+      const newTimelineDto = new TimelineRecordDto(
+        record.login,
+        record.startTime, record.endTime, record.currentTime,
+        record.startId, record.endId, currentId,
+        record.velocity, record.tableNumber);
+
+      const valueToSave = {
+        name: RECORD_SETTING_PROPERTY_NAME,
+        username: record.login,
+        groupname: ALL_GROUPS_SETTING_VALUE,
+        value: newTimelineDto.asJsonString(),
+      } as UpdateSettingsDto;
+
+      await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
+
+    } else {
+      this.logger.warn(`Таблица записи для пользователя ${login} не существует, удалить невозможно`)
+    }
+  }
 }
