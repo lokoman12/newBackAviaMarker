@@ -80,7 +80,7 @@ export class RecordStatusService {
     const nextStatus = new TimelineRecordDto(
       currentStatus.login,
       currentStatus.startTime, currentStatus.endTime, nextCurrentTime,
-      currentStatus.endId, currentStatus.startId, nextCurrentStep,
+      currentStatus.startId, currentStatus.endId, nextCurrentStep,
       currentStatus.velocity, currentStatus.tableNumber);
     this.logger.log(`nextStatus: ${nextStatus.asJsonString()}`);
     await this.setRecordStatus(nextStatus);
