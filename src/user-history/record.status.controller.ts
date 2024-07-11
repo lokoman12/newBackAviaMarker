@@ -58,15 +58,17 @@ export class RecordStatusController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get("/set-current-step")
-  async setCurrentStep(
+  @Get("/set-current")
+  async setCurrent(
     @Query("currentId") currentId: number,
+    @Query("currentTimeNum") currentTimeNum: number,
+    @Query("currentTimeStr", new ParseDatePipe(true)) currentTime: Date,
     @Req() req: Request
   ) {
     const { username } = req.user as User;
-    this.logger.log(`/set, username from token: ${username}`);
+    this.logger.log(`/set-current, username from token: ${username}, step: ${currentId}, time: ${currentTime}, numeric: ${currentTimeNum}`);
 
-    const result = this.recordStatusService.updateCurrentStepAndTime(username, currentId);
+    const result = this.recordStatusService.setCurrent(username, currentId, currentTime);
     return result;
   }
 

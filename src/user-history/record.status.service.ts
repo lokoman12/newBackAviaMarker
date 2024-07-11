@@ -5,6 +5,7 @@ import { TimelineRecordDto } from "./timeline.record.dto";
 import { UpdateSettingsDto } from "src/settings/types";
 import { RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import dayjs from "../utils/dayjs";
+import { NextCurrentType } from "./types";
 
 export interface TimelineStartRecordRequest {
   timeStart: number,
@@ -44,8 +45,7 @@ export class RecordStatusService {
    * Устанавливаем или сбрасываем статус записи.
    */
   public async setRecordStatus(dto: TimelineRecordDto): Promise<void> {
-    const isRecording = await this.isInRecordStatus(dto.login);
-    this.logger.log(`isRecording: ${isRecording}`);
+    // const isRecording = await this.isInRecordStatus(dto.login);
     // Сохраняем, если ещё не в статусе записи
     // if (!isRecording) {
     const valueToSave = {
@@ -63,7 +63,7 @@ export class RecordStatusService {
   /**
  * Обновляем состояние записи, устанавливая новые текущий шаг и время.
  */
-  public async setNextCurrentPropertiesRecordStatus(login: string, nextCurrentStep: number, nextCurrentTime: Date): Promise<void> {
+  public async setNextCurrentPropertiesRecordStatus(login: string, nextCurrentStep: number, nextCurrentTime: Date): Promise<NextCurrentType> {
     // Получим текущий статус
     const currentStatus = await this.getRecordStatus(login);
     if (!currentStatus) {
@@ -82,8 +82,10 @@ export class RecordStatusService {
       currentStatus.startTime, currentStatus.endTime, nextCurrentTime,
       currentStatus.startId, currentStatus.endId, nextCurrentStep,
       currentStatus.velocity, currentStatus.tableNumber);
-    this.logger.log(`nextStatus: ${nextStatus.asJsonString()}`);
     await this.setRecordStatus(nextStatus);
+
+    const nextCurrent: NextCurrentType = { nextCurrentTime, nextCurrentStep };
+    return nextCurrent;
   }
 
   /**
@@ -108,12 +110,12 @@ export class RecordStatusService {
     return result;
   }
 
-  async updateCurrentStepAndTime(login: string, currentId: number): Promise<any> {
+  async setCurrent(login: string, currentId: number, currentTime: Date): Promise<any> {
     const record = await this.getRecordStatus(login);
     if (record) {
       const newTimelineDto = new TimelineRecordDto(
         record.login,
-        record.startTime, record.endTime, record.currentTime,
+        record.startTime, record.endTime, currentTime,
         record.startId, record.endId, currentId,
         record.velocity, record.tableNumber);
 
@@ -123,11 +125,11 @@ export class RecordStatusService {
         groupname: ALL_GROUPS_SETTING_VALUE,
         value: newTimelineDto.asJsonString(),
       } as UpdateSettingsDto;
-
+      this.logger.log(`setCurrent, dto: ${JSON.stringify(newTimelineDto)}`);
       await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
 
     } else {
-      this.logger.warn(`Таблица записи для пользователя ${login} не существует, удалить невозможно`)
+      this.logger.warn(`Таблица записи для пользователя ${login} не существует, невозможно установить текущий момент`);
     }
   }
 }

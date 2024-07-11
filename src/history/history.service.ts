@@ -62,7 +62,7 @@ class HistoryService {
       SELECT *
       FROM ${tableName}
       WHERE step = '${nextId}'`;
-    this.logger.log(getHistorySql);
+    // this.logger.log(getHistorySql);
 
     // Получим значения для первого и последнего шагов сформированной для пользователя истории
     const records = await this.toiHistoryModel.sequelize.query(
@@ -71,8 +71,8 @@ class HistoryService {
     );
 
     // Обновим текущие шаг и время
-    this.logger.log(`$status.currentId: ${status.currentId}, nextId: ${nextId}, record[0].time: ${records?.[0]?.time || status.currentTime}`);
-    await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
+    // this.logger.log(`status.currentId: ${status.currentId}, nextId: ${nextId}, record[0].time: ${records?.[0]?.time || status.currentTime}`);
+    const nextCurrent = await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
       login, nextId, records?.[0]?.time || status.currentTime
     );
 

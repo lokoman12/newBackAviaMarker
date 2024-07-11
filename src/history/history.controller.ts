@@ -25,7 +25,7 @@ export class HistoryController {
     @Req() req: Request
   ): Promise<Array<ActualClientToi>> {
     const { username } = req.user as User;
-    this.logger.log(`Username from token: ${username}`);
+    // this.logger.log(`Username from token: ${username}`);
     const result = await this.historyService.getCurrentHistory(username);
     return result;
   }

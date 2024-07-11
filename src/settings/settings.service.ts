@@ -123,7 +123,7 @@ export class SettingsService {
   }
 
   async updateSettingValueByPropertyNameAndUsername(dto: UpdateSettingsDto): Promise<void> {
-    this.logger.log(`setRecordStatus ${dto.name}, ${dto.username}`);
+    // this.logger.log(`setRecordStatus ${dto.name}, ${dto.username}`);
 
     const item = {
       name: dto.name,
