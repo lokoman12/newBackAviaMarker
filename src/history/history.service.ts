@@ -2,9 +2,10 @@ import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
 import { SettingsService } from "src/settings/settings.service";
-import { ActualClientToi } from "src/toi/toi.service";
 import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes } from "sequelize";
+import { ToiHistoryResponseType } from "./types";
+import dayjs from '../utils/dayjs';
 
 export interface IHistoryClient {
   id: number;
@@ -45,7 +46,7 @@ class HistoryService {
 
   async getCurrentHistory(
     login: string
-  ): Promise<Array<ActualClientToi>> {
+  ): Promise<ToiHistoryResponseType> {
     // Текущее состояние воспроизведения записи пользователя
     const status = await this.recordStatusService.getRecordStatus(login);
     if (!status) {
@@ -76,7 +77,13 @@ class HistoryService {
       login, nextId, records?.[0]?.time || status.currentTime
     );
 
-    return records;
+    return {
+      rows: records,
+      state: {
+        nextCurrentStep: nextCurrent.nextCurrentStep,
+        nextCurrentTime: nextCurrent.nextCurrentTime,
+      },
+    };
   }
 
 }

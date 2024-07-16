@@ -5,7 +5,7 @@ import { TimelineRecordDto } from "./timeline.record.dto";
 import { UpdateSettingsDto } from "src/settings/types";
 import { RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import dayjs from "../utils/dayjs";
-import { NextCurrentType } from "./types";
+import { NextCurrentTypeForResponse } from "./types";
 
 export interface TimelineStartRecordRequest {
   timeStart: number,
@@ -17,6 +17,11 @@ export interface TimelineStartRecordResponse {
   allRecs: number,
   startId: number,
   endId: number
+}
+
+export interface CurrentTimeRecord {
+  currentId: number,
+  currentTime: number
 }
 
 @Injectable()
@@ -63,7 +68,7 @@ export class RecordStatusService {
   /**
  * Обновляем состояние записи, устанавливая новые текущий шаг и время.
  */
-  public async setNextCurrentPropertiesRecordStatus(login: string, nextCurrentStep: number, nextCurrentTime: Date): Promise<NextCurrentType> {
+  public async setNextCurrentPropertiesRecordStatus(login: string, nextCurrentStep: number, nextCurrentTime: Date): Promise<NextCurrentTypeForResponse> {
     // Получим текущий статус
     const currentStatus = await this.getRecordStatus(login);
     if (!currentStatus) {
@@ -84,7 +89,7 @@ export class RecordStatusService {
       currentStatus.velocity, currentStatus.tableNumber);
     await this.setRecordStatus(nextStatus);
 
-    const nextCurrent: NextCurrentType = { nextCurrentTime, nextCurrentStep };
+    const nextCurrent: NextCurrentTypeForResponse = { nextCurrentTime: nextCurrentTime.getTime(), nextCurrentStep };
     return nextCurrent;
   }
 
@@ -111,7 +116,7 @@ export class RecordStatusService {
   }
 
   async setCurrent(login: string, currentId: number, currentTime: Date): Promise<any> {
-    const record = await this.getRecordStatus(login);
+    let record = await this.getRecordStatus(login);
     if (record) {
       const newTimelineDto = new TimelineRecordDto(
         record.login,
@@ -128,8 +133,11 @@ export class RecordStatusService {
       this.logger.log(`setCurrent, dto: ${JSON.stringify(newTimelineDto)}`);
       await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
 
-    } else {
-      this.logger.warn(`Таблица записи для пользователя ${login} не существует, невозможно установить текущий момент`);
+      record = await this.getRecordStatus(login);
+      return record;
     }
+
+    this.logger.warn(`Таблица записи для пользователя ${login} не существует, невозможно установить текущий момент`);
+    return null;
   }
 }

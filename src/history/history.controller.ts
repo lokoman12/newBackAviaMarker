@@ -8,8 +8,8 @@ import {
 import { Request } from 'express';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
-import { ActualClientToi } from 'src/toi/toi.service';
 import HistoryService from './history.service';
+import { ToiHistoryResponseType } from './types';
 
 @Controller('history')
 export class HistoryController {
@@ -23,7 +23,7 @@ export class HistoryController {
   @Get("/toi-from-history")
   async getAllToi(
     @Req() req: Request
-  ): Promise<Array<ActualClientToi>> {
+  ): Promise<ToiHistoryResponseType> {
     const { username } = req.user as User;
     // this.logger.log(`Username from token: ${username}`);
     const result = await this.historyService.getCurrentHistory(username);

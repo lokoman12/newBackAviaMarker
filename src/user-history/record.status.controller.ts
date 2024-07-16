@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Logger,
   ParseIntPipe,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -13,6 +15,9 @@ import { RecordStatusService } from './record.status.service';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
 import HistoryUserService from './history.user.service';
+import { TimelineDto } from './types';
+import dayjs from "../utils/dayjs";
+import { DATE_TIME_FORMAT } from 'src/auth/consts';
 
 @Controller('record-status')
 export class RecordStatusController {
@@ -54,22 +59,80 @@ export class RecordStatusController {
     const result = await this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
     this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
 
-    return result;
+    return {
+      ...result,
+      startTime: result.startTime.getTime(),
+      endTime: result.endTime.getTime(),
+      currentTime: result.currentTime.getTime(),
+    };
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get("/set-current")
+  @Get("/move-current")
   async setCurrent(
-    @Query("currentId") currentId: number,
-    @Query("currentTimeNum") currentTimeNum: number,
-    @Query("currentTimeStr", new ParseDatePipe(true)) currentTime: Date,
+    @Query("stepsCount") stepsCount: number,
     @Req() req: Request
   ) {
     const { username } = req.user as User;
-    this.logger.log(`/set-current, username from token: ${username}, step: ${currentId}, time: ${currentTime}, numeric: ${currentTimeNum}`);
+    this.logger.log(`GET /move-current, username from token: ${username}, stepsCount: ${stepsCount}`);
+    // this.logger.log(`GET /move-current, username from token: ${username}, stepsCount: ${stepsCount}`);
 
-    const result = this.recordStatusService.setCurrent(username, currentId, currentTime);
-    return result;
+    const recordStatus = await this.recordStatusService.getRecordStatus(username);
+    if (recordStatus) {
+      let newCurrentStep = recordStatus.currentId + stepsCount;
+
+      // Листаем вперёд или назад, проверяем границы таймлайна
+      if (stepsCount > 0) {
+        if (recordStatus.endId < newCurrentStep) {
+          newCurrentStep = recordStatus.endId;
+        }
+      } else {
+        if (recordStatus.startId > newCurrentStep) {
+          newCurrentStep = recordStatus.startId;
+        }
+      }
+
+      const current = await this.historyUserService.getTimeByStep(recordStatus.tableNumber, stepsCount);
+      if (current) {
+        const result = await this.recordStatusService.setCurrent(
+          username,
+          current.currentId, dayjs.utc(current.currentTime).toDate()
+        );
+
+        // this.logger.log(`current.currentTime: ${current.currentTime}, str: ${dayjs.utc(current.currentTime).toDate()}`);
+        return result !== null ? {
+          ...result,
+          startTime: result.startTime.getTime(),
+          endTime: result.endTime.getTime(),
+          currentTime: result.currentTime.getTime(),
+        } : null;
+      }
+
+      return null;
+    }
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post("/set-current")
+  async setCurrentByPost(
+    @Body() timelineDto: TimelineDto,
+    @Req() req: Request
+  ) {
+    const { username } = req.user as User;
+    this.logger.log(`POST /set-current, username from token: ${username}, body: ${timelineDto}`);
+
+    let currentTimeDayjs = dayjs.utc(timelineDto.currentTime);
+    if (!currentTimeDayjs.isValid()) {
+      throw new Error('Задайте корректное значение для currentTime!');
+    }
+
+    const result = await this.recordStatusService.setCurrent(username, timelineDto.currentId, currentTimeDayjs.toDate());
+    return result !== null ? {
+      ...result,
+      startTime: result.startTime.getTime(),
+      endTime: result.endTime.getTime(),
+      currentTime: result.currentTime.getTime(),
+    } : null;
   }
 
   @UseGuards(AccessTokenGuard)

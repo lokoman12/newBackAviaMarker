@@ -32,13 +32,29 @@ export class TimelineRecordDto {
   }
 
   public asJsonString(): string {
+    // При сохранении проверяем, чтобы старт не оказался больше энда.
+    // Коли так, обменяем значения
+    let startId = this.startId;
+    let endId = this.endId;
+    if (startId > endId) {
+      startId = this.endId;
+      endId = this.startId;
+    }
+
+    let startTime = this.startTime;
+    let endTime = this.endTime;
+    if (startTime > endTime) {
+      startTime = this.endTime;
+      endTime = this.startTime;
+    }
+
     return JSON.stringify({
       login: this.login,
-      startTime: this.startTime,
-      endTime: this.endTime,
+      startTime,
+      endTime,
       currentTime: this.currentTime,
-      startId: this.startId,
-      endId: this.endId,
+      startId,
+      endId,
       currentId: this.currentId,
       velocity: this.velocity,
       tableNumber: this.tableNumber,

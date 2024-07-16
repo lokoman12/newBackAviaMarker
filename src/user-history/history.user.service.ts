@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
-import { RecordStatusService, TimelineStartRecordResponse } from "./record.status.service";
+import { CurrentTimeRecord, RecordStatusService, TimelineStartRecordResponse } from "./record.status.service";
 import { TimelineRecordDto } from "./timeline.record.dto";
 import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import ToiHistory from "src/db/models/toiHistory.model";
@@ -116,9 +116,9 @@ FROM (
   }
 
   /**
-* 
-* @param tableNumber 
-*/
+  * 
+  * @param tableNumber 
+  */
   private async getUserHistoryInfo(
     tableNumber: number,
   ): Promise<TimelineStartRecordResponse> {
@@ -134,6 +134,35 @@ FROM (
       return records?.[0];
     } catch (e) {
       this.logger.error(`Ошибка при вставке истории в таблицу ${tableName}`, e);
+      throw new Error(e);
+    }
+  }
+
+  /**
+* 
+* @param tableNumber 
+*/
+  public async getTimeByStep(
+    tableNumber: number,
+    step: number,
+  ): Promise<CurrentTimeRecord | null> {
+    const tableName = SettingsService.getRecordHistoryTableNameByIndex(tableNumber);
+    const infoSql = `SELECT step as currentId, time as currentTime FROM ${tableName} where step = ${step}`;
+
+    try {
+      await this.toiHistoryModel.sequelize.query(infoSql);
+      const [records] = await this.toiHistoryModel.sequelize.query(infoSql) as Array<CurrentTimeRecord>;
+
+      if (!records || !records?.[0]) {
+        return null
+      }
+      const record = records[0];
+      return {
+        currentId: record.currentId,
+        currentTime: dayjs(record.currentTime).toDate().getTime(),
+      }
+    } catch (e) {
+      this.logger.error(`Ошибка при получении информации из таблице ${tableName}`, e);
       throw new Error(e);
     }
   }

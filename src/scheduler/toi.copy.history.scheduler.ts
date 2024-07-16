@@ -28,7 +28,7 @@ export default class ToiCopyToHistoryScheduler {
   }
 
   public async toiCopyToHistory() {
-    this.logger.log('Копирование в иcторию');
+    // this.logger.log('Копирование в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const toiListForHistory = await this.toiService.getActualClientToi();
     const promises = [];
