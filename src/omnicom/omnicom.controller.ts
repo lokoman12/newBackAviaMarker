@@ -1,10 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import SCOUT from 'src/db/models/scout.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
+import OmnicomService from './omnicom.service';
 
 
 @Controller('omnicom')
@@ -12,7 +12,7 @@ export class OmnicomController {
   private readonly log = new Logger(OmnicomController.name);
 
   constructor(
-    @InjectModel(SCOUT) private readonly OmnicomModel: typeof SCOUT,
+    private readonly omnicomService: OmnicomService,
   ) {
     this.log.log('Init controller');
   }
@@ -20,13 +20,7 @@ export class OmnicomController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAOmnicom(): Promise<SCOUT[]> {
-    try {
-      const omnicom = await this.OmnicomModel.findAll();
-      return omnicom;
-    } catch (error) {
-      console.error('Error retrieving alarm:', error);
-      throw error;
-    }
+  async getAllOmnicom(): Promise<Array<SCOUT>> {
+    return this.omnicomService.getActualOmnicom();
   }
 }

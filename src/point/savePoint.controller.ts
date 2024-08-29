@@ -6,6 +6,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import Photo from 'src/db/models/photo.model';
 import { GeoType } from '../photo/types';
+import { isNull } from 'src/utils/common';
 
 @Controller('savePoints')
 export class SavePointController {
@@ -57,7 +58,7 @@ export class SavePointController {
     this.log.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${imageData?.length}`)
 
     try {
-      if (lat == null || lon == null) {
+      if (isNull(lat) || isNull(lon)) {
         throw new Error('Широта и долгота являются обязательными полями');
       }
 

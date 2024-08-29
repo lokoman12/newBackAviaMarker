@@ -38,28 +38,103 @@ const sequelize = new Sequelize({
   // },
 });
 
+
 // --- Количество таблиц
 const historyRecordTablesNumber = parseInt(process.env.historyRecordTablesNumber ?? '0');
 assert(historyRecordTablesNumber > 0, "Количество таблиц записи для истории TOI должно быть больше нуля!");
 
+
 // --- Список таблиц истории для третички
-const historyTableNames = Array.from(
+const toiHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
   (_, index) => SettingsService.getRecordHistoryTableNameByIndex(index)
 );
 
+// --- Список таблиц истории для метео
+const meteoHistoryTableNames = Array.from(
+  { length: historyRecordTablesNumber },
+  (_, index) => SettingsService.getRecordMeteoTableNameByIndex(index)
+);
+
+// --- Список таблиц истории для омникома
+const omnicomHistoryTableNames = Array.from(
+  { length: historyRecordTablesNumber },
+  (_, index) => SettingsService.getRecordOmnicomTableNameByIndex(index)
+);
+
+
+const dropTableSql = (tableName: string) =>
+  `DROP TABLE IF EXISTS ${tableName};`;
+
+const createToiHistorySql = (tableName: string) =>
+  `CREATE TABLE IF NOT EXISTS ${tableName} (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  step int(11) NOT NULL,
+  time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+
+  coordinates json NOT NULL,
+
+  Name varchar(255) DEFAULT NULL,
+  curs float NOT NULL,
+  alt float NOT NULL,
+  faza int(11) NOT NULL,
+  Number int(11) NOT NULL,
+  type int(11) NOT NULL,
+
+  formular json NOT NULL,
+
+  PRIMARY KEY (id),
+  KEY step (step),
+  KEY time_idx (time)
+);`;
+
+const createOmnicomHistorySql = (tableName: string) =>
+  `CREATE TABLE IF NOT EXISTS ${tableName} (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  step int(11) NOT NULL,
+  time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+
+  coordinates json NOT NULL,
+
+  Serial varchar(255) NOT NULL,
+  GarNum varchar(255) DEFAULT NULL,
+  t_obn double DEFAULT NULL,
+  
+  Speed float DEFAULT NULL,
+  Course float DEFAULT NULL,
+
+  PRIMARY KEY (id),
+  KEY step (step),
+  KEY time_idx (time)
+)`;
+
+const createMeteoHistorySql = (tableName: string) =>
+  `CREATE TABLE ${tableName} (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  step int(11) NOT NULL,
+  time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+
+  id_vpp tinyint(4) NOT NULL,
+  id_grp int(11) NOT NULL,
+  Data varchar(512) DEFAULT NULL,
+  
+  PRIMARY KEY (id),
+  KEY step (step),
+  KEY time_idx (time)
+)`;
+
+
 // --- Таблицы записи третички из истории
-const deleteHistoryRecordTables = async () => {
+const deleteHistoryRecordTables = async (tableList: Array<string>, getSql: (tableName: string) => string) => {
   logger.log('Удалим таблицы истории перед созданием');
 
   let promises: Array<Promise<any>> = [];
 
-  historyTableNames.forEach(it => {
-    const dropResult = sequelize.query(`
-      DROP TABLE IF EXISTS ${it};
-    `);
+  tableList.forEach(it => {
+    const dropResult = sequelize.query(getSql(it));
     promises.push(dropResult);
   });
+
   logger.log(`Промисы для удаления: ${promises.length}`);
   try {
     await Promise.all(promises);
@@ -71,32 +146,13 @@ const deleteHistoryRecordTables = async () => {
   return promises;
 }
 
-const createHistoryRecordTables = async () => {
+const createHistoryRecordTables = async (historyTableNames: Array<string>, getSql: (tableName: string) => string) => {
   logger.log('Пробуем создать таблицы записи истории TOI');
 
   let promises: Array<Promise<any>> = [];
   historyTableNames.forEach((it, _) => {
-    const sql = `CREATE TABLE IF NOT EXISTS ${it} (
-      id int(11) NOT NULL AUTO_INCREMENT,
-      step int(11) NOT NULL,
-      time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
-
-      coordinates json NOT NULL,
-
-      Name varchar(255) COLLATE utf8_bin DEFAULT NULL,
-      curs float NOT NULL,
-      alt float NOT NULL,
-      faza int(11) NOT NULL,
-      Number int(11) NOT NULL,
-      type int(11) NOT NULL,
-
-      formular json NOT NULL,
-
-      PRIMARY KEY (id)
-    );`
-
     logger.log('Создаём таблицу', it);
-    const createTableResult = sequelize.query(sql);
+    const createTableResult = sequelize.query(getSql(it));
     promises.push(createTableResult);
     return promises;
   });
@@ -111,8 +167,15 @@ const createHistoryRecordTables = async () => {
 };
 
 (async () => {
-  await deleteHistoryRecordTables();
-  await createHistoryRecordTables();
+  await deleteHistoryRecordTables(toiHistoryTableNames, dropTableSql);
+  await createHistoryRecordTables(toiHistoryTableNames, createToiHistorySql);
+
+  await deleteHistoryRecordTables(meteoHistoryTableNames, dropTableSql);
+  await createHistoryRecordTables(meteoHistoryTableNames, createMeteoHistorySql);
+  
+  await deleteHistoryRecordTables(omnicomHistoryTableNames, dropTableSql);
+  console.log(omnicomHistoryTableNames);
+  await createHistoryRecordTables(omnicomHistoryTableNames, createOmnicomHistorySql);
 
   logger.log('Окончание работы скрипта создания таблиц, хранящих запись истории TOI и и актуальную третичку по записи для ретрансляции');
   process.exit(0);

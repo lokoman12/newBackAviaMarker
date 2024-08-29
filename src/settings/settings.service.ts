@@ -4,7 +4,8 @@ import { Op } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
-import { RECORD_SETTING_PROPERTY_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
+import { METEO_HISTORY_RECORD_TEMPLATE_NAME, OMNICOM_HISTORY_RECORD_TEMPLATE_NAME, RECORD_SETTING_PROPERTY_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
+import { isNull, nonNull } from 'src/utils/common';
 
 @Injectable()
 export class SettingsService {
@@ -12,6 +13,14 @@ export class SettingsService {
 
   public static getRecordHistoryTableNameByIndex(tableNumber: number) {
     return `${TOI_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+  }
+
+  public static getRecordMeteoTableNameByIndex(tableNumber: number) {
+    return `${METEO_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+  }
+
+  public static getRecordOmnicomTableNameByIndex(tableNumber: number) {
+    return `${OMNICOM_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
   }
 
   constructor(
@@ -76,7 +85,7 @@ export class SettingsService {
     });
 
     // Возвращаем значение по умолчанию, когда не нашли свойство в базе
-    if (result == null && defaultValue != null) {
+    if (isNull(result) && nonNull(defaultValue)) {
       return defaultValue;
     }
 
@@ -95,7 +104,7 @@ export class SettingsService {
   */
   async getTypedUserSettingValueByName<T>(mapFunction: (value: string) => T, name: string, username: string, defaultValue?: string): Promise<T | null> {
     const strResult = await this.getUserSettingValueByName(name, username, defaultValue);
-    return strResult != null ? mapFunction(strResult) : null;
+    return nonNull(strResult) ? mapFunction(strResult) : null;
   }
 
   async getTypedSettingsByName<T>(mapFunction: (value: string) => T, name: string): Promise<Array<T> | null> {
@@ -106,7 +115,7 @@ export class SettingsService {
       attributes: ['value',],
     });
     this.logger.log(`getTypedSettingsByName: ${result}`);
-    return result != null ? result.map(it => mapFunction(it.value)).filter(it => it != null) : null;
+    return nonNull(result) ? result.map(it => mapFunction(it.value)).filter(nonNull) : null;
   }
 
   async createSetting(dto: CreateSettingsDto): Promise<void> {

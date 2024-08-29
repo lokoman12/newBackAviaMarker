@@ -11,6 +11,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { Request } from 'express';
 import { Op } from 'sequelize';
 import { pick } from 'lodash';
+import { nonNull } from 'src/utils/common';
 
 export interface ActualToi {
   toi: IToi;
@@ -60,7 +61,7 @@ export default class ToiService {
         })
       );
 
-      return formattedToi.filter(it => it.formular.Source_ID != null);
+      return formattedToi.filter(it => nonNull(it.formular.Source_ID));
     } catch (error) {
       this.log.error('Error retrieving points:', error);
       throw error;

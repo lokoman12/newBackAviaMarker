@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Logger,
+  NotAcceptableException,
   ParseIntPipe,
   Post,
   Query,
@@ -17,7 +18,7 @@ import User from 'src/db/models/user';
 import HistoryUserService from './history.user.service';
 import { TimelineDto } from './types';
 import dayjs from "../utils/dayjs";
-import { DATE_TIME_FORMAT } from 'src/auth/consts';
+import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
 
 @Controller('record-status')
 export class RecordStatusController {
@@ -27,6 +28,13 @@ export class RecordStatusController {
     private readonly recordStatusService: RecordStatusService,
     private readonly historyUserService: HistoryUserService,
   ) { }
+
+  @Get("/test")
+  async getTestResponse(
+    @Req() req: Request
+  ) {
+    throw new HistoryBadStateException("", HistoryErrorCodeEnum.emptyHistoryResult, 'Какая-то ошибка для проверки ручки');
+  }
 
   @UseGuards(AccessTokenGuard)
   @Get("/get")
@@ -123,7 +131,7 @@ export class RecordStatusController {
 
     let currentTimeDayjs = dayjs.utc(timelineDto.currentTime);
     if (!currentTimeDayjs.isValid()) {
-      throw new Error('Задайте корректное значение для currentTime!');
+      throw new HistoryBadStateException(username, HistoryErrorCodeEnum.invalidDateValue, 'Задайте корректное значение для currentTime!');
     }
 
     const result = await this.recordStatusService.setCurrent(username, timelineDto.currentId, currentTimeDayjs.toDate());

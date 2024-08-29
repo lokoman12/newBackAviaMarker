@@ -5,13 +5,51 @@ import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 // Расширим dayjs
-import dayjs from './utils/dayjs';
+import { WinstonModule, utilities } from 'nest-winston';
+import * as path from 'path';
+import * as winston from 'winston';
+import * as DailyRotateFile from 'winston-daily-rotate-file';
+import * as Transport from 'winston-transport';
 
 declare const module: any;
-  
-async function bootstrap() {
 
-  const app = await NestFactory.create(AppModule);
+const myLogFormat = winston.format.printf(({ level, message, timestamp }) =>
+  `${timestamp} ${level?.toUpperCase()} ${message}`);
+
+var fileTransport = new DailyRotateFile({
+  level: 'info',
+  dirname: path.join(__dirname, '../../logs'),
+  filename: 'aviamarker-info-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '60d',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    myLogFormat,
+  )
+});
+
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule, {
+    logger: WinstonModule.createLogger({
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.ms(),
+            utilities.format.nestLike('AviaMarker', {
+              colors: true,
+              prettyPrint: true,
+              processId: true,
+              appName: true,
+            }),
+          )
+        }),
+        fileTransport,
+      ],
+    }),
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, stopAtFirstError: true, skipUndefinedProperties: true, skipNullProperties: true,
@@ -25,10 +63,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(process.env.swaggerApiRelativePath, app, document);
-  
+
   // app.use(cors());
-  app.use(bodyParser.json({limit: '10mb'}));
-  app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
   app.use(cookieParser());
   app.enableCors({ origin: true, credentials: true });
   await app.listen(parseInt(process.env.webPort));

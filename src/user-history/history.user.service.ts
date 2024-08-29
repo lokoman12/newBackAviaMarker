@@ -7,8 +7,9 @@ import { InjectModel } from "@nestjs/sequelize";
 import { SettingsService } from "src/settings/settings.service";
 import { ApiConfigService } from "src/config/api.config.service";
 import { difference, head } from "lodash";
-import { DATE_TIME_FORMAT } from "src/auth/consts";
+import { DATE_TIME_FORMAT, EMPTY_STRING } from "src/auth/consts";
 import dayjs from "../utils/dayjs";
+import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
 
 @Injectable()
 class HistoryUserService {
@@ -69,8 +70,9 @@ class HistoryUserService {
     try {
       await this.toiHistoryModel.sequelize.query(deleteSql);
     } catch (e) {
-      this.logger.error(`Ошибка при очистке таблицы ${tableName}`, e);
-      throw new Error(e);
+      const message = `Ошибка при очистке таблицы ${tableName}`;
+      this.logger.error(message, e);
+      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlClearTableCanNotPerfomed, message);
     }
 
     // В нашем mysql почему-то не работают оконные (over partition) функции
@@ -110,8 +112,9 @@ FROM (
     try {
       await this.toiHistoryModel.sequelize.query(insertSql);
     } catch (e) {
-      this.logger.error(`Ошибка при вставке истории в таблицу ${tableName}`, e);
-      throw new Error(e);
+      const message = `Ошибка при вставке истории в таблицу ${tableName}`
+      this.logger.error(message, e);
+      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlInsertTableCanNotPerfomed, message);
     }
   }
 
@@ -133,8 +136,9 @@ FROM (
       const [records] = await this.toiHistoryModel.sequelize.query(infoSql) as Array<TimelineStartRecordResponse>;
       return records?.[0];
     } catch (e) {
-      this.logger.error(`Ошибка при вставке истории в таблицу ${tableName}`, e);
-      throw new Error(e);
+      const message = `Ошибка при получении информации по вставленным таблицу истории ${tableName} данным`;
+      this.logger.error(message, e);
+      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlSelectTableCanNotPerfomed, message);
     }
   }
 
@@ -162,8 +166,9 @@ FROM (
         currentTime: dayjs(record.currentTime).toDate().getTime(),
       }
     } catch (e) {
-      this.logger.error(`Ошибка при получении информации из таблице ${tableName}`, e);
-      throw new Error(e);
+      const message = `Ошибка при получении информации из таблице ${tableName}`;
+      this.logger.error(message, e);
+      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlSelectTableCanNotPerfomed, message);
     }
   }
 
@@ -180,9 +185,16 @@ FROM (
           await this.prepareUserHistoryTable(nextFreeTableNumber, startTime, endTime);
 
           // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
-          const { startId, endId, } = await this.getUserHistoryInfo(
+          const { allRecs, startId, endId, } = await this.getUserHistoryInfo(
             nextFreeTableNumber,
           );
+
+          if (allRecs === 0) {
+            const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
+            this.logger.error(message);
+            await this.recordStatusService.resetUserHistoryStatusOnException(login);
+            throw new HistoryBadStateException(login, HistoryErrorCodeEnum.emptyHistoryResult, message);
+          }
 
           // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
           const recordDto = new TimelineRecordDto(
@@ -195,13 +207,21 @@ FROM (
 
           return recordDto;
         } catch (e) {
-          this.logger.error('Не смогли захватить следующую свободную таблицу истории');
-          throw new NotAcceptableException('Не смогли захватить следующую свободную таблицу истории');
+          if (e instanceof HistoryBadStateException) {
+            throw e;
+          } else {
+            let message = `Ошибка при попытке сформировать таблицу истории с номером ${nextFreeTableNumber} для пользователя ${login}`;
+            this.logger.error(message);
+            await this.recordStatusService.resetUserHistoryStatusOnException(login);
+            throw new HistoryBadStateException(login, HistoryErrorCodeEnum.historyTableIsBusy, 'Неизвестная ошибка');
+          }
         }
       }
     } else {
-      this.logger.error(`Пользователь ${login} уже захватил таблицу`);
-      throw new NotAcceptableException(`Пользователь ${login} уже захватил таблицу`);
+      const message = `Пользователь ${login} находится в статусе воспроизведения истории`;
+      this.logger.error(message);
+      await this.recordStatusService.resetUserHistoryStatusOnException(login);
+      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userIsAlreadyInRecordStatus, message);
     }
   }
 }

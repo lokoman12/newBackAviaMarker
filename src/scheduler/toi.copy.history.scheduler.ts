@@ -21,7 +21,7 @@ export default class ToiCopyToHistoryScheduler {
     this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
       ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
-      this.configService.  getToiCopyToHistoryCronMask(),
+      this.configService.getToiCopyToHistoryCronMask(),
       this.toiCopyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')

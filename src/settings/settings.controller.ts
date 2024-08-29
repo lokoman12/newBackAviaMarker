@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   Put,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { SettingsService } from './settings.service';

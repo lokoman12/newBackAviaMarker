@@ -13,7 +13,7 @@ export function validate(config: Record<string, unknown>) {
   const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
   if (errors.length > 0) {
-    throw new Error(errors.toString());
+    throw new Error(`Ошибка валидации ${errors.toString()}`);
   }
   return validatedConfig;
 }

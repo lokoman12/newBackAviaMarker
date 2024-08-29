@@ -21,6 +21,7 @@ export class ParseDatePipe implements PipeTransform<string | Date | undefined | 
       value = value();
     }
     const transformedValue = dayjs.utc(value, DATE_TIME_FORMAT);
+    this.logger.log(`transformedValue: ${transformedValue}`);
     if (!transformedValue.isValid()) {
       throw new BadRequestException('Invalid date');
     }

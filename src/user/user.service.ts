@@ -6,6 +6,7 @@ import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { Op } from 'sequelize';
 import { omit } from 'lodash';
 import UserGroup from 'src/db/models/usergroup';
+import { nonNull } from 'src/utils/common';
 
 @Injectable()
 export class UsersService {
@@ -112,7 +113,7 @@ export class UsersService {
     this.log.log('Found user: ' + JSON.stringify(user));
 
     const data = { ...omit(updateUserDto, ['roleIds']) };
-    if (updateUserDto.roleIds != null) {
+    if (nonNull(updateUserDto.roleIds)) {
       const groupIds = updateUserDto.roleIds.split(',');
       const groups = await this.groupModel.findAll({
         where: {

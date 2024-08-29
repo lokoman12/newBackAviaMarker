@@ -10,5 +10,5 @@ export type DbConnectionPropertiesType = {
   define: {
     timestamps: boolean,
   },
-  logging?: boolean,
+  logging?: any,
 }
