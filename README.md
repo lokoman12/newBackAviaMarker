@@ -1,73 +1,92 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <a href="" rel="noopener">
+ <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h3 align="center">newBackAviaMarker</h3>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+<div align="center">
+
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/lokoman12/newBackAviaMarker/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/lokoman12/newBackAviaMarker/pulls)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+</div>
+
+---
+
+<p align="center"> Few lines describing your project.
+    <br> 
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## 📝 Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [О проекте](#about)
+- [Начало работы](#getting_started)
+- [Развёртывание](#deployment)
+- [Используемые технологии](#built_using)
+- [Команда проекта](#authors)
 
-## Installation
+## 🧐 О проекте <a name = "about"></a>
 
-```bash
-$ npm install
+Серверная часть для авиапортала шарика.
+
+## 🏁 Начало работы <a name = "getting_started"></a>
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+
+## 🚀 Развёртывание <a name = "deployment"></a>
+
+Клонировать репозитарий 
+
+```
+git clone git@github.com:lokoman12/newBackAviaMarker.git
 ```
 
-## Running the app
+Установить зависимости
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+npm i
 ```
 
-## Test
+Настроить окружение, задав в переменных:
+- Путь до базы
+- Координаты Пулково и Шереметьево
+- Аэропорт по умолчанию
+- Сеттинги кафки
+- Срок протухания ключей (как долго будет актуален пароль)
+- Сеттинги для копирования истории в соответствующие таблицы
+- Глубину хранения истории в днях
 
-```bash
-# unit tests
-$ npm run test
+Инициализировать таблицы
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+npm run build
+npm run db:create-history-tables
 ```
 
-## Support
+Запустите бэкэнд командой
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+npm run start
+```
 
-## Stay in touch
+## ⛏️ Испрользуемые технологии <a name = "built_using"></a>
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- [Mysql](https://www.mysql.com/) - Database
+- [NestJS](https://nestjs.com/) - Server Framework
+- [NodeJs](https://nodejs.org/en/) - Server Environment
+- [Sequelize TypeScript](https://sequelize.org/docs/v6/other-topics/typescript/) - Orm
+- [Typescript](https://sequelize.org/docs/v6/other-topics/typescript/) - Language
+- [Day.JS](https://www.npmjs.com/package/dayjs) - Datetime util
+- [Axios](https://www.npmjs.com/package/axios) - Http client
+- [Winston](https://www.npmjs.com/package/winston) - Logging
+- [Toad-scheduler](https://www.npmjs.com/package/toad-scheduler) - Scheduling
+- [Dotenv](https://www.npmjs.com/package/dotenv) - Work with environment
 
-## License
 
-Nest is [MIT licensed](LICENSE).
+## ✍️ Команда проекта <a name = "authors"></a>
+
+- [@ngolosin](https://github.com/tperepelkin) - Idea & Initial work
+- [@erazgulayev](https://github.com/lokoman12) - Idea & Initial work

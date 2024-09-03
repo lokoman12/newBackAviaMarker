@@ -4,33 +4,36 @@ import { Op } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
-import { AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
+import { AZNB_HISTORY_TABLE_NAME, HISTORY_TEMPLATE_TOKEN, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 import { isNull, nonNull } from 'src/utils/common';
-import { getHistoryRecordTableName } from 'scripts/database/create-history-record-tables';
 
 @Injectable()
 export class SettingsService {
   private readonly logger = new Logger(SettingsService.name);
 
+  // --- Имя нумерованной таблицы с записями из соответствующей истории
+  private static getHistoryRecordTableName = (historyTableName: string) => {
+  return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
+}
+
   public static getRecordHistoryTableNameByIndex(tableNumber: number) {
-    console.log(2);
-    return `${getHistoryRecordTableName(TOI_HISTORY_TABLE_NAME)}_${tableNumber}`;
+    return `${this.getHistoryRecordTableName(TOI_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordMeteoTableNameByIndex(tableNumber: number) {
-    return `${getHistoryRecordTableName(METEO_HISTORY_TABLE_NAME)}_${tableNumber}`;
+    return `${this.getHistoryRecordTableName(METEO_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordOmnicomTableNameByIndex(tableNumber: number) {
-    return `${getHistoryRecordTableName(OMNICOM_HISTORY_TABLE_NAME)}_${tableNumber}`;
+    return `${this.getHistoryRecordTableName(OMNICOM_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordStandsTableNameByIndex(tableNumber: number) {
-    return `${getHistoryRecordTableName(STANDS_HISTORY_TABLE_NAME)}_${tableNumber}`;
+    return `${this.getHistoryRecordTableName(STANDS_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordAznbTableNameByIndex(tableNumber: number) {
-    return `${getHistoryRecordTableName(AZNB_HISTORY_TABLE_NAME)}_${tableNumber}`;
+    return `${this.getHistoryRecordTableName(AZNB_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   constructor(

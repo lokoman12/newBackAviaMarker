@@ -46,18 +46,11 @@ const historyRecordTablesNumber = parseInt(process.env.historyRecordTablesNumber
 assert(historyRecordTablesNumber > 0, "Количество таблиц записи для истории TOI должно быть больше нуля!");
 
 
-// --- Имя нумерованной таблицы с записями из соответствующей истории
-export const getHistoryRecordTableName = (historyTableName: string) => {
-  return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
-}
 console.log('SettingsService', SettingsService);
 // --- Список таблиц истории для третички
 const toiHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
-  (_, index) => {
-    console.log(10);
-    return SettingsService.getRecordHistoryTableNameByIndex(index)
-  }
+  (_, index) => SettingsService.getRecordHistoryTableNameByIndex(index)
 );
 
 // --- Список таблиц истории для метео
@@ -161,7 +154,9 @@ const createAznbHistorySql = (tableName: string) =>
   `CREATE TABLE IF NOT EXISTS ${tableName} (
       id int (11) NOT NULL AUTO_INCREMENT,
       time datetime DEFAULT NULL,
-      trs_status int (10) unsigned NOT NULL DEFAULT '0',
+      Id_Tr varchar(25) DEFAULT '',
+      trs_status int(10) unsigned NOT NULL DEFAULT '0',
+      trs_adress int(10) unsigned NOT NULL DEFAULT '0',
       B double NOT NULL DEFAULT '0',
       L double NOT NULL DEFAULT '0',
       H smallint (6) NOT NULL DEFAULT '0',

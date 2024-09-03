@@ -70,7 +70,9 @@ CREATE TABLE IF NOT EXISTS
   `aznb_history` (
     `id` int (11) NOT NULL AUTO_INCREMENT,
     `time` datetime DEFAULT NULL,
+    `Id_Tr` varchar(25) DEFAULT '',
     `trs_status` int (10) unsigned NOT NULL DEFAULT '0',
+    `trs_adress` int(10) unsigned NOT NULL DEFAULT '0',
     `B` double NOT NULL DEFAULT '0',
     `L` double NOT NULL DEFAULT '0',
     `H` smallint (6) NOT NULL DEFAULT '0',

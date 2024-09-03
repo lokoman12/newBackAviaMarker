@@ -19,9 +19,10 @@ import { StandsModule } from 'src/stand-aodb/stand.aodb.module';
 import StandsCopyToHistoryScheduler from './stands.copy.history.scheduler';
 import { AznbModule } from 'src/aznb/aznb.module';
 import AznbHistory from 'src/db/models/aznbHistory.model';
+import AznbCopyToHistoryScheduler from './aznb.copy.history.scheduler';
 
 @Module({
-  providers: [ExternalScheduler, ToiCopyToHistoryScheduler, OmnicomCopyToHistoryScheduler, MeteoCopyToHistoryScheduler, StandsCopyToHistoryScheduler, ToadScheduler, CheckHistoryService],
+  providers: [ExternalScheduler, ToiCopyToHistoryScheduler, OmnicomCopyToHistoryScheduler, MeteoCopyToHistoryScheduler, StandsCopyToHistoryScheduler, AznbCopyToHistoryScheduler, ToadScheduler, CheckHistoryService],
   imports: [ApiConfigModule, HistoryModule, ToiModule, OmnicomModule, MeteoModule, StandsModule, AznbModule, SequelizeModule.forFeature([ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory])],
   controllers: [],
   exports: [ExternalScheduler,],
