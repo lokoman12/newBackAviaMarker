@@ -14,7 +14,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
-  private readonly log = new Logger(UserController.name);
+  private readonly logger = new Logger(UserController.name);
 
   constructor(
     private userService: UsersService,

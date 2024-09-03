@@ -5,39 +5,42 @@ import OmnicomHistory from "src/db/models/scoutHistory.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { omit } from 'lodash';
 import OmnicomService from "src/omnicom/omnicom.service";
+import StandService from "src/stand-aodb/stand.service";
+import StandsHistory from "src/db/models/standsHistory.model";
+import { log } from "console";
 
 @Injectable()
-export default class OmnicomCopyToHistoryScheduler {
-  private readonly logger = new Logger(OmnicomCopyToHistoryScheduler.name);
+export default class StandsCopyToHistoryScheduler {
+  private readonly logger = new Logger(StandsCopyToHistoryScheduler.name);
 
-  public static copyToHistoryJobName = 'OmnicomCopyToHistory';
+  public static copyToHistoryJobName = 'StandsCopyToHistory';
 
   constructor(
     private configService: ApiConfigService,
     private externalScheduler: ExternalScheduler,
-    private omnicomService: OmnicomService,
-    @InjectModel(OmnicomHistory) private readonly omnicomHistoryModel: typeof OmnicomHistory
+    private standService: StandService,
+    @InjectModel(StandsHistory) private readonly standsHistoryModel: typeof StandsHistory
   ) {
     this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
-      OmnicomCopyToHistoryScheduler.copyToHistoryJobName,
-      this.configService.getOmnicomCopyToHistoryCronMask(),
+      StandsCopyToHistoryScheduler.copyToHistoryJobName,
+      this.configService.getStandsCopyToHistoryCronMask(),
       this.omnicomCopyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async omnicomCopyToHistory() {
-    this.logger.log('Копирование omnicom в иcторию');
+    this.logger.log('Копирование stands в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
-    const rowsForHistory = await this.omnicomService.getActualData();
+    const rowsForHistory = await this.standService.getActualData();
     const promises = [];
 
-    this.logger.log(`Копируем в историю omnicom: ${rowsForHistory.length} строк`);
+    this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
 
     const time = new Date();
     rowsForHistory.forEach(it => {
-      const record = this.omnicomHistoryModel.create({
+      const record = this.standsHistoryModel.create({
         // Опустим колонку id, для хистори таблицы она будет сгенерирована
         ...omit(it, ['id']),
         time,

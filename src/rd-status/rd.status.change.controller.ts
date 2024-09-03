@@ -9,12 +9,12 @@ import RdStatus from 'src/db/models/rdStatus';
 
 @Controller('rdStatusChange')
 export class RdChangeStatusController {
-  private readonly log = new Logger(RdChangeStatusController.name);
+  private readonly logger = new Logger(RdChangeStatusController.name);
 
   constructor(
     @InjectModel(RdStatus) private readonly rdStatusModel: typeof RdStatus,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -48,7 +48,7 @@ export class RdChangeStatusController {
         return rdStatusUpdate;
       }
     } catch (error) {
-      this.log.error('Error updating rdStatusUpdate:', error);
+      this.logger.error('Error updating rdStatusUpdate:', error);
       throw error;
     }
   }

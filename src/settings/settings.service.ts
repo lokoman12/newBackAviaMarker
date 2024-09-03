@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
-import { METEO_HISTORY_RECORD_TEMPLATE_NAME, OMNICOM_HISTORY_RECORD_TEMPLATE_NAME, RECORD_SETTING_PROPERTY_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
+import { METEO_HISTORY_RECORD_TEMPLATE_NAME, OMNICOM_HISTORY_RECORD_TEMPLATE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_RECORD_TEMPLATE_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
 import { isNull, nonNull } from 'src/utils/common';
 
 @Injectable()
@@ -21,6 +21,10 @@ export class SettingsService {
 
   public static getRecordOmnicomTableNameByIndex(tableNumber: number) {
     return `${OMNICOM_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+  }
+
+  public static getRecordStandsTableNameByIndex(tableNumber: number) {
+    return `${STANDS_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
   }
 
   constructor(

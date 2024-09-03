@@ -11,7 +11,7 @@ import MeteoService from "src/meteo/meteo.service";
 export default class MeteoCopyToHistoryScheduler {
   private readonly logger = new Logger(MeteoCopyToHistoryScheduler.name);
 
-  public static meteoCopyToHistoryJobName = 'MeteoCopyToHistory';
+  public static copyToHistoryJobName = 'MeteoCopyToHistory';
 
   constructor(
     private configService: ApiConfigService,
@@ -21,8 +21,8 @@ export default class MeteoCopyToHistoryScheduler {
   ) {
     this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
-      MeteoCopyToHistoryScheduler.meteoCopyToHistoryJobName,
-      this.configService.getToiCopyToHistoryCronMask(),
+      MeteoCopyToHistoryScheduler.copyToHistoryJobName,
+      this.configService.getMeteoCopyToHistoryCronMask(),
       this.meteoCopyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
@@ -31,11 +31,13 @@ export default class MeteoCopyToHistoryScheduler {
   public async meteoCopyToHistory() {
     this.logger.log('Копирование meteo в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
-    const meteoListForHistory = await this.meteoService.getActualMeteo();
+    const rowsForHistory = await this.meteoService.getActualData();
     const promises = [];
 
+    this.logger.log(`Копируем в историю meteo: ${rowsForHistory.length} строк`);
+    
     const time = new Date();
-    meteoListForHistory.forEach(it => {
+    rowsForHistory.forEach(it => {
       const record = this.meteoHistoryModel.create({
         // Опустим колонку id, для хистори таблицы она будет сгенерирована
         ...omit(it, ['id']),

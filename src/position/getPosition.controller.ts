@@ -9,12 +9,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('position')
 export class PositionController {
-  private readonly log = new Logger(PositionController.name);
+  private readonly logger = new Logger(PositionController.name);
 
   constructor(
     @InjectModel(PositionAM) private readonly positionModel: typeof PositionAM,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -25,7 +25,7 @@ export class PositionController {
       const position = await this.positionModel.findAll();
       return position;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      console.error('Error retrieving get position:', error);
       throw error;
     }
   }

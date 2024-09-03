@@ -24,17 +24,17 @@ export type ActualClientToi = Partial<IToi> & {
 
 @Injectable()
 export default class ToiService {
-  private readonly log = new Logger(ToiService.name);
+  private readonly logger = new Logger(ToiService.name);
 
   constructor(
     private configService: ApiConfigService,
     @InjectModel(Toi) private readonly toiModel: typeof Toi,
     @InjectModel(Formular) private readonly formularModel: typeof Formular,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
-  async getActualToi(): Promise<Array<ActualToi>> {
+  async getActualData(): Promise<Array<ActualToi>> {
     try {
       const toi = await this.toiModel.findAll({
         raw: true,
@@ -63,13 +63,13 @@ export default class ToiService {
 
       return formattedToi.filter(it => nonNull(it.formular.Source_ID));
     } catch (error) {
-      this.log.error('Error retrieving points:', error);
+      this.logger.error('Error retrieving points:', error);
       throw error;
     }
   }
 
-  async getActualClientToi(): Promise<Array<ActualClientToi>> {
-    const attualToi = await this.getActualToi();
+  async getActualClientData(): Promise<Array<ActualClientToi>> {
+    const attualToi = await this.getActualData();
     return attualToi.map(toiItem => {
       const [lat, lon] = flatOffsetMeterToLongitudeLatitude(
         this.configService.getActiveAirportPosition(),

@@ -9,10 +9,10 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('reta')
 export class RetaController {
-  private readonly log = new Logger(RetaController.name);
+  private readonly logger = new Logger(RetaController.name);
 
   constructor(@InjectModel(Reta) private readonly retaModel: typeof Reta) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()

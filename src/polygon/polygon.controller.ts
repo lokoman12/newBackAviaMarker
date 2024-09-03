@@ -6,12 +6,12 @@ import Polygon from 'src/db/models/polygon.model';
 
 @Controller('polygons')
 export class PolygonController {
-  private readonly log = new Logger(PolygonController.name);
+  private readonly logger = new Logger(PolygonController.name);
 
   constructor(
     @InjectModel(Polygon) private readonly polygonModel: typeof Polygon,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
   @Public()
   @Get()
@@ -20,7 +20,7 @@ export class PolygonController {
       const polygons = await this.polygonModel.findAll();
       return polygons;
     } catch (error) {
-      this.log.error('Error retrieving polygons:', error);
+      this.logger.error('Error retrieving polygons:', error);
       throw error;
     }
   }

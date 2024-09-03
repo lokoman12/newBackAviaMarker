@@ -6,13 +6,13 @@ import { CreateGroupDto, CreateUserDto, UpdateGroupDto, UpdateUserDto } from './
 
 @Injectable()
 export class GroupService {
-  private readonly log = new Logger(GroupService.name);
+  private readonly logger = new Logger(GroupService.name);
 
   constructor(
     @InjectModel(User) private readonly usersModel: typeof User,
     @InjectModel(Group) private readonly groupModel: typeof Group
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   async createGroup(groupDto: CreateGroupDto): Promise<IGroup> {
@@ -23,7 +23,7 @@ export class GroupService {
   }
 
   async findAllGroups(): Promise<Array<IGroup>> {
-    this.log.log('find all groups: ');
+    this.logger.log('find all groups: ');
     return this.groupModel.findAll({ raw: true, });
   }
 

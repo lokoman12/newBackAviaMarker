@@ -7,12 +7,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('alarm')
 export class AlarmController {
-  private readonly log = new Logger(AlarmController.name);
+  private readonly logger = new Logger(AlarmController.name);
 
   constructor(
     @InjectModel(AlaramAM) private readonly alarmModel: typeof AlaramAM,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -20,10 +20,10 @@ export class AlarmController {
   @Get()
   async getAllAlram(): Promise<AlaramAM[]> {
     try {
-      const alarm = await this.alarmModel.findAll();
-      return alarm;
+      const alarms = await this.alarmModel.findAll();
+      return alarms;
     } catch (error) {
-      this.log.error('Error retrieving alarm:', error);
+      this.logger.error('Error retrieving alarms:', error);
       throw error;
     }
   }

@@ -1,13 +1,27 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
 
-@Table({ tableName: 'stands_aodb' })
-export default class Stands extends Model {
+@Table({ tableName: 'stands_history' })
+export default class StandsHistory extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @AllowNull(false)
+  @Column({
+    type: DataType.INTEGER,
+  })
+  id: number;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  time: Date;
+
   @Column({
     type: DataType.STRING,
     primaryKey: true,
   })
   id_st: string;
-
+  
   @Column({
     type: DataType.STRING,
   })

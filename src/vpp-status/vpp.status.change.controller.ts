@@ -8,12 +8,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('vppStatusChange')
 export class VppChangeStatusController {
-  private readonly log = new Logger(VppChangeStatusController.name);
+  private readonly logger = new Logger(VppChangeStatusController.name);
 
   constructor(
     @InjectModel(VppStatus) private readonly vppStatusModel: typeof VppStatus,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -51,7 +51,7 @@ export class VppChangeStatusController {
         return vppStatusUpdate;
       }
     } catch (error) {
-      this.log.error('Error updating VppStatus:', error);
+      this.logger.error('Error updating VppStatus:', error);
       throw error;
     }
   }

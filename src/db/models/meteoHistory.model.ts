@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, Unique, AutoIncrement, AllowNull } from 'sequelize-typescript';
 
 @Table({ tableName: 'meteo_history' })
 export default class MeteoHistory extends Model {
@@ -10,27 +10,28 @@ export default class MeteoHistory extends Model {
   })
   id: number;
 
+  @AllowNull(true)
   @Column({
     type: DataType.DATE,
-    allowNull: true,
   })
   time: Date;
 
+  @Unique
   @Column({
     type: DataType.DOUBLE,
-    unique: true,
   })
   dTime: number;
 
+  @AllowNull(false)
   @Column({
     type: DataType.TINYINT,
     allowNull: false,
   })
   id_vpp: number;
 
+  @AllowNull(false)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
   })
   id_grp: number;
 

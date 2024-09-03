@@ -17,14 +17,14 @@ import { Sequelize } from 'sequelize-typescript';
   ],
 })
 export class DatabaseModule implements NestModule {
-  private readonly log = new Logger(DatabaseModule.name);
+  private readonly logger = new Logger(DatabaseModule.name);
 
   constructor(private readonly sequelize: Sequelize) {
-    this.log.debug('Init DatabaseModule');
+    this.logger.debug('Init DatabaseModule');
   }
 
   async onModuleInit() {
-    this.log.debug('Initialize');
+    this.logger.debug('Initialize');
     // try {
     //   await this.sequelize.sync({ alter: true, });
     //   this.log.debug('Database synchronized.');
@@ -34,6 +34,6 @@ export class DatabaseModule implements NestModule {
   }
 
   configure() {
-    this.log.debug('Configure');
+    this.logger.debug('Configure');
   }
 }

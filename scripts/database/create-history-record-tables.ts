@@ -62,6 +62,12 @@ const omnicomHistoryTableNames = Array.from(
   (_, index) => SettingsService.getRecordOmnicomTableNameByIndex(index)
 );
 
+// --- Список таблиц истории для омникома
+const standsHistoryTableNames = Array.from(
+  { length: historyRecordTablesNumber },
+  (_, index) => SettingsService.getRecordStandsTableNameByIndex(index)
+);
+
 
 const dropTableSql = (tableName: string) =>
   `DROP TABLE IF EXISTS ${tableName};`;
@@ -109,7 +115,7 @@ const createOmnicomHistorySql = (tableName: string) =>
 )`;
 
 const createMeteoHistorySql = (tableName: string) =>
-  `CREATE TABLE ${tableName} (
+  `CREATE TABLE IF NOT EXISTS ${tableName} (
   id int(11) NOT NULL AUTO_INCREMENT,
   step int(11) NOT NULL,
   time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
@@ -121,6 +127,26 @@ const createMeteoHistorySql = (tableName: string) =>
   PRIMARY KEY (id),
   KEY step (step),
   KEY time_idx (time)
+)`;
+
+const createStandsHistorySql = (tableName: string) =>
+  `CREATE TABLE IF NOT EXISTS ${tableName} (
+    id int (11) NOT NULL AUTO_INCREMENT,
+    time datetime DEFAULT NULL,
+    id_st varchar(50) NOT NULL DEFAULT '',
+    sector varchar(250) DEFAULT NULL,
+    reg_number varchar(50) DEFAULT NULL,
+    calls_arr varchar(50) DEFAULT NULL,
+    calls_dep varchar(50) DEFAULT NULL,
+    close tinyint (4) DEFAULT NULL,
+    fpl_id_arr bigint (20) DEFAULT NULL,
+    fpl_id_dep bigint (20) DEFAULT NULL,
+    terminal varchar(50) DEFAULT NULL,
+    time_occup varchar(50) DEFAULT NULL,
+    time_tow varchar(50) DEFAULT NULL,
+    last_tu double DEFAULT NULL,
+    PRIMARY KEY (id),
+    KEY time (time)
 )`;
 
 
@@ -174,8 +200,10 @@ const createHistoryRecordTables = async (historyTableNames: Array<string>, getSq
   await createHistoryRecordTables(meteoHistoryTableNames, createMeteoHistorySql);
   
   await deleteHistoryRecordTables(omnicomHistoryTableNames, dropTableSql);
-  console.log(omnicomHistoryTableNames);
   await createHistoryRecordTables(omnicomHistoryTableNames, createOmnicomHistorySql);
+
+  await deleteHistoryRecordTables(standsHistoryTableNames, dropTableSql);
+  await createHistoryRecordTables(standsHistoryTableNames, createStandsHistorySql);
 
   logger.log('Окончание работы скрипта создания таблиц, хранящих запись истории TOI и и актуальную третичку по записи для ретрансляции');
   process.exit(0);

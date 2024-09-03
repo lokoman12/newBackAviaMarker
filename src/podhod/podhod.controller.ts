@@ -9,12 +9,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('podhod')
 export class PodhodController {
-  private readonly log = new Logger(PodhodController.name);
+  private readonly logger = new Logger(PodhodController.name);
 
   constructor(
     @InjectModel(Podhod) private readonly podhodModel: typeof Podhod,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -25,7 +25,7 @@ export class PodhodController {
       const podhod = await this.podhodModel.findAll();
       return podhod;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      console.error('Error retrieving podhod:', error);
       throw error;
     }
   }

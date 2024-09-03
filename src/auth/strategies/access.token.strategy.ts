@@ -7,7 +7,7 @@ import { JwtPayload } from '../types';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy) {
-  private readonly log = new Logger(AccessTokenStrategy.name);
+  private readonly logger = new Logger(AccessTokenStrategy.name);
 
   constructor(
     private configService: ApiConfigService,

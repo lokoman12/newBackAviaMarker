@@ -10,10 +10,10 @@ import RdStatus from 'src/db/models/rdStatus';
 
 @Controller('rdStatus')
 export class RdStatusController {
-  private readonly log = new Logger(RdStatusController.name);
+  private readonly logger = new Logger(RdStatusController.name);
 
   constructor(@InjectModel(RdStatus) private readonly rdStatusModel: typeof RdStatus) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()

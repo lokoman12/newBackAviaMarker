@@ -10,7 +10,7 @@ import { Request } from 'express';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  private readonly log = new Logger(RefreshTokenStrategy.name);
+  private readonly logger = new Logger(RefreshTokenStrategy.name);
 
   constructor(
     private configService: ApiConfigService,
@@ -25,7 +25,7 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refres
   }
 
   async validate(req: Request, payload: JwtPayload) {
-    this.log.log('Refresh strategy, validate', JSON.stringify(payload));
+    this.logger.log('Refresh strategy, validate', JSON.stringify(payload));
     const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
     return { ...payload, refreshToken, };
   }

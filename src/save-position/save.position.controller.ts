@@ -10,13 +10,13 @@ import PositionHistory from 'src/db/models/positionHistory.model';
 
 @Controller('savePosition')
 export class SavePositionController {
-  private readonly log = new Logger(SavePositionController.name);
+  private readonly logger = new Logger(SavePositionController.name);
 
   constructor(
     @InjectModel(PositionAM) private readonly positionModel: typeof PositionAM,
     @InjectModel(PositionHistory) private readonly positionHistoryModel: typeof PositionHistory,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -65,7 +65,7 @@ export class SavePositionController {
 
       return position;
     } catch (error) {
-      this.log.error('Error saving alarm:', error);
+      this.logger.error('Error saving alarm:', error);
       throw error;
     }
   }

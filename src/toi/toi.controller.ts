@@ -10,13 +10,13 @@ import { decode } from 'jsonwebtoken';
 
 @Controller('toi')
 export class ToiController {
-  private readonly log = new Logger(ToiController.name);
+  private readonly logger = new Logger(ToiController.name);
 
   constructor(
     private toiService: ToiService
     // , private jwtService: JwtService
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -30,7 +30,7 @@ export class ToiController {
     // if (jwtToken?.length > 0) {
     //   this.log.log(`----> getAllToi: ${jwtToken}, ${JSON.stringify(value)}`);
     // }
-    const formattedToi = this.toiService.getActualClientToi();
+    const formattedToi = this.toiService.getActualClientData();
     return formattedToi;
   }
 }

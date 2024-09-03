@@ -5,28 +5,24 @@ import Stands from 'src/db/models/stands.model';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
+import StandService from './stand.service';
 
 
 @Controller('stand')
 export class StandController {
-  private readonly log = new Logger(StandController.name);
+  private readonly logger = new Logger(StandController.name);
 
   constructor(
     @InjectModel(Stands) private readonly standModel: typeof Stands,
+    private readonly standService: StandService
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllStand(): Promise<Stands[]> {
-    try {
-      const stand = await this.standModel.findAll();
-      return stand;
-    } catch (error) {
-      console.error('Error retrieving stand:', error);
-      throw error;
-    }
+  async getAllStand(): Promise<Array<Stands>> {
+      return this.standService.getActualData();
   }
 }

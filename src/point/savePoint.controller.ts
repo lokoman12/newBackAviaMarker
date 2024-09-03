@@ -10,12 +10,12 @@ import { isNull } from 'src/utils/common';
 
 @Controller('savePoints')
 export class SavePointController {
-  private readonly log = new Logger(SavePointController.name);
+  private readonly logger = new Logger(SavePointController.name);
 
   constructor(
     @InjectModel(Point) private readonly pointModel: typeof Point,
     @InjectModel(Photo) private readonly photoModel: typeof Photo) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @ApiQuery({
@@ -55,7 +55,7 @@ export class SavePointController {
     @Query('description') description?: string,
     @Body('photo') imageData?: string
   ): Promise<void> {
-    this.log.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${imageData?.length}`)
+    this.logger.log(`lat: ${lat}, lon: ${lon}, radius: ${radius}, project: ${project}, mode: ${mode}, name: ${name}, description: ${description}, body.photo.length: ${imageData?.length}`)
 
     try {
       if (isNull(lat) || isNull(lon)) {
@@ -85,7 +85,7 @@ export class SavePointController {
         await this.photoModel.create(data);
       }
     } catch (error) {
-      this.log.error('Ошибка при создании точки:', error);
+      this.logger.error('Ошибка при создании точки:', error);
       throw error;
     }
   }

@@ -7,12 +7,12 @@ import PositionHistory from 'src/db/models/positionHistory.model';
 
 @Controller('getPositionHistory')
 export class PositionHistoryController {
-  private readonly log = new Logger(PositionHistoryController.name);
+  private readonly logger = new Logger(PositionHistoryController.name);
 
   constructor(
     @InjectModel(PositionHistory) private readonly positionHistoryModel: typeof PositionHistory,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()

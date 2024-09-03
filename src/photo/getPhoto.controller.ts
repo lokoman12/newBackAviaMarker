@@ -13,11 +13,11 @@ interface IGetPhotoResponse {
 
 @Controller('getPhoto')
 export class GetPhotoController {
-  private readonly log = new Logger(GetPhotoController.name);
+  private readonly logger = new Logger(GetPhotoController.name);
 
   constructor(
     @InjectModel(Photo) private readonly photoModel: typeof Photo) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @ApiQuery({
@@ -49,7 +49,7 @@ export class GetPhotoController {
       }
       return result;
     } catch (error) {
-      this.log.error('Ошибка при создании точки:', error);
+      this.logger.error('Ошибка при создании точки:', error);
       throw error;
     }
   }

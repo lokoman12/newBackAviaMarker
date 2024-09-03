@@ -5,20 +5,20 @@ import Meteo from 'src/db/models/meteo.model';
 
 @Injectable()
 export default class MeteoService {
-  private readonly log = new Logger(MeteoService.name);
+  private readonly logger = new Logger(MeteoService.name);
 
   constructor(
     @InjectModel(Meteo) private readonly meteoModel: typeof Meteo,
   ) {
-    this.log.log('Init service');
+    this.logger.log('Init service');
   }
 
-  async getActualMeteo(): Promise<Array<Meteo>> {
+  async getActualData(): Promise<Array<Meteo>> {
     try {
       const meteo = await this.meteoModel.findAll();
       return meteo;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      console.error('Error retrieving meteo:', error);
       throw error;
     }
   }

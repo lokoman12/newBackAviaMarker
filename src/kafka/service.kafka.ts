@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Kafka, Consumer } from 'kafkajs';
 import { Op } from 'sequelize';
 import { ApiConfigService } from 'src/config/api.config.service';
-import SCOUT from 'src/db/models/scout.model';
+import Scout from 'src/db/models/scout.model';
 
 
 @Injectable()
@@ -45,7 +45,7 @@ export class KafkaService {
 
         const fifteenMinutesAgo = Number(date) - 15 * 60;
         console.log(fifteenMinutesAgo)
-        await SCOUT.destroy({
+        await Scout.destroy({
           where: {
             t_obn: {
               [Op.lte]: fifteenMinutesAgo,
@@ -55,7 +55,7 @@ export class KafkaService {
 
         const timeDiffMin = (Number(date) - objForDb.timeUpdate) / 60;
         if (timeDiffMin < 15) {
-          await SCOUT.upsert({
+          await Scout.upsert({
             Serial: objForDb.id,
             t_obn: objForDb.timeUpdate,
             GarNum: objForDb.regNum,
