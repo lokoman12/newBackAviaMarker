@@ -17,6 +17,11 @@ export class ApiConfigService {
     return this.configService.get<string>('toiCopyToHistoryCronMask');
   }
 
+
+  getAznbCopyToHistoryCronMask() {
+    return this.configService.get<string>('aznbCopyToHistoryCronMask');
+  }
+
   getOmnicomCopyToHistoryCronMask() {
     return this.configService.get<string>('omnicomCopyToHistoryCronMask');
   }
