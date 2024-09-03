@@ -23,12 +23,12 @@ export default class MeteoCopyToHistoryScheduler {
     this.externalScheduler.addJob(
       MeteoCopyToHistoryScheduler.copyToHistoryJobName,
       this.configService.getMeteoCopyToHistoryCronMask(),
-      this.meteoCopyToHistory.bind(this)
+      this.copyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
   }
 
-  public async meteoCopyToHistory() {
+  public async copyToHistory() {
     this.logger.log('Копирование meteo в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const rowsForHistory = await this.meteoService.getActualData();

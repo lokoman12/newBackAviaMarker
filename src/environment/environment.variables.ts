@@ -62,6 +62,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  aznbCopyToHistoryCronMask: string;
+
+  @IsString()
+  @IsNotEmpty()
   omnicomCopyToHistoryCronMask: string;
 
   @IsString()

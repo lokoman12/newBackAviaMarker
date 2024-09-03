@@ -1,11 +1,13 @@
 import "reflect-metadata";
 import * as dotenv from 'dotenv';
 import * as assert from 'assert';
-import { SettingsService } from '../../src/settings/settings.service';
 import { Logger } from '@nestjs/common';
 import { getSequelizeDbConnectionPropertiesConfig } from "src/db/sequelize.config";
 import { Sequelize } from "sequelize";
 import * as path from 'path';
+import { isString, isArray } from 'lodash';
+import { AZNB_HISTORY_TABLE_NAME, HISTORY_TEMPLATE_TOKEN, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME } from "src/history/consts";
+import { SettingsService } from "src/settings/settings.service";
 
 const logger = new Logger('Script create-history-record-tables');
 logger.log('Запуск скрипта создания таблиц, хранящих запись истории TOI для ретрансляции');
@@ -44,10 +46,18 @@ const historyRecordTablesNumber = parseInt(process.env.historyRecordTablesNumber
 assert(historyRecordTablesNumber > 0, "Количество таблиц записи для истории TOI должно быть больше нуля!");
 
 
+// --- Имя нумерованной таблицы с записями из соответствующей истории
+export const getHistoryRecordTableName = (historyTableName: string) => {
+  return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
+}
+console.log('SettingsService', SettingsService);
 // --- Список таблиц истории для третички
 const toiHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
-  (_, index) => SettingsService.getRecordHistoryTableNameByIndex(index)
+  (_, index) => {
+    console.log(10);
+    return SettingsService.getRecordHistoryTableNameByIndex(index)
+  }
 );
 
 // --- Список таблиц истории для метео
@@ -56,16 +66,22 @@ const meteoHistoryTableNames = Array.from(
   (_, index) => SettingsService.getRecordMeteoTableNameByIndex(index)
 );
 
-// --- Список таблиц истории для омникома
+// --- Список таблиц истории для машинок
 const omnicomHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
   (_, index) => SettingsService.getRecordOmnicomTableNameByIndex(index)
 );
 
-// --- Список таблиц истории для омникома
+// --- Список таблиц истории для парковок
 const standsHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
   (_, index) => SettingsService.getRecordStandsTableNameByIndex(index)
+);
+
+// --- Список таблиц истории для первички
+const aznbHistoryTableNames = Array.from(
+  { length: historyRecordTablesNumber },
+  (_, index) => SettingsService.getRecordAznbTableNameByIndex(index)
 );
 
 
@@ -134,32 +150,43 @@ const createStandsHistorySql = (tableName: string) =>
     id int (11) NOT NULL AUTO_INCREMENT,
     time datetime DEFAULT NULL,
     id_st varchar(50) NOT NULL DEFAULT '',
-    sector varchar(250) DEFAULT NULL,
-    reg_number varchar(50) DEFAULT NULL,
     calls_arr varchar(50) DEFAULT NULL,
     calls_dep varchar(50) DEFAULT NULL,
     close tinyint (4) DEFAULT NULL,
-    fpl_id_arr bigint (20) DEFAULT NULL,
-    fpl_id_dep bigint (20) DEFAULT NULL,
-    terminal varchar(50) DEFAULT NULL,
-    time_occup varchar(50) DEFAULT NULL,
-    time_tow varchar(50) DEFAULT NULL,
-    last_tu double DEFAULT NULL,
     PRIMARY KEY (id),
     KEY time (time)
 )`;
 
+const createAznbHistorySql = (tableName: string) =>
+  `CREATE TABLE IF NOT EXISTS ${tableName} (
+      id int (11) NOT NULL AUTO_INCREMENT,
+      time datetime DEFAULT NULL,
+      trs_status int (10) unsigned NOT NULL DEFAULT '0',
+      B double NOT NULL DEFAULT '0',
+      L double NOT NULL DEFAULT '0',
+      H smallint (6) NOT NULL DEFAULT '0',
+      V_grd double NOT NULL DEFAULT '0',
+      PA tinyint (4) NOT NULL DEFAULT '0',
+      PRIMARY KEY (id),
+      KEY time (time)
+  )`;
 
 // --- Таблицы записи третички из истории
-const deleteHistoryRecordTables = async (tableList: Array<string>, getSql: (tableName: string) => string) => {
+const deleteHistoryRecordTables = async (tableNames: Array<string> | string, getSql: (tableName: string) => string) => {
   logger.log('Удалим таблицы истории перед созданием');
 
   let promises: Array<Promise<any>> = [];
 
-  tableList.forEach(it => {
-    const dropResult = sequelize.query(getSql(it));
+  // Имя таблицы или список имён таблиц
+  if (isString(tableNames)) {
+    const dropResult = sequelize.query(getSql(tableNames));
     promises.push(dropResult);
-  });
+  } else if (isArray(tableNames)) {
+    tableNames.forEach(it => {
+      const dropResult = sequelize.query(getSql(it));
+      promises.push(dropResult);
+    });
+  }
 
   logger.log(`Промисы для удаления: ${promises.length}`);
   try {
@@ -172,16 +199,31 @@ const deleteHistoryRecordTables = async (tableList: Array<string>, getSql: (tabl
   return promises;
 }
 
-const createHistoryRecordTables = async (historyTableNames: Array<string>, getSql: (tableName: string) => string) => {
+const prepareHistoryTables = async (
+  tableNames: Array<string> | string,
+  getDeleteSql: (tableNames: string) => string,
+  getCreateSql: (tableNames: string) => string) => {
+  await deleteHistoryRecordTables(tableNames, getDeleteSql);
+  await createHistoryRecordTables(tableNames, getCreateSql);
+}
+
+const createHistoryRecordTables = async (tableNames: Array<string> | string, getSql: (tableName: string) => string) => {
   logger.log('Пробуем создать таблицы записи истории TOI');
 
   let promises: Array<Promise<any>> = [];
-  historyTableNames.forEach((it, _) => {
-    logger.log('Создаём таблицу', it);
-    const createTableResult = sequelize.query(getSql(it));
+
+  // Имя таблицы или список имён таблиц
+  if (isString(tableNames)) {
+    const createTableResult = sequelize.query(getSql(tableNames));
     promises.push(createTableResult);
-    return promises;
-  });
+  } else if (isArray(tableNames)) {
+    tableNames.forEach((it, _) => {
+      logger.log('Создаём таблицу', it);
+      const createTableResult = sequelize.query(getSql(it));
+      promises.push(createTableResult);
+      return promises;
+    });
+  }
 
   try {
     await Promise.all(promises);
@@ -193,17 +235,19 @@ const createHistoryRecordTables = async (historyTableNames: Array<string>, getSq
 };
 
 (async () => {
-  await deleteHistoryRecordTables(toiHistoryTableNames, dropTableSql);
-  await createHistoryRecordTables(toiHistoryTableNames, createToiHistorySql);
+  await prepareHistoryTables(toiHistoryTableNames, dropTableSql, createToiHistorySql);
 
-  await deleteHistoryRecordTables(meteoHistoryTableNames, dropTableSql);
-  await createHistoryRecordTables(meteoHistoryTableNames, createMeteoHistorySql);
-  
-  await deleteHistoryRecordTables(omnicomHistoryTableNames, dropTableSql);
-  await createHistoryRecordTables(omnicomHistoryTableNames, createOmnicomHistorySql);
+  await prepareHistoryTables([METEO_HISTORY_TABLE_NAME], dropTableSql, createAznbHistorySql);
+  await prepareHistoryTables(meteoHistoryTableNames, dropTableSql, createMeteoHistorySql);
 
-  await deleteHistoryRecordTables(standsHistoryTableNames, dropTableSql);
-  await createHistoryRecordTables(standsHistoryTableNames, createStandsHistorySql);
+  await prepareHistoryTables([OMNICOM_HISTORY_TABLE_NAME], dropTableSql, createAznbHistorySql);
+  await prepareHistoryTables(omnicomHistoryTableNames, dropTableSql, createOmnicomHistorySql);
+
+  await prepareHistoryTables([STANDS_HISTORY_TABLE_NAME], dropTableSql, createStandsHistorySql);
+  await prepareHistoryTables(standsHistoryTableNames, dropTableSql, createStandsHistorySql);
+
+  await prepareHistoryTables([AZNB_HISTORY_TABLE_NAME], dropTableSql, createAznbHistorySql);
+  await prepareHistoryTables(aznbHistoryTableNames, dropTableSql, createAznbHistorySql);
 
   logger.log('Окончание работы скрипта создания таблиц, хранящих запись истории TOI и и актуальную третичку по записи для ретрансляции');
   process.exit(0);

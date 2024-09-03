@@ -22,12 +22,12 @@ export default class OmnicomCopyToHistoryScheduler {
     this.externalScheduler.addJob(
       OmnicomCopyToHistoryScheduler.copyToHistoryJobName,
       this.configService.getOmnicomCopyToHistoryCronMask(),
-      this.omnicomCopyToHistory.bind(this)
+      this.copyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
   }
 
-  public async omnicomCopyToHistory() {
+  public async copyToHistory() {
     this.logger.log('Копирование omnicom в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const rowsForHistory = await this.omnicomService.getActualData();

@@ -4,27 +4,33 @@ import { Op } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
-import { METEO_HISTORY_RECORD_TEMPLATE_NAME, OMNICOM_HISTORY_RECORD_TEMPLATE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_RECORD_TEMPLATE_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
+import { AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 import { isNull, nonNull } from 'src/utils/common';
+import { getHistoryRecordTableName } from 'scripts/database/create-history-record-tables';
 
 @Injectable()
 export class SettingsService {
   private readonly logger = new Logger(SettingsService.name);
 
   public static getRecordHistoryTableNameByIndex(tableNumber: number) {
-    return `${TOI_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+    console.log(2);
+    return `${getHistoryRecordTableName(TOI_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordMeteoTableNameByIndex(tableNumber: number) {
-    return `${METEO_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+    return `${getHistoryRecordTableName(METEO_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordOmnicomTableNameByIndex(tableNumber: number) {
-    return `${OMNICOM_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+    return `${getHistoryRecordTableName(OMNICOM_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   public static getRecordStandsTableNameByIndex(tableNumber: number) {
-    return `${STANDS_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+    return `${getHistoryRecordTableName(STANDS_HISTORY_TABLE_NAME)}_${tableNumber}`;
+  }
+
+  public static getRecordAznbTableNameByIndex(tableNumber: number) {
+    return `${getHistoryRecordTableName(AZNB_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   constructor(

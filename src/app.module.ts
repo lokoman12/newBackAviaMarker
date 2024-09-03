@@ -36,6 +36,7 @@ import { PhotoModule } from './photo/photo.module';
 import { GetpositionModule } from './get-position-history/Getposition.module';
 import { UserHistoryModule } from './user-history/user.history.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { AznbModule } from './aznb/aznb.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
     SaveZoneModule,
     DeleteZoneModule,
     MeteoModule,
+    AznbModule,
     AodbModule,
     StripsModule,
     RetaModule,
