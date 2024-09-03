@@ -10,6 +10,6 @@ import OmnicomService from './omnicom.service';
   imports: [ApiConfigModule, SequelizeModule.forFeature([SCOUT])],
   providers: [OmnicomService,],
   controllers: [OmnicomController],
-  exports: [SequelizeModule],
+  exports: [SequelizeModule, OmnicomService],
 })
 export class OmnicomModule { }
