@@ -7,12 +7,12 @@ import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 
 @Controller('taxiway')
 export class TaxiwayController {
-  private readonly log = new Logger(TaxiwayController.name);
+  private readonly logger = new Logger(TaxiwayController.name);
 
   constructor(
     @InjectModel(Taxiway) private readonly taxiwayModel: typeof Taxiway,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()

@@ -8,13 +8,13 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 
 @Controller('aodb')
-export class AODBController {
-  private readonly log = new Logger(AODBController.name);
+export class AodbController {
+  private readonly logger = new Logger(AodbController.name);
 
   constructor(
     @InjectModel(AODB) private readonly AODBModel: typeof AODB,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -25,7 +25,7 @@ export class AODBController {
       const aodb = await this.AODBModel.findAll();
       return aodb;
     } catch (error) {
-      console.error('Error retrieving alarm:', error);
+      console.error('Error retrieving flight plans:', error);
       throw error;
     }
   }

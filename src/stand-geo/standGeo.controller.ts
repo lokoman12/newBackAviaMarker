@@ -8,12 +8,12 @@ import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 
 @Controller('standGeo')
 export class StandGeoController {
-  private readonly log = new Logger(StandGeoController.name);
+  private readonly logger = new Logger(StandGeoController.name);
 
   constructor(
     @InjectModel(StandsGeo) private readonly standsGeoModel: typeof StandsGeo,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()

@@ -12,14 +12,14 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('aodb')
 export class ToiController {
-  private readonly log = new Logger(ToiController.name);
+  private readonly logger = new Logger(ToiController.name);
 
   constructor(
     private configService: ApiConfigService,
     @InjectModel(Toi) private readonly toiModel: typeof Toi,
     @InjectModel(Formular) private readonly formularModel: typeof Formular, // Добавляем вторую модель
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
   
   @Public()

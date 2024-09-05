@@ -7,14 +7,14 @@ import { JwtTokenType, SignInDataType } from './types';
 
 @Injectable()
 export class AuthService {
-  private readonly log = new Logger(AuthService.name);
+  private readonly logger = new Logger(AuthService.name);
 
   constructor(
     private configService: ApiConfigService,
     private usersService: UsersService,
     private jwtService: JwtService
   ) {
-    this.log.log('Init AuthService, access: ' + this.configService.getJwtAccessSecret() + ", refresh" + this.configService.getJwtRefreshSecret());
+    this.logger.log('Init AuthService, access: ' + this.configService.getJwtAccessSecret() + ", refresh" + this.configService.getJwtRefreshSecret());
   }
 
   private async updateRefreshToken(userId: number, refreshToken: string) {

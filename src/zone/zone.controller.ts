@@ -9,12 +9,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('zone')
 export class ZoneController {
-  private readonly log = new Logger(ZoneController.name);
+  private readonly logger = new Logger(ZoneController.name);
 
   constructor(
     @InjectModel(ZoneAM) private readonly zoneModel: typeof ZoneAM,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -22,10 +22,10 @@ export class ZoneController {
   @Get()
   async getAllZone(): Promise<ZoneAM[]> {
     try {
-      const zone = await this.zoneModel.findAll();
-      return zone;
+      const zones = await this.zoneModel.findAll();
+      return zones;
     } catch (error) {
-      this.log.error('Error retrieving alarm:', error);
+      this.logger.error('Error retrieving zones:', error);
       throw error;
     }
   }

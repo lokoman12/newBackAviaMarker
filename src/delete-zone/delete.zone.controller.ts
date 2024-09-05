@@ -9,12 +9,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('deleteZone')
 export class DeleteZoneController {
-  private readonly log = new Logger(DeleteZoneController.name);
+  private readonly logger = new Logger(DeleteZoneController.name);
 
   constructor(
     @InjectModel(ZoneAM) private readonly zoneModel: typeof ZoneAM,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -28,7 +28,7 @@ export class DeleteZoneController {
       }
       await zoneToDelete.destroy();
     } catch (error) {
-      this.log.error('Error deleting zone:', error);
+      this.logger.error('Error deleting zone:', error);
       throw error;
     }
   }

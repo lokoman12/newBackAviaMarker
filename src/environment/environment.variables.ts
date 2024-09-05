@@ -54,11 +54,27 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  toiCheckToHistoryCronMask: string;
+  checkActualOfHistoriesCronMask: string;
 
   @IsString()
   @IsNotEmpty()
   toiCopyToHistoryCronMask: string;
+
+  @IsString()
+  @IsNotEmpty()
+  aznbCopyToHistoryCronMask: string;
+
+  @IsString()
+  @IsNotEmpty()
+  omnicomCopyToHistoryCronMask: string;
+
+  @IsString()
+  @IsNotEmpty()
+  meteoCopyToHistoryCronMask: string;
+
+  @IsString()
+  @IsNotEmpty()
+  standsCopyToHistoryCronMask: string;
 
   @IsNumber()
   @IsPositive()

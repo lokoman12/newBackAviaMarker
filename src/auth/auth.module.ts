@@ -37,9 +37,9 @@ import { UserHistoryModule } from 'src/user-history/user.history.module';
   exports: [AuthService],
 })
 export class AuthModule {
-  private readonly log = new Logger(AuthModule.name);
+  private readonly logger = new Logger(AuthModule.name);
 
   constructor() {
-    this.log.debug('Init AuthModule');
+    this.logger.debug('Init AuthModule');
   }
 }

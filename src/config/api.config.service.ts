@@ -17,6 +17,22 @@ export class ApiConfigService {
     return this.configService.get<string>('toiCopyToHistoryCronMask');
   }
 
+  getAznbCopyToHistoryCronMask() {
+    return this.configService.get<string>('aznbCopyToHistoryCronMask');
+  }
+
+  getOmnicomCopyToHistoryCronMask() {
+    return this.configService.get<string>('omnicomCopyToHistoryCronMask');
+  }
+
+  getStandsCopyToHistoryCronMask() {
+    return this.configService.get<string>('standsCopyToHistoryCronMask');
+  }
+
+  getMeteoCopyToHistoryCronMask() {
+    return this.configService.get<string>('meteoCopyToHistoryCronMask');
+  }
+
 
   getJwtAccessExpiresIn(): string {
     return this.configService.get<string>('jwt_access_expires_in');
@@ -89,6 +105,6 @@ export class ApiConfigService {
     return this.configService.get<number>('historyDaySave');
   }
   getToiCheckToHistoryCronMask() {
-    return this.configService.get<string>('toiCheckToHistoryCronMask');
+    return this.configService.get<string>('checkActualOfHistoriesCronMask');
   }
 };

@@ -6,6 +6,10 @@ import { ApiConfigService } from 'src/config/api.config.service';
 import dayjs from '../utils/dayjs';
 import { ExternalScheduler } from 'src/scheduler/external.scheduler';
 import { DATE_TIME_FORMAT } from 'src/auth/consts';
+import MeteoHistory from 'src/db/models/meteoHistory.model';
+import StandsHistory from 'src/db/models/standsHistory.model';
+import OmnicomHistory from 'src/db/models/scoutHistory.model';
+import AznbHistory from 'src/db/models/aznbHistory.model';
 
 @Injectable()
 export class CheckHistoryService {
@@ -16,6 +20,14 @@ export class CheckHistoryService {
     private externalScheduler: ExternalScheduler,
     @InjectModel(ToiHistory)
     private readonly toiHistoryModel: typeof ToiHistory,
+    @InjectModel(MeteoHistory)
+    private readonly meteoHistoryModel: typeof MeteoHistory,
+    @InjectModel(StandsHistory)
+    private readonly standsHistoryModel: typeof StandsHistory,
+    @InjectModel(OmnicomHistory)
+    private readonly omnicomHistoryModel: typeof OmnicomHistory,
+    @InjectModel(AznbHistory)
+    private readonly aznbHistoryModel: typeof AznbHistory,
   ) {
     this.logger.log(`Init controller`);
     this.externalScheduler.addJob(
@@ -33,6 +45,7 @@ export class CheckHistoryService {
       const startTime = dayjs.utc()
         .subtract(this.configService.getHowDaySave(), 'days');
       this.logger.log(`Delete all records from history before: ${startTime.format(DATE_TIME_FORMAT)}`);
+
       await this.toiHistoryModel.destroy({
         where: {
           time: {
@@ -40,6 +53,39 @@ export class CheckHistoryService {
           },
         },
       });
+
+      await this.aznbHistoryModel.destroy({
+        where: {
+          time: {
+            [Op.lt]: startTime.toDate(),
+          },
+        },
+      });
+
+      await this.standsHistoryModel.destroy({
+        where: {
+          time: {
+            [Op.lt]: startTime.toDate(),
+          },
+        },
+      });
+
+      await this.omnicomHistoryModel.destroy({
+        where: {
+          time: {
+            [Op.lt]: startTime.toDate(),
+          },
+        },
+      });
+
+      await this.meteoHistoryModel.destroy({
+        where: {
+          time: {
+            [Op.lt]: startTime.toDate(),
+          },
+        },
+      });
+
     } catch (error) {
       this.logger.error('Error during daily check:', error);
     }

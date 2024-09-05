@@ -9,12 +9,12 @@ import { QueryError } from 'sequelize';
 
 @Controller('addStandGeo')
 export class AddStandGeoController {
-  private readonly log = new Logger(AddStandGeoController.name);
+  private readonly logger = new Logger(AddStandGeoController.name);
 
   constructor(
     @InjectModel(StandsGeo) private readonly standsGeoModel: typeof StandsGeo,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @ApiBody({

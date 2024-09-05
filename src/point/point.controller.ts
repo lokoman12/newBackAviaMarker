@@ -9,12 +9,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('points')
 export class PointController {
-  private readonly log = new Logger(PointController.name);
+  private readonly logger = new Logger(PointController.name);
 
   constructor(
     @InjectModel(Point) private readonly pointModel: typeof Point,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -25,7 +25,7 @@ export class PointController {
       const points = await this.pointModel.findAll();
       return points;
     } catch (error) {
-      this.log.error('Error retrieving points:', error);
+      this.logger.error('Error retrieving points:', error);
       throw error;
     }
   }

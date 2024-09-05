@@ -9,11 +9,11 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('strips')
 export class StripsController {
-  private readonly log = new Logger(StripsController.name);
+  private readonly logger = new Logger(StripsController.name);
   constructor(
     @InjectModel(Strips) private readonly stripsModel: typeof Strips,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()

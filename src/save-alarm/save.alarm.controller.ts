@@ -9,12 +9,12 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('saveAlarm')
 export class SaveAlarmController {
-  private readonly log = new Logger(SaveAlarmController.name);
+  private readonly logger = new Logger(SaveAlarmController.name);
 
   constructor(
     @InjectModel(AlaramAM) private readonly alarmModel: typeof AlaramAM,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
   
   @Public()
@@ -39,7 +39,7 @@ export class SaveAlarmController {
       });
       return saveAlarm;
     } catch (error) {
-      this.log.error('Error saving alarm:', error);
+      this.logger.error('Error saving alarm:', error);
       throw error;
     }
   }

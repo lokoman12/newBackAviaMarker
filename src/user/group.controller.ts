@@ -15,7 +15,7 @@ import { GroupService } from './group.service';
 
 @Controller('groups')
 export class GroupController {
-  private readonly log = new Logger(GroupController.name);
+  private readonly logger = new Logger(GroupController.name);
 
   constructor(
     private userService: UsersService,

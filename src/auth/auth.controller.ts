@@ -28,7 +28,7 @@ import { RecordStatusService } from 'src/user-history/record.status.service';
 
 @Controller('auth')
 export class AuthController {
-  private readonly log = new Logger(AuthController.name);
+  private readonly logger = new Logger(AuthController.name);
 
   constructor(
     private readonly authService: AuthService,
@@ -49,7 +49,7 @@ export class AuthController {
     @Query('password') password: string
     , @Res({ passthrough: true }) response: Response
   ) {
-    this.log.warn('Login, user: ' + username);
+    this.logger.warn('Login, user: ' + username);
     const { accessToken } = await this.authService.signIn({ username, password });
     // При логине сбрасываем статус воспроизведения истории, если был включен
     await this.recordStatusService.resetRecordStatus(username);
@@ -67,7 +67,7 @@ export class AuthController {
   ) {
     // this.log.log('LoginController, cookies: ' + req.cookies.test);
     const { username } = data;
-    this.log.warn('Login, user: ' + username);
+    this.logger.warn('Login, user: ' + username);
     const signInData = await this.authService.signIn(data);
     // При логине сбрасываем статус воспроизведения истории, если был включен
     await this.recordStatusService.resetRecordStatus(username);
@@ -106,7 +106,7 @@ export class AuthController {
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string
   ) {
-    this.log.log('Refreshm, userId: ' + userId);
+    this.logger.log('Refreshm, userId: ' + userId);
     return this.authService.refreshTokens(userId, refreshToken);
   }
 }

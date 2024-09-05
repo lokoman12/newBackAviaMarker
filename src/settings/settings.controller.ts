@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   Put,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { SettingsService } from './settings.service';
@@ -15,7 +15,7 @@ import { CreateSettingsDto, UpdateSettingsDto } from './types';
 
 @Controller('settings')
 export class SettingsController {
-  private readonly log = new Logger(SettingsController.name);
+  private readonly logger = new Logger(SettingsController.name);
 
   constructor(
     private settingsService: SettingsService,

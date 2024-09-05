@@ -16,14 +16,14 @@ import { validate } from '../environment/env.validation';
   exports: [ApiConfigService],
 })
 export class ApiConfigModule implements NestModule {
-  private readonly log = new Logger(ApiConfigModule.name);
+  private readonly logger = new Logger(ApiConfigModule.name);
 
   constructor(
   ) {
-    this.log.debug('Init ApiConfigModule');
+    this.logger.debug('Init ApiConfigModule');
   }
 
   configure() {
-    this.log.debug('ConfigModule configure');
+    this.logger.debug('ConfigModule configure');
   }
 }

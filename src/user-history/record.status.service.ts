@@ -6,6 +6,8 @@ import { UpdateSettingsDto } from "src/settings/types";
 import { RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import dayjs from "../utils/dayjs";
 import { NextCurrentTypeForResponse } from "./types";
+import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
+import { nonNull } from "src/utils/common";
 
 export interface TimelineStartRecordRequest {
   timeStart: number,
@@ -34,6 +36,11 @@ export class RecordStatusService {
     this.logger.log('Сервис инициализирован!')
   }
 
+  async resetUserHistoryStatusOnException(login: string) {
+    this.logger.warn(`Не получилось включить воспроизведение записи пользователем ${login}. Сбрасываем статус. Нет смысла продолжать`);
+    await this.resetRecordStatus(login);
+  }
+
   async getRecordStatus(login: string): Promise<TimelineRecordDto | null> {
     const result = await this.settingsService.getTypedUserSettingValueByName<TimelineRecordDto>(
       TimelineRecordDto.fromJsonString, RECORD_SETTING_PROPERTY_NAME, login
@@ -43,7 +50,7 @@ export class RecordStatusService {
 
   async isInRecordStatus(login: string): Promise<boolean> {
     const recordStatus = await this.getRecordStatus(login);
-    return recordStatus != null;
+    return nonNull(recordStatus);
   }
 
   /**
@@ -72,14 +79,16 @@ export class RecordStatusService {
     // Получим текущий статус
     const currentStatus = await this.getRecordStatus(login);
     if (!currentStatus) {
-      const message = `Перед обновлённом статуса пользователя ${login} статус не должен быть пустым`;
+      const message = `Перед обновлёнием статуса он не должен быть пустым`;
       this.logger.error(message);
-      throw new NotAcceptableException(message);
+      await this.resetUserHistoryStatusOnException(login);
+      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userStatusNotFound, message);
     }
     if (!dayjs.utc(nextCurrentTime).isValid()) {
-      const message = `Next current time must have valid datatime value ${nextCurrentTime}`;
+      const message = `Следующая дата воспроизведения записи должна иметь корректное значение: ${nextCurrentTime}`;
       this.logger.error(message);
-      throw new NotAcceptableException(message);
+      await this.resetUserHistoryStatusOnException(login);
+      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.invalidDateValue, message);
     }
     // Обновим текущие шаг и время
     const nextStatus = new TimelineRecordDto(
@@ -104,7 +113,7 @@ export class RecordStatusService {
     if (record) {
       await this.settingsService.removeRecordingSettingsByUsername(login);
     } else {
-      this.logger.warn(`Таблица записи для пользователя ${login} не существует, удалить невозможно`)
+      this.logger.warn(`Пользователь ${login} не находится в состоянии воспроизведения истории`)
     }
   }
 

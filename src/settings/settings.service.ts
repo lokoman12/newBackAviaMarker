@@ -4,14 +4,36 @@ import { Op } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
-import { RECORD_SETTING_PROPERTY_NAME, TOI_HISTORY_RECORD_TEMPLATE_NAME } from 'src/history/consts';
+import { AZNB_HISTORY_TABLE_NAME, HISTORY_TEMPLATE_TOKEN, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
+import { isNull, nonNull } from 'src/utils/common';
 
 @Injectable()
 export class SettingsService {
   private readonly logger = new Logger(SettingsService.name);
 
+  // --- Имя нумерованной таблицы с записями из соответствующей истории
+  private static getHistoryRecordTableName = (historyTableName: string) => {
+  return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
+}
+
   public static getRecordHistoryTableNameByIndex(tableNumber: number) {
-    return `${TOI_HISTORY_RECORD_TEMPLATE_NAME}${tableNumber}`;
+    return `${this.getHistoryRecordTableName(TOI_HISTORY_TABLE_NAME)}_${tableNumber}`;
+  }
+
+  public static getRecordMeteoTableNameByIndex(tableNumber: number) {
+    return `${this.getHistoryRecordTableName(METEO_HISTORY_TABLE_NAME)}_${tableNumber}`;
+  }
+
+  public static getRecordOmnicomTableNameByIndex(tableNumber: number) {
+    return `${this.getHistoryRecordTableName(OMNICOM_HISTORY_TABLE_NAME)}_${tableNumber}`;
+  }
+
+  public static getRecordStandsTableNameByIndex(tableNumber: number) {
+    return `${this.getHistoryRecordTableName(STANDS_HISTORY_TABLE_NAME)}_${tableNumber}`;
+  }
+
+  public static getRecordAznbTableNameByIndex(tableNumber: number) {
+    return `${this.getHistoryRecordTableName(AZNB_HISTORY_TABLE_NAME)}_${tableNumber}`;
   }
 
   constructor(
@@ -76,7 +98,7 @@ export class SettingsService {
     });
 
     // Возвращаем значение по умолчанию, когда не нашли свойство в базе
-    if (result == null && defaultValue != null) {
+    if (isNull(result) && nonNull(defaultValue)) {
       return defaultValue;
     }
 
@@ -95,7 +117,7 @@ export class SettingsService {
   */
   async getTypedUserSettingValueByName<T>(mapFunction: (value: string) => T, name: string, username: string, defaultValue?: string): Promise<T | null> {
     const strResult = await this.getUserSettingValueByName(name, username, defaultValue);
-    return strResult != null ? mapFunction(strResult) : null;
+    return nonNull(strResult) ? mapFunction(strResult) : null;
   }
 
   async getTypedSettingsByName<T>(mapFunction: (value: string) => T, name: string): Promise<Array<T> | null> {
@@ -106,7 +128,7 @@ export class SettingsService {
       attributes: ['value',],
     });
     this.logger.log(`getTypedSettingsByName: ${result}`);
-    return result != null ? result.map(it => mapFunction(it.value)).filter(it => it != null) : null;
+    return nonNull(result) ? result.map(it => mapFunction(it.value)).filter(nonNull) : null;
   }
 
   async createSetting(dto: CreateSettingsDto): Promise<void> {

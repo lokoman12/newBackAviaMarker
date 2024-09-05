@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AllowNull } from 'sequelize-typescript';
 import { curs } from 'src/utils/Curs';
 
 export interface IToi {
@@ -16,61 +16,64 @@ export interface IToi {
 
 @Table({ tableName: "toi" })
 export default class Toi extends Model implements IToi {
+  @PrimaryKey
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    primaryKey: true,
-    allowNull: true,
   })
   id: number;
+
+  @AllowNull(true)
   @Column({
     type: DataType.SMALLINT,
-    allowNull: true,
   })
   id_Sintez: number;
+
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    allowNull: true,
   })
   Number: number;
 
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    allowNull: true,
   })
   X: number;
 
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    allowNull: true,
   })
   Y: number;
 
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    allowNull: true,
   })
   H: number;
 
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    allowNull: true,
   })
   CRS: number;
+
+  @AllowNull(true)
   @Column({
     type: DataType.STRING,
-    allowNull: true,
   })
   Name: string;
 
+  @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
-    allowNull: true,
   })
   faza: number;
 
+  @AllowNull(true)
   @Column({
     type: DataType.SMALLINT,
-    allowNull: true,
   })
   Type: number;
 }

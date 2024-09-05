@@ -8,16 +8,16 @@ import { CookiesController } from './cookies.controller';
   controllers: [CookiesController]
 })
 export class CookiesModule implements NestModule {
-  private readonly log = new Logger(ConfigModule.name);
+  private readonly logger = new Logger(ConfigModule.name);
 
   constructor(
     @Inject(cookiesConfig.KEY)
     private readonly config: ConfigType<typeof cookiesConfig>,
   ) {
-    this.log.debug('CookiesModule, config' + JSON.stringify(config));
+    this.logger.debug('CookiesModule, config' + JSON.stringify(config));
   }
 
   configure(consumer: MiddlewareConsumer) {
-    this.log.debug("CookiesModule configure");
+    this.logger.debug("CookiesModule configure");
   }
 }

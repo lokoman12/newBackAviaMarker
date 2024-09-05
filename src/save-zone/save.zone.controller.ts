@@ -14,12 +14,12 @@ interface Coord {
 
 @Controller('saveZone')
 export class SaveZoneController {
-  private readonly log = new Logger(SaveZoneController.name);
+  private readonly logger = new Logger(SaveZoneController.name);
 
   constructor(
     @InjectModel(ZoneAM) private readonly zoneModel: typeof ZoneAM,
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
@@ -44,7 +44,7 @@ export class SaveZoneController {
       }
 
     } catch (error) {
-      this.log.error('Error saving alarm:', error);
+      this.logger.error('Error saving alarm:', error);
       throw error;
     }
   }

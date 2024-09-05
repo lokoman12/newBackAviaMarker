@@ -10,7 +10,7 @@ import { omit } from 'lodash';
 export default class ToiCopyToHistoryScheduler {
   private readonly logger = new Logger(ToiCopyToHistoryScheduler.name);
 
-  public static toiCopyToHistoryJobName = 'ToiCopyToHistory';
+  public static copyToHistoryJobName = 'ToiCopyToHistory';
 
   constructor(
     private configService: ApiConfigService,
@@ -20,21 +20,23 @@ export default class ToiCopyToHistoryScheduler {
   ) {
     this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
-      ToiCopyToHistoryScheduler.toiCopyToHistoryJobName,
-      this.configService.  getToiCopyToHistoryCronMask(),
-      this.toiCopyToHistory.bind(this)
+      ToiCopyToHistoryScheduler.copyToHistoryJobName,
+      this.configService.getToiCopyToHistoryCronMask(),
+      this.copyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
   }
 
-  public async toiCopyToHistory() {
+  public async copyToHistory() {
     // this.logger.log('Копирование в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
-    const toiListForHistory = await this.toiService.getActualClientToi();
+    const rowsForHistory = await this.toiService.getActualClientData();
     const promises = [];
 
+    this.logger.log(`Копируем в историю toi: ${rowsForHistory.length} строк`);
+
     const time = new Date();
-    toiListForHistory.forEach(it => {
+    rowsForHistory.forEach(it => {
       const record = this.toiHistoryModel.create({
         // Опустим колонку id третички, для хистори таблицы она будет сгенерирована
         ...omit(it, ['id']),

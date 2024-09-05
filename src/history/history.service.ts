@@ -6,6 +6,9 @@ import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes } from "sequelize";
 import { ToiHistoryResponseType } from "./types";
 import dayjs from '../utils/dayjs';
+import { isNumber } from "lodash";
+import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
+import { isNormalNumber } from "src/utils/number";
 
 export interface IHistoryClient {
   id: number;
@@ -50,8 +53,9 @@ class HistoryService {
     // Текущее состояние воспроизведения записи пользователя
     const status = await this.recordStatusService.getRecordStatus(login);
     if (!status) {
-      this.logger.error(`Can not get status for user with login ${login}`);
-      throw new NotAcceptableException(`Can not get status for user with login ${login}`);
+      const message = `При попытке получить историю для пользователя ${login} нет сохранённого статуса`;
+      this.logger.error(message);
+      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userStatusNotFound, message);
     }
 
     // Новый текущий шаг
@@ -76,12 +80,22 @@ class HistoryService {
     const nextCurrent = await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
       login, nextId, records?.[0]?.time || status.currentTime
     );
+    
+    const nextCurrentStep = nextCurrent.nextCurrentStep;
+    const nextCurrentTime = nextCurrent.nextCurrentTime;
+
+    this.logger.log(`isNumber(value) && !isNaN(value) && isFinite(value) = ${isNumber(nextCurrentTime)} && ${!isNaN(nextCurrentTime)} && ${isFinite(nextCurrentTime)}`);
+    if (!isNormalNumber(nextCurrentStep)) {
+      const message = `Ошибка при попытке получить следующий шаг '${nextCurrentStep}' воспроизведения истории для пользователя '${login}'`;
+      this.logger.error(message);
+      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.invalidStepValue, message);
+    }
 
     return {
       rows: records,
       state: {
-        nextCurrentStep: nextCurrent.nextCurrentStep,
-        nextCurrentTime: nextCurrent.nextCurrentTime,
+        nextCurrentStep,
+        nextCurrentTime,
       },
     };
   }

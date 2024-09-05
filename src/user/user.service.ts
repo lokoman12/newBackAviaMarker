@@ -6,21 +6,22 @@ import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { Op } from 'sequelize';
 import { omit } from 'lodash';
 import UserGroup from 'src/db/models/usergroup';
+import { nonNull } from 'src/utils/common';
 
 @Injectable()
 export class UsersService {
-  private readonly log = new Logger(UsersService.name);
+  private readonly logger = new Logger(UsersService.name);
 
   constructor(
     @InjectModel(User) private readonly usersModel: typeof User,
     @InjectModel(Group) private readonly groupModel: typeof Group,
     @InjectModel(Group) private readonly userGroupModel: typeof UserGroup
   ) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   async createUser(userDto: CreateUserDto): Promise<IUser> {
-    this.log.log('Create user: ' + userDto.username);
+    this.logger.log('Create user: ' + userDto.username);
     const user = await this.usersModel.create(
       { ...userDto, }
     );
@@ -28,7 +29,7 @@ export class UsersService {
   }
 
   async findAllUsers(): Promise<Array<IUser>> {
-    this.log.log('find all users: ');
+    this.logger.log('find all users: ');
     return this.usersModel.findAll({
       nest: true,
       raw: true,
@@ -43,7 +44,7 @@ export class UsersService {
   }
 
   async findUserByLogin(username: string): Promise<IUser | null> {
-    this.log.log('findUser: ', username);
+    this.logger.log('findUser: ', username);
     return this.usersModel.findOne({ raw: true, where: { username, }, });
   }
 
@@ -109,10 +110,10 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException(`Can not update user with id: ${id}!`);
     }
-    this.log.log('Found user: ' + JSON.stringify(user));
+    this.logger.log('Found user: ' + JSON.stringify(user));
 
     const data = { ...omit(updateUserDto, ['roleIds']) };
-    if (updateUserDto.roleIds != null) {
+    if (nonNull(updateUserDto.roleIds)) {
       const groupIds = updateUserDto.roleIds.split(',');
       const groups = await this.groupModel.findAll({
         where: {

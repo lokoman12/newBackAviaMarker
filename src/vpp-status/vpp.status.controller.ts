@@ -9,10 +9,10 @@ import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('vpp')
 export class VppStatusController {
-  private readonly log = new Logger(VppStatusController.name);
+  private readonly logger = new Logger(VppStatusController.name);
 
   constructor(@InjectModel(VppStatus) private readonly vppStatusModel: typeof VppStatus) {
-    this.log.log('Init controller');
+    this.logger.log('Init controller');
   }
 
   @Public()
