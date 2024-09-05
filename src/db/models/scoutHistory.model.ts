@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull, Unique } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
 
 export interface IOmnicomHistory {
   id: number;
@@ -28,14 +28,13 @@ export default class OmnicomHistory extends Model implements OmnicomHistory {
   })
   time: Date;
 
-  @Unique
   @Column({
-    type: DataType.STRING,
+    type: DataType.STRING(10),
   })
   Serial: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.STRING(20),
   })
   GarNum: string;
 

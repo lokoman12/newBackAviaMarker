@@ -16,7 +16,6 @@ export default class MeteoHistory extends Model {
   })
   time: Date;
 
-  @Unique
   @Column({
     type: DataType.DOUBLE,
   })

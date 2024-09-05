@@ -3,7 +3,6 @@ import { Table, Column, Model, DataType, PrimaryKey, AllowNull, Default } from '
 export interface IAznb {
   id: number;
   Id_Tr: string;
-  trs_status: number;
   trs_adress: number;
   B: number;
   L: number;
@@ -27,13 +26,6 @@ export default class Aznb extends Model implements IAznb {
     type: DataType.STRING(25),
   })
   Id_Tr: string;
-
-  @AllowNull(true)
-  @Default(0)
-  @Column({
-    type: DataType.INTEGER.UNSIGNED,
-  })
-  trs_status: number;
 
   @AllowNull(true)
   @Default(0)

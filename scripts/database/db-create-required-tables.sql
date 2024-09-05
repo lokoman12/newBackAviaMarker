@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS
     `dTime` double NOT NULL,
     `id_vpp` tinyint (4) NOT NULL,
     `id_grp` int (11) NOT NULL,
-    `Data` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `Data` varchar(512) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `meteo_history_id_key` (`id`),
     KEY `time` (`time`),
@@ -20,15 +20,14 @@ CREATE TABLE IF NOT EXISTS
   `omnicom_history` (
     `id` int (11) NOT NULL AUTO_INCREMENT,
     `time` double NOT NULL,
-    `Serial` varchar(255) COLLATE utf8_bin NOT NULL,
-    `GarNum` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+    `Serial` varchar(10) NOT NULL,
+    `GarNum` varchar(20) DEFAULT NULL,
     `t_obn` double DEFAULT NULL,
     `Lat` double DEFAULT NULL,
     `Lon` double DEFAULT NULL,
     `Speed` float DEFAULT NULL,
     `Course` float DEFAULT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `serial_uniq` (`Serial`),
     KEY `time` (`time`)
   );
 
@@ -71,7 +70,6 @@ CREATE TABLE IF NOT EXISTS
     `id` int (11) NOT NULL AUTO_INCREMENT,
     `time` datetime DEFAULT NULL,
     `Id_Tr` varchar(25) DEFAULT '',
-    `trs_status` int (10) unsigned NOT NULL DEFAULT '0',
     `trs_adress` int(10) unsigned NOT NULL DEFAULT '0',
     `B` double NOT NULL DEFAULT '0',
     `L` double NOT NULL DEFAULT '0',

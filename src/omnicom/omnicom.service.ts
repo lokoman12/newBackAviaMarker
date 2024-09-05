@@ -16,6 +16,9 @@ export default class OmnicomService {
   async getActualData(): Promise<Array<Scout>> {
     try {
       const omnicom = await this.omnicomModel.findAll();
+      omnicom.forEach(it =>
+        this.logger.log(`Omnicom: ${JSON.stringify(it)}`)
+      );
       return omnicom;
     } catch (error) {
       console.error('Error retrieving omnicom:', error);
