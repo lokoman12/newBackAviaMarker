@@ -5,10 +5,11 @@ import {
   Body,
   Param,
   Delete,
-  Put
+  Put,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
-import { UpdateUserDto } from 'src/user/user.dto';
+import { CreateUserDto, UpdateUserDto } from 'src/user/user.dto';
 import { GroupService } from './group.service';
 import { Public } from 'src/auth/decorators/public.decorator';
 
@@ -18,8 +19,8 @@ export class UserController {
 
   constructor(
     private userService: UsersService,
-    private groupService: GroupService
-  ) { }
+    private groupService: GroupService,
+  ) {}
 
   @Public()
   @Get('/')
@@ -35,7 +36,6 @@ export class UserController {
     return user;
   }
 
-
   @Public()
   @Get('/:userId/groups')
   async getGroupsOfUser(@Param('userId') userId: number) {
@@ -49,12 +49,16 @@ export class UserController {
     const user = await this.userService.updateUser(id, dto);
     return user;
   }
-
+  @Public()
+  @Post('/')
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    const user = await this.userService.createUser(createUserDto);
+    return user;
+  }
   @Public()
   @Delete('/:id')
   async removeUserById(@Param('id') id: number) {
     const user = await this.userService.removeUser(id);
     return user;
   }
-
 }
