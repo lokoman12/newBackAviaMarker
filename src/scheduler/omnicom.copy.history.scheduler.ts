@@ -1,10 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { ApiConfigService } from "src/config/api.config.service";
-import { ExternalScheduler } from "./external.scheduler";
-import OmnicomHistory from "src/db/models/scoutHistory.model";
-import { InjectModel } from "@nestjs/sequelize";
+import { Injectable, Logger } from '@nestjs/common';
+import { ApiConfigService } from 'src/config/api.config.service';
+import { ExternalScheduler } from './external.scheduler';
+import OmnicomHistory from 'src/db/models/scoutHistory.model';
+import { InjectModel } from '@nestjs/sequelize';
 import { omit } from 'lodash';
-import OmnicomService from "src/omnicom/omnicom.service";
+import OmnicomService from 'src/omnicom/omnicom.service';
 
 @Injectable()
 export default class OmnicomCopyToHistoryScheduler {
@@ -16,15 +16,16 @@ export default class OmnicomCopyToHistoryScheduler {
     private configService: ApiConfigService,
     private externalScheduler: ExternalScheduler,
     private omnicomService: OmnicomService,
-    @InjectModel(OmnicomHistory) private readonly omnicomHistoryModel: typeof OmnicomHistory
+    @InjectModel(OmnicomHistory)
+    private readonly omnicomHistoryModel: typeof OmnicomHistory,
   ) {
     this.logger.log('Init controller --------------------------->');
     this.externalScheduler.addJob(
       OmnicomCopyToHistoryScheduler.copyToHistoryJobName,
       this.configService.getOmnicomCopyToHistoryCronMask(),
-      this.copyToHistory.bind(this)
+      this.copyToHistory.bind(this),
     );
-    this.logger.log('Сервис инициализирован! ==================')
+    this.logger.log('Сервис инициализирован! ==================');
   }
 
   public async copyToHistory() {
@@ -33,18 +34,25 @@ export default class OmnicomCopyToHistoryScheduler {
     const rowsForHistory = await this.omnicomService.getActualData();
     const promises = [];
 
-    this.logger.log(`Копируем в историю omnicom: ${rowsForHistory.length} строк`);
+    this.logger.log(
+      `Копируем в историю omnicom: ${rowsForHistory.length} строк`,
+    );
 
     const time = new Date();
-    rowsForHistory.forEach(it => {
+    rowsForHistory.forEach((it) => {
       const record = this.omnicomHistoryModel.create({
         // Опустим колонку id, для хистори таблицы она будет сгенерирована
-        ...omit(it, ['id']),
         time,
-      })
+        Serial: it.Serial,
+        GarNum: it.GarNum,
+        t_obn: it.t_obn,
+        Lat: it.Lat,
+        Lon: it.Lon,
+        Speed: it.Speed,
+        Course: it.Course,
+      });
       promises.push(record);
     });
     await Promise.all(promises);
   }
-
 }
