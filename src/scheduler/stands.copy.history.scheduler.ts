@@ -25,12 +25,12 @@ export default class StandsCopyToHistoryScheduler {
     this.externalScheduler.addJob(
       StandsCopyToHistoryScheduler.copyToHistoryJobName,
       this.configService.getStandsCopyToHistoryCronMask(),
-      this.omnicomCopyToHistory.bind(this)
+      this.copyToHistory.bind(this)
     );
     this.logger.log('Сервис инициализирован! ==================')
   }
 
-  public async omnicomCopyToHistory() {
+  public async copyToHistory() {
     this.logger.log('Копирование stands в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const rowsForHistory = await this.standService.getActualData();

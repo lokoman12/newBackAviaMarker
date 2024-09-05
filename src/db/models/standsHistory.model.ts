@@ -22,15 +22,6 @@ export default class StandsHistory extends Model {
   })
   id_st: string;
   
-  @Column({
-    type: DataType.STRING,
-  })
-  sector: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  reg_number: string;
 
   @Column({
     type: DataType.STRING,
@@ -46,34 +37,4 @@ export default class StandsHistory extends Model {
     type: DataType.TINYINT,
   })
   close: number;
-
-  @Column({
-    type: DataType.BIGINT,
-  })
-  fpl_id_arr: string;
-
-  @Column({
-    type: DataType.BIGINT,
-  })
-  fpl_id_dep: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  terminal: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  time_occup: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  time_tow: string;
-  
-  @Column({
-    type: DataType.DOUBLE,
-  })
-  last_tu: number;
 }
