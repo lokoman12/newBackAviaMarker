@@ -20,7 +20,7 @@ export class AodbController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAodb(): Promise<AODB[]> {
+  async getAllAodb(): Promise<Array<AODB>> {
     try {
       const aodb = await this.AODBModel.findAll();
       return aodb;

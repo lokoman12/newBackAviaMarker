@@ -19,7 +19,7 @@ export class StripsController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllStrips(): Promise<any[]> {
+  async getAllStrips(): Promise<Array<Strips>> {
     try {
       const strips = await this.stripsModel.findAll();
       return strips;

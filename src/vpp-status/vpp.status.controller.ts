@@ -18,7 +18,7 @@ export class VppStatusController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllVppStatus(): Promise<any[]> {
+  async getAllVppStatus(): Promise<Array<VppStatus>> {
     try {
       const vppStatus = await this.vppStatusModel.findAll();
 

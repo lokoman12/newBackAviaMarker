@@ -18,7 +18,7 @@ export class AlarmController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAlram(): Promise<AlaramAM[]> {
+  async getAllAlram(): Promise<Array<AlaramAM>> {
     try {
       const alarms = await this.alarmModel.findAll();
       return alarms;

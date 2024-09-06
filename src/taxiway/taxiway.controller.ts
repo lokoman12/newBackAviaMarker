@@ -18,7 +18,7 @@ export class TaxiwayController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllTaxiway(): Promise<Taxiway[]> {
+  async getAllTaxiway(): Promise<Array<Taxiway>> {
     try {
       const taxiway = await this.taxiwayModel.findAll();
       return taxiway;

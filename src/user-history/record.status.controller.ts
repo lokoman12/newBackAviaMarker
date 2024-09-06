@@ -19,6 +19,7 @@ import HistoryUserService from './history.user.service';
 import { TimelineDto } from './types';
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
+import { omit } from 'lodash';
 
 @Controller('record-status')
 export class RecordStatusController {
@@ -46,7 +47,7 @@ export class RecordStatusController {
 
     const result = await this.recordStatusService.getRecordStatus(username);
     return result !== null ? {
-      ...result,
+      ...omit(result, ['logger']),
       startTime: result.startTime.getTime(),
       endTime: result.endTime.getTime(),
       currentTime: result.currentTime.getTime(),

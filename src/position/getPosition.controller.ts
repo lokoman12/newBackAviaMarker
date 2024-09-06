@@ -20,7 +20,7 @@ export class PositionController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAlram(): Promise<PositionAM[]> {
+  async getAllAlram(): Promise<Array<PositionAM>> {
     try {
       const position = await this.positionModel.findAll();
       return position;

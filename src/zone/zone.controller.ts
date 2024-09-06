@@ -20,7 +20,7 @@ export class ZoneController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllZone(): Promise<ZoneAM[]> {
+  async getAllZone(): Promise<Array<ZoneAM>> {
     try {
       const zones = await this.zoneModel.findAll();
       return zones;

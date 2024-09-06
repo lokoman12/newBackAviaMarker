@@ -20,7 +20,7 @@ export class PodhodController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllPodhod(): Promise<Podhod[]> {
+  async getAllPodhod(): Promise<Array<Podhod>> {
     try {
       const podhod = await this.podhodModel.findAll();
       return podhod;
