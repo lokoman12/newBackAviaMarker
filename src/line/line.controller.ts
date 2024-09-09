@@ -5,7 +5,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import Line from 'src/db/models/line.model';
 
 
-@Controller('lines')
+@Controller('/lines')
 export class LineController {
   private readonly logger = new Logger(LineController.name);
 

@@ -8,7 +8,7 @@ import Photo from 'src/db/models/photo.model';
 import { GeoType } from '../photo/types';
 import { isNull } from 'src/utils/common';
 
-@Controller('savePoints')
+@Controller('/savePoints')
 export class SavePointController {
   private readonly logger = new Logger(SavePointController.name);
 

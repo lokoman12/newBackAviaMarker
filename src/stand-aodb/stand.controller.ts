@@ -8,7 +8,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import StandService from './stand.service';
 
 
-@Controller('stand')
+@Controller('/stand')
 export class StandController {
   private readonly logger = new Logger(StandController.name);
 

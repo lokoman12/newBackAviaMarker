@@ -13,7 +13,7 @@ import { CreateGroupDto, UpdateGroupDto } from 'src/user/user.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { GroupService } from './group.service';
 
-@Controller('groups')
+@Controller('/groups')
 export class GroupController {
   private readonly logger = new Logger(GroupController.name);
 

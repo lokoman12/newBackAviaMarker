@@ -6,7 +6,7 @@ import { AccessTokenGuard } from '../auth/guards/access.token.guard';
 import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
-@Controller('vppStatusChange')
+@Controller('/vppStatusChange')
 export class VppChangeStatusController {
   private readonly logger = new Logger(VppChangeStatusController.name);
 

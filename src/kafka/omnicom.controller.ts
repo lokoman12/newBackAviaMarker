@@ -10,9 +10,9 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('aodb')
-export class ToiController {
-  private readonly logger = new Logger(ToiController.name);
+@Controller('/aodb1')
+export class ToiController1 {
+  private readonly logger = new Logger(ToiController1.name);
 
   constructor(
     private configService: ApiConfigService,
@@ -27,32 +27,32 @@ export class ToiController {
   @Get()
   async getAllToi(): Promise<any[]> {
     try {
-      const toi = await this.toiModel.findAll();
-      const toiFiltered = toi.filter((item) => item.Number !== 0);
-      const formattedToi = await Promise.all(toiFiltered.map(async (item) => {
-        const formular = await this.formularModel.findAll({where: {id: item.id_Sintez}});
-        const [lat, lon] = flatOffsetMeterToLongitudeLatitude(
-          this.configService.getActiveAirportPosition(),
-          item.Y, 
-          item.X
-        );
-        return {
-          id: item.id,
-          Name: item.Name,
-          coordinates: {
-            lat: lat,
-            lon: lon,
-          },
-          curs: item.CRS,
-          alt: item.H,
-          faza: item.faza,
-          Number: item.Number,
-          type: item.Type,
-          formular: formular,
-        };
-      }));
-
-      return formattedToi;
+      // const toi = await this.toiModel.findAll();
+      // const toiFiltered = toi.filter((item) => item.Number !== 0);
+      // const formattedToi = await Promise.all(toiFiltered.map(async (item) => {
+      //   const formular = await this.formularModel.findAll({where: {id: item.id_Sintez}});
+      //   const [lat, lon] = flatOffsetMeterToLongitudeLatitude(
+      //     this.configService.getActiveAirportPosition(),
+      //     item.Y, 
+      //     item.X
+      //   );
+      //   return {
+      //     id: item.id,
+      //     Name: item.Name,
+      //     coordinates: {
+      //       lat: lat,
+      //       lon: lon,
+      //     },
+      //     curs: item.CRS,
+      //     alt: item.H,
+      //     faza: item.faza,
+      //     Number: item.Number,
+      //     type: item.Type,
+      //     formular: formular,
+      //   };
+      // }));
+      // return formattedToi;
+      return [];
     } catch (error) {
       console.error('Error retrieving points:', error);
       throw error;

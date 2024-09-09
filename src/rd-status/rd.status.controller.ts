@@ -8,7 +8,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import RdStatus from 'src/db/models/rdStatus';
 
 
-@Controller('rdStatus')
+@Controller('/rdStatus')
 export class RdStatusController {
   private readonly logger = new Logger(RdStatusController.name);
 

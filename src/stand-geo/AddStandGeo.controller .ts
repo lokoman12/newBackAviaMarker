@@ -7,7 +7,7 @@ import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import { log } from 'console';
 import { QueryError } from 'sequelize';
 
-@Controller('addStandGeo')
+@Controller('/addStandGeo')
 export class AddStandGeoController {
   private readonly logger = new Logger(AddStandGeoController.name);
 

@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('vpp')
+@Controller('/vpp')
 export class VppStatusController {
   private readonly logger = new Logger(VppStatusController.name);
 
@@ -18,7 +18,7 @@ export class VppStatusController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllVppStatus(): Promise<any[]> {
+  async getAllVppStatus(): Promise<Array<VppStatus>> {
     try {
       const vppStatus = await this.vppStatusModel.findAll();
 

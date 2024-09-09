@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('zone')
+@Controller('/zone')
 export class ZoneController {
   private readonly logger = new Logger(ZoneController.name);
 
@@ -20,7 +20,7 @@ export class ZoneController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllZone(): Promise<ZoneAM[]> {
+  async getAllZone(): Promise<Array<ZoneAM>> {
     try {
       const zones = await this.zoneModel.findAll();
       return zones;

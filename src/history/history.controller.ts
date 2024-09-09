@@ -11,7 +11,7 @@ import User from 'src/db/models/user';
 import HistoryService from './history.service';
 import { ToiHistoryResponseType } from './types';
 
-@Controller('history')
+@Controller('/history')
 export class HistoryController {
   private readonly logger = new Logger(HistoryController.name);
 
@@ -22,6 +22,17 @@ export class HistoryController {
   @UseGuards(AccessTokenGuard)
   @Get("/toi-from-history")
   async getAllToi(
+    @Req() req: Request
+  ): Promise<ToiHistoryResponseType> {
+    const { username } = req.user as User;
+    // this.logger.log(`Username from token: ${username}`);
+    const result = await this.historyService.getCurrentHistory(username);
+    return result;
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get("/omnicom-from-history")
+  async getAllOmnicom(
     @Req() req: Request
   ): Promise<ToiHistoryResponseType> {
     const { username } = req.user as User;

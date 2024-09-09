@@ -7,7 +7,7 @@ import AznbService from './aznb.service';
 import Aznb from 'src/db/models/aznb.model';
 
 
-@Controller('omnicom')
+@Controller('/omnicom')
 export class AznbController {
   private readonly logger = new Logger(AznbController.name);
 

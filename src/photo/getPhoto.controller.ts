@@ -11,7 +11,7 @@ interface IGetPhotoResponse {
   photo: string;
 }
 
-@Controller('getPhoto')
+@Controller('/getPhoto')
 export class GetPhotoController {
   private readonly logger = new Logger(GetPhotoController.name);
 

@@ -16,7 +16,7 @@ interface ABC {
 }
 
 @ApiTags('ReceivePoint')
-@Controller('receivePoint')
+@Controller('/receivePoint')
 export class ReceivePointController {
   private readonly logger = new Logger(ReceivePointController.name);
 

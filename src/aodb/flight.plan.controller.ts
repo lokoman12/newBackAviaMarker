@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('aodb')
+@Controller('/aodb')
 export class AodbController {
   private readonly logger = new Logger(AodbController.name);
 
@@ -20,7 +20,7 @@ export class AodbController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAodb(): Promise<AODB[]> {
+  async getAllAodb(): Promise<Array<AODB>> {
     try {
       const aodb = await this.AODBModel.findAll();
       return aodb;

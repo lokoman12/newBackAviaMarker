@@ -5,7 +5,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import PositionHistory from 'src/db/models/positionHistory.model';
 
 
-@Controller('getPositionHistory')
+@Controller('/getPositionHistory')
 export class PositionHistoryController {
   private readonly logger = new Logger(PositionHistoryController.name);
 

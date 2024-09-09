@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('scout')
+@Controller('/scout')
 export class ScoutController {
   private readonly logger = new Logger(ScoutController.name);
 

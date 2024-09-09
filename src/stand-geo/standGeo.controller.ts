@@ -6,7 +6,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 
 
-@Controller('standGeo')
+@Controller('/standGeo')
 export class StandGeoController {
   private readonly logger = new Logger(StandGeoController.name);
 

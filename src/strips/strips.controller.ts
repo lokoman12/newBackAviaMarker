@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('strips')
+@Controller('/strips')
 export class StripsController {
   private readonly logger = new Logger(StripsController.name);
   constructor(
@@ -19,7 +19,7 @@ export class StripsController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllStrips(): Promise<any[]> {
+  async getAllStrips(): Promise<Array<Strips>> {
     try {
       const strips = await this.stripsModel.findAll();
       return strips;

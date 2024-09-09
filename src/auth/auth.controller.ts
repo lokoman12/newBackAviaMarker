@@ -26,7 +26,7 @@ import { LoginTypeResponse } from './types';
 import User from 'src/db/models/user';
 import { RecordStatusService } from 'src/user-history/record.status.service';
 
-@Controller('auth')
+@Controller('/auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
