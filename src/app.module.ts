@@ -61,7 +61,7 @@ import { AznbModule } from './aznb/aznb.module';
     RetaModule,
     RetdModule,
     VppStatusModule,
-    // KafkaModule,
+    KafkaModule,
     ScoutModule,
     OmnicomModule,
     PodhodModule,
