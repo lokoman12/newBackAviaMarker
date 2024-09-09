@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('aodb')
+@Controller('/aodb')
 export class AodbController {
   private readonly logger = new Logger(AodbController.name);
 

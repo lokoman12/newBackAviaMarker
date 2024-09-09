@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('zone')
+@Controller('/zone')
 export class ZoneController {
   private readonly logger = new Logger(ZoneController.name);
 

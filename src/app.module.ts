@@ -37,6 +37,7 @@ import { GetpositionModule } from './get-position-history/Getposition.module';
 import { UserHistoryModule } from './user-history/user.history.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { AznbModule } from './aznb/aznb.module';
+import { AirportStateModule } from './airport-state/airportState.module';
 
 @Module({
   imports: [
@@ -47,16 +48,17 @@ import { AznbModule } from './aznb/aznb.module';
     AuthModule,
     SettingsModule,
     ToiModule,
-    AlarmModule,
-    PositionModule,
-    SaveAlaramModule,
-    SavePositionModule,
-    ZoneModule,
-    SaveZoneModule,
-    DeleteZoneModule,
+    // AlarmModule, для Шарика не надо, только для Пулково
+    // PositionModule, для Шарика не надо, только для Пулково
+    // SaveAlaramModule, для Шарика не надо, только для Пулково
+    // SavePositionModule, для Шарика не надо, только для Пулково
+    // ZoneModule, для Шарика не надо, только для Пулково
+    // SaveZoneModule, для Шарика не надо, только для Пулково
+    // DeleteZoneModule, для Шарика не надо, только для Пулково
     MeteoModule,
     AznbModule,
-    AodbModule,
+    AirportStateModule,
+    // AodbModule, для Шарика не надо, только для Пулково
     StripsModule,
     RetaModule,
     RetdModule,
@@ -68,13 +70,13 @@ import { AznbModule } from './aznb/aznb.module';
     StandsModule,
     TaxiwayModule,
     StandGeoModule,
-    PointModule,
-    LineModule,
-    PolygonsModule,
+    // PointModule, для Шарика не надо, только для Пулково
+    // LineModule, для Шарика не надо, только для Пулково
+    // PolygonsModule, для Шарика не надо, только для Пулково
     HistoryModule,
     RdStatusModule,
-    PhotoModule,
-    GetpositionModule,
+    // PhotoModule, для Шарика не надо, только для Пулково
+    // GetpositionModule, для Шарика не надо, только для Пулково
     UserHistoryModule,
     SchedulerModule,
   ],

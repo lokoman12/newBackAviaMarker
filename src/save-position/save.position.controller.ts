@@ -8,7 +8,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import PositionHistory from 'src/db/models/positionHistory.model';
 
 
-@Controller('savePosition')
+@Controller('/savePosition')
 export class SavePositionController {
   private readonly logger = new Logger(SavePositionController.name);
 

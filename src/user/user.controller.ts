@@ -13,7 +13,7 @@ import { CreateUserDto, UpdateUserDto } from 'src/user/user.dto';
 import { GroupService } from './group.service';
 import { Public } from 'src/auth/decorators/public.decorator';
 
-@Controller('users')
+@Controller('/users')
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 

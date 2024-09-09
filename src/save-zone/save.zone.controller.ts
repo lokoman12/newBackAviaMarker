@@ -12,7 +12,7 @@ interface Coord {
   lon: number,
 }
 
-@Controller('saveZone')
+@Controller('/saveZone')
 export class SaveZoneController {
   private readonly logger = new Logger(SaveZoneController.name);
 

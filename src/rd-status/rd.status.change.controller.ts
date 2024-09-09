@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import RdStatus from 'src/db/models/rdStatus';
 
-@Controller('rdStatusChange')
+@Controller('/rdStatusChange')
 export class RdChangeStatusController {
   private readonly logger = new Logger(RdChangeStatusController.name);
 

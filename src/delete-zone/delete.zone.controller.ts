@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('deleteZone')
+@Controller('/deleteZone')
 export class DeleteZoneController {
   private readonly logger = new Logger(DeleteZoneController.name);
 

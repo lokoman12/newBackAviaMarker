@@ -7,7 +7,7 @@ import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import * as fs from 'fs';
 import axios from 'axios';
 
-@Controller('sendPoint')
+@Controller('/sendPoint')
 export class SendPointController {
   private readonly logger = new Logger(SendPointController.name);
 

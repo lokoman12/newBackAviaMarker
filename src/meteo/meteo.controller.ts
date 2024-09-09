@@ -7,7 +7,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import MeteoService from './meteo.service';
 
 
-@Controller('meteo')
+@Controller('/meteo')
 export class MeteoController {
   private readonly logger = new Logger(MeteoController.name);
 

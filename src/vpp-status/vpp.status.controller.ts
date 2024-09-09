@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('vpp')
+@Controller('/vpp')
 export class VppStatusController {
   private readonly logger = new Logger(VppStatusController.name);
 

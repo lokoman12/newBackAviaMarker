@@ -13,7 +13,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { SettingsService } from './settings.service';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
 
-@Controller('settings')
+@Controller('/settings')
 export class SettingsController {
   private readonly logger = new Logger(SettingsController.name);
 

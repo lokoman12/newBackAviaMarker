@@ -5,7 +5,7 @@ import AlaramAM from 'src/db/models/alarm.model';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import { Public } from 'src/auth/decorators/public.decorator';
 
-@Controller('alarm')
+@Controller('/alarm')
 export class AlarmController {
   private readonly logger = new Logger(AlarmController.name);
 

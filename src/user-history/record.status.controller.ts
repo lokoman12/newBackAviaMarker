@@ -21,7 +21,7 @@ import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
 import { omit } from 'lodash';
 
-@Controller('record-status')
+@Controller('/record-status')
 export class RecordStatusController {
   private readonly logger = new Logger(RecordStatusController.name);
 

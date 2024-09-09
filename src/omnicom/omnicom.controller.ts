@@ -7,7 +7,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import OmnicomService from './omnicom.service';
 
 
-@Controller('omnicom')
+@Controller('/omnicom')
 export class OmnicomController {
   private readonly logger = new Logger(OmnicomController.name);
 

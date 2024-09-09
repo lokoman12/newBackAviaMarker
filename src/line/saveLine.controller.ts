@@ -8,7 +8,7 @@ import { ApiQuery } from '@nestjs/swagger';
 import { GeoType } from 'src/photo/types';
 import Photo from 'src/db/models/photo.model';
 
-@Controller('saveLine')
+@Controller('/saveLine')
 export class SaveLineController {
   private readonly logger = new Logger(SaveLineController.name);
 

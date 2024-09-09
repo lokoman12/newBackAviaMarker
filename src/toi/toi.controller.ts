@@ -8,7 +8,7 @@ import ToiService from './toi.service';
 import { ExtractJwt } from 'passport-jwt';
 import { decode } from 'jsonwebtoken';
 
-@Controller('toi')
+@Controller('/toi')
 export class ToiController {
   private readonly logger = new Logger(ToiController.name);
 

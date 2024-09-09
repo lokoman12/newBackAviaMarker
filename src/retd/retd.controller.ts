@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
-@Controller('retd')
+@Controller('/retd')
 export class RetdController {
   private readonly logger = new Logger(RetdController.name);
 

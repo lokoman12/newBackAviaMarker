@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import Polygon from 'src/db/models/polygon.model';
 
-@Controller('polygons')
+@Controller('/polygons')
 export class PolygonController {
   private readonly logger = new Logger(PolygonController.name);
 
