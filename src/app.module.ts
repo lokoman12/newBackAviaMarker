@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ToiModule } from './toi/toi.module';
 import { AlarmModule } from './alarm/alarm.module';
 import { SaveAlaramModule } from './save-alarm/alarm.module';
@@ -23,7 +24,6 @@ import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { PodhodModule } from './podhod/podhod.module';
 import { StandsModule } from './stand-aodb/stand.aodb.module';
-import { CookiesModule } from './cookie/cookies.module';
 import { DatabaseModule } from './db/database.module';
 import { TaxiwayModule } from './taxiway/taxiway.module';
 import { StandGeoModule } from './stand-geo/stand.geo.module';
@@ -37,51 +37,49 @@ import { GetpositionModule } from './get-position-history/Getposition.module';
 import { UserHistoryModule } from './user-history/user.history.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { AznbModule } from './aznb/aznb.module';
-import { AirportStateModule } from './airport-state/airportState.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), // Подключаем ConfigModule для работы с env
     ApiConfigModule,
     DatabaseModule,
-    // CookiesModule,
     UsersModule,
     AuthModule,
     SettingsModule,
     ToiModule,
-    // AlarmModule, для Шарика не надо, только для Пулково
-    // PositionModule, для Шарика не надо, только для Пулково
-    // SaveAlaramModule, для Шарика не надо, только для Пулково
-    // SavePositionModule, для Шарика не надо, только для Пулково
-    // ZoneModule, для Шарика не надо, только для Пулково
-    // SaveZoneModule, для Шарика не надо, только для Пулково
-    // DeleteZoneModule, для Шарика не надо, только для Пулково
+    SavePositionModule,
     MeteoModule,
     AznbModule,
-    AirportStateModule,
-    // AodbModule, для Шарика не надо, только для Пулково
     StripsModule,
     RetaModule,
     RetdModule,
     VppStatusModule,
-    KafkaModule,
     ScoutModule,
     OmnicomModule,
     PodhodModule,
     StandsModule,
     TaxiwayModule,
     StandGeoModule,
-    // PointModule, для Шарика не надо, только для Пулково
-    // LineModule, для Шарика не надо, только для Пулково
-    // PolygonsModule, для Шарика не надо, только для Пулково
     HistoryModule,
     RdStatusModule,
-    // PhotoModule, для Шарика не надо, только для Пулково
-    // GetpositionModule, для Шарика не надо, только для Пулково
     UserHistoryModule,
     SchedulerModule,
+    ...(process.env.activeAirport === 'ULLI' ? [AlarmModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [PositionModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [SaveAlaramModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [ZoneModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [SaveZoneModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [DeleteZoneModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [AodbModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [LineModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [PointModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [PolygonsModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [PhotoModule] : []),
+    ...(process.env.activeAirport === 'ULLI' ? [GetpositionModule] : []),
+    
+    ...(process.env.activeAirport === 'UUEE' ? [KafkaModule] : []),
   ],
   providers: [ApiConfigService],
-
   controllers: [],
 })
-export class AppModule { }
+export class AppModule {}

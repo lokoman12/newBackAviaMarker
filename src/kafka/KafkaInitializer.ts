@@ -13,11 +13,7 @@ export class KafkaInitializer implements OnApplicationBootstrap {
   ) { }
 
   async onApplicationBootstrap() {
-    try {
       await this.kafkaService.init();
       await this.kafkaService.subscribe('omnicomm.changes');
-    } catch (e) {
-      this.logger.error('Can not init and start Kafka. Functionality was disabled!');
-    }
   }
 }
