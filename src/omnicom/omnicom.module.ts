@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import Scout from 'src/db/models/scout.model';
 import { OmnicomController } from './omnicom.controller';
@@ -12,4 +12,10 @@ import OmnicomService from './omnicom.service';
   controllers: [OmnicomController],
   exports: [SequelizeModule, OmnicomService],
 })
-export class OmnicomModule { }
+export class OmnicomModule implements NestModule {
+  private readonly logger = new Logger(OmnicomModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init OmnicomModule');
+  }
+}

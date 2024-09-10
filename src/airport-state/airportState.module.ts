@@ -13,10 +13,12 @@ import { MeteoModule } from 'src/meteo/meteo.module';
 import { AlarmModule } from 'src/alarm/alarm.module';
 import { TaxiwayModule } from 'src/taxiway/taxiway.module';
 import { VppStatusModule } from 'src/vpp-status/vpp.module';
+import { PodhodModule } from 'src/podhod/podhod.module';
+import { StandGeoModule } from 'src/stand-geo/stand.geo.module';
 
 
 @Module({
-  imports: [ApiConfigModule, ToiModule, AznbModule, OmnicomModule, StandsModule, PositionModule, StripsModule, FplnModule, VppStatusModule, MeteoModule, TaxiwayModule, AlarmModule],
+  imports: [ApiConfigModule, ToiModule, AznbModule, OmnicomModule, StandsModule, StandGeoModule, PositionModule, StripsModule, FplnModule, VppStatusModule, MeteoModule, TaxiwayModule, AlarmModule, PodhodModule],
   providers: [AirportStateService],
   controllers: [AirportStateController],
   exports: [AirportStateService],

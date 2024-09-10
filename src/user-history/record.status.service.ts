@@ -111,7 +111,11 @@ export class RecordStatusService {
   async resetRecordStatus(login: string): Promise<void> {
     const record = await this.getRecordStatus(login);
     if (record) {
-      await this.settingsService.removeRecordingSettingsByUsername(login);
+      try {
+        await this.settingsService.removeRecordingSettingsByUsername(login);
+      } catch (e) {
+        this.logger.warn(`Не получилось сбросить настройки для пользователя ${login}, ошибка ${e}. Работаем дальше`)
+      }
     } else {
       this.logger.warn(`Пользователь ${login} не находится в состоянии воспроизведения истории`)
     }

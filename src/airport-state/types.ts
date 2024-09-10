@@ -6,6 +6,7 @@ import Podhod from "src/db/models/podhod.model";
 import PositionAM from "src/db/models/position.model";
 import Scout from "src/db/models/scout.model";
 import Stands from "src/db/models/stands.model";
+import StandsGeo from "src/db/models/standsGeo.model";
 import Strips from "src/db/models/strips.model";
 import Taxiway from "src/db/models/taxiway.model";
 import VppStatus from "src/db/models/vppStatus.model";
@@ -23,7 +24,7 @@ export type AirportState = {
   strip: Array<Strips>;
   vppStatus: Array<VppStatus>;
   omnicom: Array<Scout>;
-  standsGeo: Array<Stands>;
+  standsGeo: Array<StandsGeo>;
   alarms: Array<AlaramAM>;
   taxiway: Array<Taxiway>;
   zones: Array<ZoneAM>;

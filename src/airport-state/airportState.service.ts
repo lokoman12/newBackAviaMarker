@@ -9,10 +9,11 @@ import PositionService from 'src/position/position.service';
 import StripsService from 'src/strips/strips.service';
 import { ApiConfigService } from 'src/config/api.config.service';
 import MeteoService from 'src/meteo/meteo.service';
-import { AlarmModule } from 'src/alarm/alarm.module';
 import AlarmService from 'src/alarm/alarm.service';
 import TaxiwayService from 'src/taxiway/taxiway.service';
 import VppService from 'src/vpp-status/vpp.service';
+import PodhodService from 'src/podhod/podhod.service';
+import StandGeoService from 'src/stand-geo/stand.geo.service';
 
 @Injectable()
 export default class AirportStateService {
@@ -30,7 +31,8 @@ export default class AirportStateService {
     private readonly alarmsService: AlarmService,
     private readonly taxiwayService: TaxiwayService,
     private readonly vppService: VppService,
-
+    private readonly podhodService: PodhodService,
+    private readonly standGeoService: StandGeoService
   ) {
     this.logger.log('Init service');
   }
@@ -45,6 +47,8 @@ export default class AirportStateService {
       const meteo = await this.meteoService.getActualData();
       const taxiway = await this.taxiwayService.getActualData();
       const vppStatus = await this.vppService.getActualData();
+      const podhod = await this.podhodService.getActualData();
+      const standsGeo = await this.standGeoService.getActualData();
 
       const airportState = {
         ...emptyAirportState,
@@ -56,6 +60,8 @@ export default class AirportStateService {
         meteo,
         taxiway,
         vppStatus,
+        podhod,
+        standsGeo,
       };
 
       if (this.configService.isActiveAirportUlli()) {

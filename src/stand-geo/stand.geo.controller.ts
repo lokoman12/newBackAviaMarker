@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import StandsGeo from 'src/db/models/standsGeo.model';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
+import StandGeoService from './stand.geo.service';
 
 
 @Controller('/standGeo')
@@ -11,7 +12,7 @@ export class StandGeoController {
   private readonly logger = new Logger(StandGeoController.name);
 
   constructor(
-    @InjectModel(StandsGeo) private readonly standsGeoModel: typeof StandsGeo,
+    private readonly standGeoService: StandGeoService,
   ) {
     this.logger.log('Init controller');
   }
@@ -19,13 +20,7 @@ export class StandGeoController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllStandsGeo(): Promise<StandsGeo[]> {
-    try {
-      const standGeo = await this.standsGeoModel.findAll();
-      return standGeo;
-    } catch (error) {
-      console.error('Error retrieving standsGeo:', error);
-      throw error;
-    }
+  async getAllStandsGeo(): Promise<Array<StandsGeo>> {
+      return this.standGeoService.getActualData();
   }
 }
