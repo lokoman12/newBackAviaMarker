@@ -29,7 +29,7 @@ export default class MeteoCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    this.logger.log('Копирование meteo в иcторию');
+    // this.logger.log('Копируем meteo в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const rowsForHistory = await this.meteoService.getActualData();
     const promises = [];

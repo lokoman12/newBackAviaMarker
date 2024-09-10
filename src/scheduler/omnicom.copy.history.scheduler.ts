@@ -29,14 +29,12 @@ export default class OmnicomCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    this.logger.log('Копирование omnicom в иcторию');
+    // this.logger.log('Копируем omnicom в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const rowsForHistory = await this.omnicomService.getActualData();
     const promises = [];
 
-    this.logger.log(
-      `Копируем в историю omnicom: ${rowsForHistory.length} строк`,
-    );
+    // this.logger.log(`Копируем в историю omnicom: ${rowsForHistory.length} строк`);
 
     const time = new Date();
     rowsForHistory.forEach((it) => {

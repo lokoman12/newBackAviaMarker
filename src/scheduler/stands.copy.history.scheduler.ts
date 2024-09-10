@@ -31,12 +31,12 @@ export default class StandsCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    this.logger.log('Копирование stands в иcторию');
+    // this.logger.log('Копируем stands в иcторию');
     // this.logger.log('Запуск джобы копирования актуальной третички в историю');
     const rowsForHistory = await this.standService.getActualData();
     const promises = [];
 
-    this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
+    // this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
 
     const time = new Date();
     rowsForHistory.forEach(it => {

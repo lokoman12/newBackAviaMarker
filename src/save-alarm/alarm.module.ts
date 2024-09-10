@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { SaveAlarmController } from './save.alarm.controller';
 import AlaramAM from 'src/db/models/alarm.model';
@@ -11,4 +11,10 @@ import AlaramAM from 'src/db/models/alarm.model';
   controllers: [SaveAlarmController],
   exports: [SequelizeModule],
 })
-export class SaveAlaramModule {}
+export class SaveAlaramModule implements NestModule {
+  private readonly logger = new Logger(SaveAlaramModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init SaveAlaramModule');
+  }
+}

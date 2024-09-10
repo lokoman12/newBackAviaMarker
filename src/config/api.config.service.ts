@@ -1,10 +1,13 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Airports, Position } from "src/environment/types";
+import { loggers } from "winston";
 
 
 @Injectable()
 export class ApiConfigService {
+  private readonly logger = new Logger(ApiConfigService.name);
+
   constructor(
     private configService: ConfigService
   ) { }
@@ -75,6 +78,12 @@ export class ApiConfigService {
 
   getDbProperties(): string {
     return this.configService.get<string>('dbUri');
+  }
+
+  isActiveAirportUlli(): boolean {
+    const activeAirport = this.configService.get<string>('activeAirport');
+    this.logger.log(`isActiveAirportUlli: ${activeAirport}`);
+    return activeAirport === Airports.ULLI;
   }
 
   getActiveAirportPosition(): Position {

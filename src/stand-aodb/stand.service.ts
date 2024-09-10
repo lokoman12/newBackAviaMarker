@@ -35,7 +35,7 @@ export default class StandService {
           },
         }
       });
-      this.logger.log(`Stands: ${stands.length}`);
+
       return stands;
     } catch (error) {
       console.error('Error retrieving stands:', error);

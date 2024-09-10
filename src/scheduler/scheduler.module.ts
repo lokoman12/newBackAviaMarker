@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ApiConfigModule } from 'src/config/config.module';
 import { ExternalScheduler } from './external.scheduler';
 import { HistoryModule } from 'src/history/history.module';
@@ -27,4 +27,10 @@ import AznbCopyToHistoryScheduler from './aznb.copy.history.scheduler';
   controllers: [],
   exports: [ExternalScheduler,],
 })
-export class SchedulerModule { }
+export class SchedulerModule implements NestModule {
+  private readonly logger = new Logger(SchedulerModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init SchedulerModule');
+  }
+}

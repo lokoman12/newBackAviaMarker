@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ZoneController } from './zone.controller';
 import ZoneAM from 'src/db/models/zone.model';
@@ -11,4 +11,10 @@ import ZoneAM from 'src/db/models/zone.model';
   controllers: [ZoneController],
   exports: [SequelizeModule],
 })
-export class ZoneModule {}
+export class ZoneModule implements NestModule {
+  private readonly logger = new Logger(ZoneModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init ZoneModule');
+  }
+}

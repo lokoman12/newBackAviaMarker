@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { LineController } from './line.controller';
 import { SaveLineController } from './saveLine.controller';
@@ -10,4 +10,10 @@ import Photo from 'src/db/models/photo.model';
   controllers: [LineController, SaveLineController],
   exports: [SequelizeModule],
 })
-export class LineModule {}
+export class LineModule implements NestModule {
+  private readonly logger = new Logger(LineModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init LineModule');
+  }
+}

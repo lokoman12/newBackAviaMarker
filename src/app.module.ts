@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, Type } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ToiModule } from './toi/toi.module';
 import { AlarmModule } from './alarm/alarm.module';
@@ -10,8 +10,8 @@ import { DeleteZoneModule } from './delete-zone/zone.module';
 import { PositionModule } from './position/position.module';
 import { MeteoModule } from './meteo/meteo.module';
 import { ApiConfigModule } from './config/config.module';
-import { AodbModule } from './aodb/aodb.module';
-import { StripsModule } from './strips/user.module';
+import { FplnModule } from './fpln/fpln.module';
+import { StripsModule } from './strips/strips.module';
 import { RetaModule } from './reta/reta.module';
 import { RetdModule } from './retd/retd';
 import { VppStatusModule } from './vpp-status/vpp.module';
@@ -33,10 +33,19 @@ import { PolygonsModule } from './polygon/polygon.module';
 import { HistoryModule } from './history/history.module';
 import { RdStatusModule } from './rd-status/rd.module';
 import { PhotoModule } from './photo/photo.module';
-import { GetpositionModule } from './get-position-history/Getposition.module';
+import { PositionHistoryModule } from './get-position-history/positionHistory.module';
 import { UserHistoryModule } from './user-history/user.history.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { AznbModule } from './aznb/aznb.module';
+import { AirportStateModule } from './airport-state/airportState.module';
+
+type NestModuleType = Type<NestModule>;
+function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
+  if (process.env.activeAirport === 'ULLI') {
+    return [module];
+  }
+  return [];
+}
 
 @Module({
   imports: [
@@ -64,22 +73,22 @@ import { AznbModule } from './aznb/aznb.module';
     RdStatusModule,
     UserHistoryModule,
     SchedulerModule,
-    ...(process.env.activeAirport === 'ULLI' ? [AlarmModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [PositionModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [SaveAlaramModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [ZoneModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [SaveZoneModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [DeleteZoneModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [AodbModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [LineModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [PointModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [PolygonsModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [PhotoModule] : []),
-    ...(process.env.activeAirport === 'ULLI' ? [GetpositionModule] : []),
-    
-    ...(process.env.activeAirport === 'UUEE' ? [KafkaModule] : []),
+    AirportStateModule,
+    ...getUlliModuleOnly(AlarmModule),
+    ...getUlliModuleOnly(PositionModule),
+    ...getUlliModuleOnly(SaveAlaramModule),
+    ...getUlliModuleOnly(ZoneModule),
+    ...getUlliModuleOnly(SaveZoneModule),
+    ...getUlliModuleOnly(DeleteZoneModule),
+    ...getUlliModuleOnly(FplnModule),
+    ...getUlliModuleOnly(LineModule),
+    ...getUlliModuleOnly(PointModule),
+    ...getUlliModuleOnly(PolygonsModule),
+    ...getUlliModuleOnly(PhotoModule),
+    ...getUlliModuleOnly(PositionHistoryModule),
+    ...getUlliModuleOnly(KafkaModule),
   ],
   providers: [ApiConfigService],
   controllers: [],
 })
-export class AppModule {}
+export class AppModule { }

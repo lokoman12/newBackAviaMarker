@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { PointController } from './point.controller';
 import Point from 'src/db/models/point.model';
@@ -12,4 +12,10 @@ import Photo from 'src/db/models/photo.model';
   controllers: [PointController, SavePointController, SendPointController, ReceivePointController],
   exports: [SequelizeModule],
 })
-export class PointModule {}
+export class PointModule implements NestModule {
+  private readonly logger = new Logger(PointModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init PointModule');
+  }
+}

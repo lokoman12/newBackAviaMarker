@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ToiController } from './toi.controller';
 import Toi from 'src/db/models/toi.model';
@@ -13,4 +13,10 @@ import ToiService from './toi.service';
   controllers: [ToiController],
   exports: [SequelizeModule, ToiService],
 })
-export class ToiModule { }
+export class ToiModule implements NestModule {
+  private readonly logger = new Logger(ToiModule.name);
+
+  configure(consumer: MiddlewareConsumer) {
+    this.logger.debug('Init ToiModule');
+  }
+}
