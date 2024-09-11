@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
-import ToiService from 'src/toi/toi.service';
+import ToiService, { ActualClientToi, GeneralToiResponseType } from 'src/toi/toi.service';
 import { AirportState, emptyAirportState } from './types';
-import OmnicomService from 'src/omnicom/omnicom.service';
+import OmnicomService, { GeneralOmnicomResponseType } from 'src/omnicom/omnicom.service';
 import StandService from 'src/stand-aodb/stand.service';
 import AznbService from 'src/aznb/aznb.service';
 import PositionService from 'src/position/position.service';
@@ -14,6 +14,8 @@ import TaxiwayService from 'src/taxiway/taxiway.service';
 import VppService from 'src/vpp-status/vpp.service';
 import PodhodService from 'src/podhod/podhod.service';
 import StandGeoService from 'src/stand-geo/stand.geo.service';
+import HistoryService from 'src/history/history.service';
+import { RecordStatusService } from 'src/user-history/record.status.service';
 
 @Injectable()
 export default class AirportStateService {
@@ -32,16 +34,28 @@ export default class AirportStateService {
     private readonly taxiwayService: TaxiwayService,
     private readonly vppService: VppService,
     private readonly podhodService: PodhodService,
-    private readonly standGeoService: StandGeoService
+    private readonly standGeoService: StandGeoService,
+    private readonly historyService: HistoryService,
+    private readonly recordStatusService: RecordStatusService
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<AirportState> {
+  async getActualData(username: string): Promise<AirportState> {
     try {
-      const toi = await this.toiService.getActualClientData();
+      // Если включено воспроизведение истории, заполняем данными из исторических таблиц, вместо актуальных значений
+      let toi: GeneralToiResponseType;
+      let omnicom: GeneralOmnicomResponseType;
+      const isRecording = await this.recordStatusService.isInRecordStatus(username);
+      if (isRecording) {
+        toi = await this.historyService.getCurrentHistory(username);        
+        omnicom = [];
+      } else {
+        toi = await this.toiService.getActualClientData();
+        omnicom = await this.omnicomService.getActualData();
+      }
+
       const aznb = await this.aznbService.getActualData();
-      const omnicom = await this.omnicomService.getActualData();
       const stands = await this.standService.getActualData();
       const strip = await this.stripsService.getActualData();
       const meteo = await this.meteoService.getActualData();

@@ -12,6 +12,7 @@ import { Request } from 'express';
 import { Op } from 'sequelize';
 import { pick } from 'lodash';
 import { nonNull } from 'src/utils/common';
+import { ToiHistoryResponseType } from 'src/history/types';
 
 export interface ActualToi {
   toi: IToi;
@@ -21,6 +22,8 @@ export interface ActualToi {
 export type ActualClientToi = Partial<IToi> & {
   formular: Array<IFormular>
 }
+
+export type GeneralToiResponseType = Array<ActualClientToi> | ToiHistoryResponseType;
 
 @Injectable()
 export default class ToiService {

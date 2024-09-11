@@ -86,7 +86,6 @@ export class ApiConfigService {
 
   isActiveAirportUlli(): boolean {
     const activeAirport = this.configService.get<string>('activeAirport');
-    this.logger.log(`isActiveAirportUlli: ${activeAirport}`);
     return activeAirport === Airports.ULLI;
   }
 

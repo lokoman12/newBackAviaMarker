@@ -49,6 +49,7 @@ export class UserController {
     const user = await this.userService.updateUser(id, dto);
     return user;
   }
+  
   @Public()
   @Post('/')
   async createUser(@Body() createUserDto: CreateUserDto) {

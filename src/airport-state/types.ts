@@ -4,17 +4,17 @@ import AODB from "src/db/models/fpln.model";
 import Meteo from "src/db/models/meteo.model";
 import Podhod from "src/db/models/podhod.model";
 import PositionAM from "src/db/models/position.model";
-import Scout from "src/db/models/scout.model";
 import Stands from "src/db/models/stands.model";
 import StandsGeo from "src/db/models/standsGeo.model";
 import Strips from "src/db/models/strips.model";
 import Taxiway from "src/db/models/taxiway.model";
 import VppStatus from "src/db/models/vppStatus.model";
 import ZoneAM from "src/db/models/zone.model";
-import { ActualClientToi } from "src/toi/toi.service";
+import { GeneralOmnicomResponseType } from "src/omnicom/omnicom.service";
+import { GeneralToiResponseType } from "src/toi/toi.service";
 
 export type AirportState = {
-  toi: Array<ActualClientToi>;
+  toi: GeneralToiResponseType;
   aznb: Array<Aznb>,
   podhod: Array<Podhod>;
   stands: Array<Stands>;
@@ -23,7 +23,7 @@ export type AirportState = {
   fpln: Array<AODB>;
   strip: Array<Strips>;
   vppStatus: Array<VppStatus>;
-  omnicom: Array<Scout>;
+  omnicom: GeneralOmnicomResponseType;
   standsGeo: Array<StandsGeo>;
   alarms: Array<AlaramAM>;
   taxiway: Array<Taxiway>;

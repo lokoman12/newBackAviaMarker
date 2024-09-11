@@ -49,8 +49,12 @@ export class RecordStatusService {
   }
 
   async isInRecordStatus(login: string): Promise<boolean> {
-    const recordStatus = await this.getRecordStatus(login);
-    return nonNull(recordStatus);
+    try {
+      const recordStatus = await this.getRecordStatus(login);
+      return nonNull(recordStatus);
+    } catch (e) {
+      return false;
+    }
   }
 
   /**

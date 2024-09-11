@@ -15,10 +15,12 @@ import { TaxiwayModule } from 'src/taxiway/taxiway.module';
 import { VppStatusModule } from 'src/vpp-status/vpp.module';
 import { PodhodModule } from 'src/podhod/podhod.module';
 import { StandGeoModule } from 'src/stand-geo/stand.geo.module';
+import { HistoryModule } from 'src/history/history.module';
+import { UserHistoryModule } from 'src/user-history/user.history.module';
 
 
 @Module({
-  imports: [ApiConfigModule, ToiModule, AznbModule, OmnicomModule, StandsModule, StandGeoModule, PositionModule, StripsModule, FplnModule, VppStatusModule, MeteoModule, TaxiwayModule, AlarmModule, PodhodModule],
+  imports: [ApiConfigModule, ToiModule, AznbModule, OmnicomModule, StandsModule, StandGeoModule, PositionModule, StripsModule, FplnModule, VppStatusModule, MeteoModule, TaxiwayModule, AlarmModule, PodhodModule, HistoryModule, UserHistoryModule],
   providers: [AirportStateService],
   controllers: [AirportStateController],
   exports: [AirportStateService],

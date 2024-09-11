@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import Scout from 'src/db/models/scout.model';
+import { OmnicomHistoryResponseType } from 'src/history/types';
+
+export type GeneralOmnicomResponseType = Array<Scout> | OmnicomHistoryResponseType;
 
 @Injectable()
 export default class OmnicomService {
