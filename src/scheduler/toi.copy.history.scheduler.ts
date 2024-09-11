@@ -19,11 +19,18 @@ export default class ToiCopyToHistoryScheduler {
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
     this.logger.log('Init controller --------------------------->');
-    this.externalScheduler.addJob(
-      ToiCopyToHistoryScheduler.copyToHistoryJobName,
-      this.configService.getToiCopyToHistoryCronMask(),
-      this.copyToHistory.bind(this)
-    );
+    
+    if (!configService.getDisableCopyHistory()) {
+      this.logger.warn('Включение копирования третички в историю');
+      this.externalScheduler.addJob(
+        ToiCopyToHistoryScheduler.copyToHistoryJobName,
+        this.configService.getToiCopyToHistoryCronMask(),
+        this.copyToHistory.bind(this)
+      );
+    } else {
+      this.logger.warn('Копирование третички отключено в настройках');
+    }
+    
     this.logger.log('Сервис инициализирован! ==================')
   }
 

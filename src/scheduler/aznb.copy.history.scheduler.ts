@@ -24,11 +24,16 @@ export default class AznbCopyToHistoryScheduler {
     @InjectModel(AznbHistory) private readonly aznbHistoryModel: typeof AznbHistory
   ) {
     this.logger.log('Init controller --------------------------->');
-    this.externalScheduler.addJob(
-      AznbCopyToHistoryScheduler.copyToHistoryJobName,
-      this.configService.getAznbCopyToHistoryCronMask(),
-      this.copyToHistory.bind(this)
-    );
+    if (!configService.getDisableCopyHistory()) {
+      this.logger.warn('Включение копирования азнб в историю');
+      this.externalScheduler.addJob(
+        AznbCopyToHistoryScheduler.copyToHistoryJobName,
+        this.configService.getAznbCopyToHistoryCronMask(),
+        this.copyToHistory.bind(this)
+      );
+    } else {
+      this.logger.warn('Копирование первички отключено в настройках');
+    }
     this.logger.log('Сервис инициализирован! ==================')
   }
 

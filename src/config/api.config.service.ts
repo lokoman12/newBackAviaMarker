@@ -12,6 +12,10 @@ export class ApiConfigService {
     private configService: ConfigService
   ) { }
 
+  getDisableCopyHistory() {
+    return this.configService.get<boolean>('disableCopyHistory');
+  }
+
   getHistoryRecordTablesNumber() {
     return this.configService.get<number>('historyRecordTablesNumber');
   }

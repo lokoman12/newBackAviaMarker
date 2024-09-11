@@ -22,11 +22,17 @@ export default class StandsCopyToHistoryScheduler {
     @InjectModel(StandsHistory) private readonly standsHistoryModel: typeof StandsHistory
   ) {
     this.logger.log('Init controller --------------------------->');
-    this.externalScheduler.addJob(
-      StandsCopyToHistoryScheduler.copyToHistoryJobName,
-      this.configService.getStandsCopyToHistoryCronMask(),
-      this.copyToHistory.bind(this)
-    );
+
+    if (!configService.getDisableCopyHistory()) {
+      this.logger.warn('Включение копирования парковок в историю');
+      this.externalScheduler.addJob(
+        StandsCopyToHistoryScheduler.copyToHistoryJobName,
+        this.configService.getStandsCopyToHistoryCronMask(),
+        this.copyToHistory.bind(this)
+      );
+    } else {
+      this.logger.warn('Копирование парковкок отключено в настройках');
+    }
     this.logger.log('Сервис инициализирован! ==================')
   }
 
