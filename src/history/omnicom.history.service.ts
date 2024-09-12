@@ -4,12 +4,13 @@ import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
 import { SettingsService } from "src/settings/settings.service";
 import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes } from "sequelize";
-import { ToiHistoryResponseType } from "./types";
+import { OmnicomHistoryResponseType, ToiHistoryResponseType } from "./types";
 import dayjs from '../utils/dayjs';
 import { isNumber } from "lodash";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
 import { isNormalNumber } from "src/utils/number";
-import { TOI_HISTORY_TABLE_NAME } from "./consts";
+import { OMNICOM_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from "./consts";
+import OmnicomHistory from "src/db/models/scoutHistory.model";
 
 export interface IHistoryClient {
   id: number;
@@ -22,12 +23,12 @@ export interface IHistoryClient {
 }
 
 @Injectable()
-class HistoryService {
-  private readonly logger = new Logger(HistoryService.name);
+class OmnicomHistoryService {
+  private readonly logger = new Logger(OmnicomHistoryService.name);
 
   constructor(
     private readonly recordStatusService: RecordStatusService,
-    @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
+    @InjectModel(OmnicomHistory) private readonly omnicomHistoryModel: typeof OmnicomHistory
   ) {
     this.logger.log('Сервис инициализирован!')
   }
@@ -35,8 +36,8 @@ class HistoryService {
   async getHistoryFromStartTillEnd(
     timeStart: Date,
     timeEnd: Date
-  ): Promise<Array<IToiHistory>> {
-    const dbHistoryResult = await this.toiHistoryModel.findAll({
+  ): Promise<Array<OmnicomHistory>> {
+    const dbHistoryResult = await this.omnicomHistoryModel.findAll({
       raw: true,
       where: {
         time: {
@@ -48,9 +49,9 @@ class HistoryService {
     return dbHistoryResult;
   }
 
-  async getCurrentToiHistory(
+  async getCurrentHistory(
     login: string
-  ): Promise<ToiHistoryResponseType> {
+  ): Promise<OmnicomHistoryResponseType> {
     // Текущее состояние воспроизведения записи пользователя
     const status = await this.recordStatusService.getRecordStatus(login);
     if (!status) {
@@ -62,7 +63,7 @@ class HistoryService {
     // Новый текущий шаг
     const nextId = status.currentToiId + 1;
     // Получим имя таблицы истории для залогиненного пользователя
-    const tableName = SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, status.tableNumber);
+    const tableName = SettingsService.getRecordTableNameByIndex(OMNICOM_HISTORY_TABLE_NAME, status.tableNumber);
 
     const getHistorySql = `
       SELECT *
@@ -71,9 +72,9 @@ class HistoryService {
     // this.logger.log(getHistorySql);
 
     // Получим значения для первого и последнего шагов сформированной для пользователя истории
-    const records = await this.toiHistoryModel.sequelize.query(
+    const records = await this.omnicomHistoryModel.sequelize.query(
       getHistorySql,
-      { raw: true, model: ToiHistory, mapToModel: true, type: QueryTypes.SELECT, }
+      { raw: true, model: OmnicomHistory, mapToModel: true, type: QueryTypes.SELECT, }
     );
 
     // Обновим текущие шаг и время
@@ -103,4 +104,4 @@ class HistoryService {
 
 }
 
-export default HistoryService;
+export default OmnicomHistoryService;

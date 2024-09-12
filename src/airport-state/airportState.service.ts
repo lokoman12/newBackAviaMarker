@@ -14,8 +14,9 @@ import TaxiwayService from 'src/taxiway/taxiway.service';
 import VppService from 'src/vpp-status/vpp.service';
 import PodhodService from 'src/podhod/podhod.service';
 import StandGeoService from 'src/stand-geo/stand.geo.service';
-import HistoryService from 'src/history/history.service';
+import ToiHistoryService from 'src/history/toi.history.service';
 import { RecordStatusService } from 'src/user-history/record.status.service';
+import OmnicomHistoryService from 'src/history/omnicom.history.service';
 
 @Injectable()
 export default class AirportStateService {
@@ -35,7 +36,8 @@ export default class AirportStateService {
     private readonly vppService: VppService,
     private readonly podhodService: PodhodService,
     private readonly standGeoService: StandGeoService,
-    private readonly historyService: HistoryService,
+    private readonly toiHistoryService: ToiHistoryService,
+    private readonly omnicomHistoryService: OmnicomHistoryService,
     private readonly recordStatusService: RecordStatusService
   ) {
     this.logger.log('Init service');
@@ -48,8 +50,8 @@ export default class AirportStateService {
       let omnicom: GeneralOmnicomResponseType;
       const isRecording = await this.recordStatusService.isInRecordStatus(username);
       if (isRecording) {
-        toi = await this.historyService.getCurrentToiHistory(username);
-        omnicom = [];
+        toi = await this.toiHistoryService.getCurrentHistory(username);
+        omnicom = await this.omnicomHistoryService.getCurrentHistory(username);
       } else {
         toi = await this.toiService.getActualClientData();
         omnicom = await this.omnicomService.getActualData();

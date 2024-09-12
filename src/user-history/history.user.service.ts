@@ -198,10 +198,9 @@ class HistoryUserService {
 * @param tableNumber 
 */
   public async getTimeByStep(
-    tableNumber: number,
+    tableName: string,
     step: number,
   ): Promise<CurrentTimeRecord | null> {
-    const tableName = SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, tableNumber);
     const infoSql = `SELECT step as currentId, time as currentTime FROM ${tableName} where step = ${step}`;
 
     try {

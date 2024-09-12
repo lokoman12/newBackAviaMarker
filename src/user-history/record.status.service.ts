@@ -135,14 +135,14 @@ export class RecordStatusService {
     return result;
   }
 
-  async setCurrent(login: string, currentToiId: number, currentTime: Date): Promise<any> {
+  async setCurrent(login: string, currentToiId: number, currentOmnicomId: number, currentTime: Date): Promise<any> {
     let record = await this.getRecordStatus(login);
     if (record) {
       const newTimelineDto = new TimelineRecordDto(
         record.login,
         record.startTime, record.endTime, currentTime,
         record.startToiId, record.endToiId, currentToiId,
-        record.startOmnicomId, record.endOmnicomId, 0,
+        record.startOmnicomId, record.endOmnicomId, currentOmnicomId,
         record.startMeteoId, record.endMeteoId, 1,
         record.velocity, record.tableNumber);
       this.logger.log(`currentToiId: ${currentToiId} ,newTimelineDto: ${JSON.stringify(newTimelineDto)}`);

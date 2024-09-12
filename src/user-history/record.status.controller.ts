@@ -20,6 +20,8 @@ import { TimelineDto } from './types';
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
 import { omit } from 'lodash';
+import { SettingsService } from 'src/settings/settings.service';
+import { OMNICOM_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 
 @Controller('/record-status')
 export class RecordStatusController {
@@ -101,11 +103,17 @@ export class RecordStatusController {
         }
       }
 
-      const current = await this.historyUserService.getTimeByStep(recordStatus.tableNumber, stepsCount);
-      if (current) {
+      const toiTableName = SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, recordStatus.tableNumber);
+      const toiCurrent = await this.historyUserService.getTimeByStep(toiTableName, stepsCount);
+
+      const omnicomTableName = SettingsService.getRecordTableNameByIndex(OMNICOM_HISTORY_TABLE_NAME, recordStatus.tableNumber);
+      const omnicomCurrent = await this.historyUserService.getTimeByStep(omnicomTableName, stepsCount);
+
+      if (toiCurrent) {
         const toiHistoryResult = await this.recordStatusService.setCurrent(
           username,
-          current.currentId, dayjs.utc(current.currentTime).toDate()
+          toiCurrent.currentId, omnicomCurrent.currentId,
+          dayjs.utc(toiCurrent.currentTime).toDate()
         );
 
         // this.logger.log(`current.currentTime: ${current.currentTime}, str: ${dayjs.utc(current.currentTime).toDate()}`);
@@ -135,7 +143,7 @@ export class RecordStatusController {
       throw new HistoryBadStateException(username, HistoryErrorCodeEnum.invalidDateValue, 'Задайте корректное значение для currentTime!');
     }
 
-    const result = await this.recordStatusService.setCurrent(username, timelineDto.currentToiId, currentTimeDayjs.toDate());
+    const result = await this.recordStatusService.setCurrent(username, timelineDto.currentToiId, timelineDto.currentOmnicomId, currentTimeDayjs.toDate());
     return result !== null ? {
       ...omit(result, ['logger']),
       startTime: result.startTime.getTime(),
