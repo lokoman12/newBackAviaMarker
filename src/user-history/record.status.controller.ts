@@ -88,16 +88,16 @@ export class RecordStatusController {
 
     const recordStatus = await this.recordStatusService.getRecordStatus(username);
     if (recordStatus) {
-      let newCurrentStep = recordStatus.currentId + stepsCount;
+      let newCurrentStep = recordStatus.currentToiId + stepsCount;
 
       // Листаем вперёд или назад, проверяем границы таймлайна
       if (stepsCount > 0) {
-        if (recordStatus.endId < newCurrentStep) {
-          newCurrentStep = recordStatus.endId;
+        if (recordStatus.endToiId < newCurrentStep) {
+          newCurrentStep = recordStatus.endToiId;
         }
       } else {
-        if (recordStatus.startId > newCurrentStep) {
-          newCurrentStep = recordStatus.startId;
+        if (recordStatus.startToiId > newCurrentStep) {
+          newCurrentStep = recordStatus.startToiId;
         }
       }
 
@@ -128,16 +128,16 @@ export class RecordStatusController {
     @Req() req: Request
   ) {
     const { username } = req.user as User;
-    this.logger.log(`POST /set-current, username from token: ${username}, body: ${timelineDto}`);
+    this.logger.log(`POST /set-current, username from token: ${username}, body: ${JSON.stringify(timelineDto)}`);
 
     let currentTimeDayjs = dayjs.utc(timelineDto.currentTime);
     if (!currentTimeDayjs.isValid()) {
       throw new HistoryBadStateException(username, HistoryErrorCodeEnum.invalidDateValue, 'Задайте корректное значение для currentTime!');
     }
 
-    const result = await this.recordStatusService.setCurrent(username, timelineDto.currentId, currentTimeDayjs.toDate());
+    const result = await this.recordStatusService.setCurrent(username, timelineDto.currentToiId, currentTimeDayjs.toDate());
     return result !== null ? {
-      ...result,
+      ...omit(result, ['logger']),
       startTime: result.startTime.getTime(),
       endTime: result.endTime.getTime(),
       currentTime: result.currentTime.getTime(),

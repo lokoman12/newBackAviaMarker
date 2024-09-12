@@ -59,7 +59,7 @@ class HistoryService {
     }
 
     // Новый текущий шаг
-    const nextId = status.currentId + 1;
+    const nextId = status.currentToiId + 1;
     // Получим имя таблицы истории для залогиненного пользователя
     const tableName = SettingsService.getRecordHistoryTableNameByIndex(status.tableNumber);
 

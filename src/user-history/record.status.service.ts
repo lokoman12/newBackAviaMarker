@@ -64,11 +64,13 @@ export class RecordStatusService {
     // const isRecording = await this.isInRecordStatus(dto.login);
     // Сохраняем, если ещё не в статусе записи
     // if (!isRecording) {
+    const value = dto.asJsonString();
+    this.logger.log(`value: ${value}`);
     const valueToSave = {
       name: RECORD_SETTING_PROPERTY_NAME,
       username: dto.login,
       groupname: ALL_GROUPS_SETTING_VALUE,
-      value: dto.asJsonString(),
+      value,
     } as UpdateSettingsDto;
     await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
     // } else {
@@ -97,7 +99,8 @@ export class RecordStatusService {
     const nextStatus = new TimelineRecordDto(
       currentStatus.login,
       currentStatus.startTime, currentStatus.endTime, nextCurrentTime,
-      currentStatus.startId, currentStatus.endId, nextCurrentStep,
+      currentStatus.startToiId, currentStatus.endToiId, nextCurrentStep,
+      currentStatus.startToiId, currentStatus.endToiId, nextCurrentStep,
       currentStatus.velocity, currentStatus.tableNumber);
     await this.setRecordStatus(nextStatus);
 
@@ -131,15 +134,16 @@ export class RecordStatusService {
     return result;
   }
 
-  async setCurrent(login: string, currentId: number, currentTime: Date): Promise<any> {
+  async setCurrent(login: string, currentToiId: number, currentTime: Date): Promise<any> {
     let record = await this.getRecordStatus(login);
     if (record) {
       const newTimelineDto = new TimelineRecordDto(
         record.login,
         record.startTime, record.endTime, currentTime,
-        record.startId, record.endId, currentId,
+        record.startToiId, record.endToiId, currentToiId,
+        record.startToiId, record.endToiId, currentToiId,
         record.velocity, record.tableNumber);
-
+      this.logger.log(`currentToiId: ${currentToiId} ,newTimelineDto: ${JSON.stringify(newTimelineDto)}`);
       const valueToSave = {
         name: RECORD_SETTING_PROPERTY_NAME,
         username: record.login,

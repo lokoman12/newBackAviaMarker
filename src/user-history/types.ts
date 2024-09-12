@@ -13,6 +13,7 @@ export type NextCurrentTypeForResponse = {
 };
 
 export class TimelineDto {
-  currentId: number;
+  currentToiId?: number;
+  currentOmnicomId?: number;
   currentTime: number;
 }

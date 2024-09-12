@@ -10,9 +10,12 @@ export class TimelineRecordDto {
     readonly startTime: Date,
     readonly endTime: Date,
     readonly currentTime: Date,
-    readonly startId: number,
-    readonly endId: number,
-    readonly currentId: number,
+    readonly startToiId: number,
+    readonly endToiId: number,
+    readonly currentToiId: number,
+    readonly startOmnicomId: number,
+    readonly endOmnicomId: number,
+    readonly currentOmnicomId: number,
     readonly velocity: number,
     readonly tableNumber: number
   ) { }
@@ -23,9 +26,15 @@ export class TimelineRecordDto {
       startTime: this.startTime,
       endTime: this.endTime,
       currentTime: this.currentTime,
-      startId: this.startId,
-      endId: this.endId,
-      currentId: this.currentId,
+
+      startToiId: this.startToiId,
+      endToiId: this.endToiId,
+      currentToiId: this.currentToiId,
+      
+      startOmnicomId: this.startOmnicomId,
+      endOmnicomId: this.endOmnicomId,
+      currentOmnicomId: this.currentOmnicomId,
+      
       velocity: this.velocity,
       tableNumber: this.tableNumber,
     };
@@ -34,11 +43,18 @@ export class TimelineRecordDto {
   public asJsonString(): string {
     // При сохранении проверяем, чтобы старт не оказался больше энда.
     // Коли так, обменяем значения
-    let startId = this.startId;
-    let endId = this.endId;
-    if (startId > endId) {
-      startId = this.endId;
-      endId = this.startId;
+    let startToiId = this.startToiId;
+    let endToiId = this.endToiId;
+    if (startToiId > endToiId) {
+      startToiId = this.endToiId;
+      endToiId = this.startToiId;
+    }
+
+    let startOmnicomId = this.startOmnicomId;
+    let endOmnicomId = this.endOmnicomId;
+    if (startOmnicomId > endOmnicomId) {
+      startOmnicomId = this.endOmnicomId;
+      endOmnicomId = this.startOmnicomId;
     }
 
     let startTime = this.startTime;
@@ -52,10 +68,16 @@ export class TimelineRecordDto {
       login: this.login,
       startTime,
       endTime,
+
       currentTime: this.currentTime,
-      startId,
-      endId,
-      currentId: this.currentId,
+      startToiId: startToiId,
+      endToiId: endToiId,
+      
+      currentToiId: this.currentToiId,
+      startOmnicomId: startOmnicomId,
+      endOmnicomId: endOmnicomId,
+      
+      currentOmnicomId: this.currentOmnicomId,
       velocity: this.velocity,
       tableNumber: this.tableNumber,
     });
@@ -70,9 +92,15 @@ export class TimelineRecordDto {
         dayjs.utc(json.startTime, DATE_TIME_FORMAT).toDate(),
         dayjs.utc(json.endTime, DATE_TIME_FORMAT).toDate(),
         dayjs.utc(json.currentTime, DATE_TIME_FORMAT).toDate(),
-        json.startId,
-        json.endId,
-        json.currentId,
+        
+        json.startToiId,
+        json.endToiId,
+        json.currentToiId,
+
+        json.startToiId,
+        json.endToiId,
+        json.currentToiId,
+        
         json.velocity, json.tableNumber
       );
     } catch (e) {

@@ -214,7 +214,7 @@ class HistoryUserService {
           const { allRecs, startId, endId, } = await this.getUserHistoryInfo(
             nextFreeTableNumber,
           );
-
+          this.logger.log(`Пользователь ${login}, нашли строк: ${allRecs}`);
           if (allRecs === 0) {
             const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
             this.logger.error(message);
@@ -226,10 +226,10 @@ class HistoryUserService {
           const recordDto = new TimelineRecordDto(
             login, startTime, endTime, startTime,
             startId, endId, startId,
+            startId, endId, startId,
             velocity, nextFreeTableNumber)
-            this.logger.log('-----> 2');
+          this.logger.log(`recordDto: ${JSON.stringify(recordDto)}`);
           await this.recordStatusService.setRecordStatus(recordDto);
-          this.logger.log('-----> 3');
 
           this.logger.log(`History info: nextFreeTableNumber: ${nextFreeTableNumber}, startId: ${startId}, endId: ${endId}`);
 
