@@ -9,6 +9,7 @@ import dayjs from '../utils/dayjs';
 import { isNumber } from "lodash";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
 import { isNormalNumber } from "src/utils/number";
+import { TOI_HISTORY_TABLE_NAME } from "./consts";
 
 export interface IHistoryClient {
   id: number;
@@ -47,7 +48,7 @@ class HistoryService {
     return dbHistoryResult;
   }
 
-  async getCurrentHistory(
+  async getCurrentToiHistory(
     login: string
   ): Promise<ToiHistoryResponseType> {
     // Текущее состояние воспроизведения записи пользователя
@@ -61,7 +62,7 @@ class HistoryService {
     // Новый текущий шаг
     const nextId = status.currentToiId + 1;
     // Получим имя таблицы истории для залогиненного пользователя
-    const tableName = SettingsService.getRecordHistoryTableNameByIndex(status.tableNumber);
+    const tableName = SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, status.tableNumber);
 
     const getHistorySql = `
       SELECT *
@@ -76,7 +77,7 @@ class HistoryService {
     );
 
     // Обновим текущие шаг и время
-    // this.logger.log(`status.currentId: ${status.currentId}, nextId: ${nextId}, record[0].time: ${records?.[0]?.time || status.currentTime}`);
+    // this.logger.log(`status.currentToiId: ${status.currentToiId}, nextId: ${nextId}, record[0].time: ${records?.[0]?.time || status.currentTime}`);
     const nextCurrent = await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
       login, nextId, records?.[0]?.time || status.currentTime
     );

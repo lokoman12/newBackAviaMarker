@@ -48,7 +48,7 @@ export default class AirportStateService {
       let omnicom: GeneralOmnicomResponseType;
       const isRecording = await this.recordStatusService.isInRecordStatus(username);
       if (isRecording) {
-        toi = await this.historyService.getCurrentHistory(username);        
+        toi = await this.historyService.getCurrentToiHistory(username);
         omnicom = [];
       } else {
         toi = await this.toiService.getActualClientData();

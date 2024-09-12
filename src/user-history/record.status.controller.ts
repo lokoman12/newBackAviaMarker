@@ -103,17 +103,17 @@ export class RecordStatusController {
 
       const current = await this.historyUserService.getTimeByStep(recordStatus.tableNumber, stepsCount);
       if (current) {
-        const result = await this.recordStatusService.setCurrent(
+        const toiHistoryResult = await this.recordStatusService.setCurrent(
           username,
           current.currentId, dayjs.utc(current.currentTime).toDate()
         );
 
         // this.logger.log(`current.currentTime: ${current.currentTime}, str: ${dayjs.utc(current.currentTime).toDate()}`);
-        return result !== null ? {
-          ...result,
-          startTime: result.startTime.getTime(),
-          endTime: result.endTime.getTime(),
-          currentTime: result.currentTime.getTime(),
+        return toiHistoryResult !== null ? {
+          ...toiHistoryResult,
+          startTime: toiHistoryResult.startTime.getTime(),
+          endTime: toiHistoryResult.endTime.getTime(),
+          currentTime: toiHistoryResult.currentTime.getTime(),
         } : null;
       }
 

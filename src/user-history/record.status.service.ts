@@ -100,7 +100,8 @@ export class RecordStatusService {
       currentStatus.login,
       currentStatus.startTime, currentStatus.endTime, nextCurrentTime,
       currentStatus.startToiId, currentStatus.endToiId, nextCurrentStep,
-      currentStatus.startToiId, currentStatus.endToiId, nextCurrentStep,
+      currentStatus.startOmnicomId, currentStatus.endOmnicomId, nextCurrentStep,
+      currentStatus.startMeteoId, currentStatus.endMeteoId, nextCurrentStep,
       currentStatus.velocity, currentStatus.tableNumber);
     await this.setRecordStatus(nextStatus);
 
@@ -141,7 +142,8 @@ export class RecordStatusService {
         record.login,
         record.startTime, record.endTime, currentTime,
         record.startToiId, record.endToiId, currentToiId,
-        record.startToiId, record.endToiId, currentToiId,
+        record.startOmnicomId, record.endOmnicomId, 0,
+        record.startMeteoId, record.endMeteoId, 1,
         record.velocity, record.tableNumber);
       this.logger.log(`currentToiId: ${currentToiId} ,newTimelineDto: ${JSON.stringify(newTimelineDto)}`);
       const valueToSave = {

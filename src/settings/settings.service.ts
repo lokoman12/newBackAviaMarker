@@ -16,16 +16,8 @@ export class SettingsService {
   return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
 }
 
-  public static getRecordHistoryTableNameByIndex(tableNumber: number) {
-    return `${this.getHistoryRecordTableName(TOI_HISTORY_TABLE_NAME)}_${tableNumber}`;
-  }
-
-  public static getRecordMeteoTableNameByIndex(tableNumber: number) {
-    return `${this.getHistoryRecordTableName(METEO_HISTORY_TABLE_NAME)}_${tableNumber}`;
-  }
-
-  public static getRecordOmnicomTableNameByIndex(tableNumber: number) {
-    return `${this.getHistoryRecordTableName(OMNICOM_HISTORY_TABLE_NAME)}_${tableNumber}`;
+  public static getRecordTableNameByIndex(tableName: string, tableNumber: number) {
+    return `${this.getHistoryRecordTableName(tableName)}_${tableNumber}`;
   }
 
   public static getRecordStandsTableNameByIndex(tableNumber: number) {

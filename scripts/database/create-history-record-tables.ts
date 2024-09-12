@@ -50,19 +50,19 @@ console.log('SettingsService', SettingsService);
 // --- Список таблиц истории для третички
 const toiHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
-  (_, index) => SettingsService.getRecordHistoryTableNameByIndex(index)
+  (_, index) => SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, index)
 );
 
 // --- Список таблиц истории для метео
 const meteoHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
-  (_, index) => SettingsService.getRecordMeteoTableNameByIndex(index)
+  (_, index) => SettingsService.getRecordTableNameByIndex(METEO_HISTORY_TABLE_NAME, index)
 );
 
 // --- Список таблиц истории для машинок
 const omnicomHistoryTableNames = Array.from(
   { length: historyRecordTablesNumber },
-  (_, index) => SettingsService.getRecordOmnicomTableNameByIndex(index)
+  (_, index) => SettingsService.getRecordTableNameByIndex(OMNICOM_HISTORY_TABLE_NAME, index)
 );
 
 // --- Список таблиц истории для парковок

@@ -26,7 +26,7 @@ export class HistoryController {
   ): Promise<ToiHistoryResponseType> {
     const { username } = req.user as User;
     // this.logger.log(`Username from token: ${username}`);
-    const result = await this.historyService.getCurrentHistory(username);
+    const result = await this.historyService.getCurrentToiHistory(username);
     return result;
   }
 
@@ -37,7 +37,7 @@ export class HistoryController {
   ): Promise<ToiHistoryResponseType> {
     const { username } = req.user as User;
     // this.logger.log(`Username from token: ${username}`);
-    const result = await this.historyService.getCurrentHistory(username);
+    const result = await this.historyService.getCurrentToiHistory(username);
     return result;
   }
 }

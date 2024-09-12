@@ -10,12 +10,19 @@ export class TimelineRecordDto {
     readonly startTime: Date,
     readonly endTime: Date,
     readonly currentTime: Date,
+
     readonly startToiId: number,
     readonly endToiId: number,
     readonly currentToiId: number,
+
     readonly startOmnicomId: number,
     readonly endOmnicomId: number,
     readonly currentOmnicomId: number,
+
+    readonly startMeteoId: number,
+    readonly endMeteoId: number,
+    readonly currentMeteoId: number,
+
     readonly velocity: number,
     readonly tableNumber: number
   ) { }
@@ -34,6 +41,10 @@ export class TimelineRecordDto {
       startOmnicomId: this.startOmnicomId,
       endOmnicomId: this.endOmnicomId,
       currentOmnicomId: this.currentOmnicomId,
+      
+      startMeteoId: this.startMeteoId,
+      endMeteoId: this.endMeteoId,
+      currentMeteoId: this.currentMeteoId,
       
       velocity: this.velocity,
       tableNumber: this.tableNumber,
@@ -57,6 +68,13 @@ export class TimelineRecordDto {
       endOmnicomId = this.startOmnicomId;
     }
 
+    let startMeteoId = this.startMeteoId;
+    let endMeteoId = this.endMeteoId;
+    if (startMeteoId > endMeteoId) {
+      startMeteoId = this.endMeteoId;
+      endMeteoId = this.startMeteoId;
+    }
+
     let startTime = this.startTime;
     let endTime = this.endTime;
     if (startTime > endTime) {
@@ -70,14 +88,19 @@ export class TimelineRecordDto {
       endTime,
 
       currentTime: this.currentTime,
+
       startToiId: startToiId,
       endToiId: endToiId,
-      
       currentToiId: this.currentToiId,
+
       startOmnicomId: startOmnicomId,
       endOmnicomId: endOmnicomId,
-      
       currentOmnicomId: this.currentOmnicomId,
+
+      startMeteoId: startMeteoId,
+      endMeteoId: endMeteoId,
+      currentMeteoId: this.currentMeteoId,
+
       velocity: this.velocity,
       tableNumber: this.tableNumber,
     });
@@ -97,9 +120,13 @@ export class TimelineRecordDto {
         json.endToiId,
         json.currentToiId,
 
-        json.startToiId,
-        json.endToiId,
-        json.currentToiId,
+        json.startOmnicomId,
+        json.endOmnicomId,
+        json.currentOmnicomId,
+        
+        json.startMeteoId,
+        json.endMeteoId,
+        json.currentMeteoId,
         
         json.velocity, json.tableNumber
       );
