@@ -157,7 +157,6 @@ export class SettingsService {
       name: dto.name,
       username: dto.username,
     };
-
     const model = await this.settingsModel.findOne({ raw: true, where, });
     if (model) {
       await this.settingsModel.update(item, { where, });

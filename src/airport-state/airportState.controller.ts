@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query, Req } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { AccessTokenGuard } from '../auth/guards/access.token.guard';
@@ -23,10 +23,14 @@ export class AirportStateController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAirportInfo(@Req() req: Request): Promise<AirportState> {
-    let username = (req.user as User)?.username;
+  async getAllAirportInfo(
+    @Query('username') username: string,
+    @Req() req: Request
+    ): Promise<AirportState> {
+    // let username = (req.user as User)?.username;
+    this.logger.log(`username: ${username}`);
     if (isNull(username)) {
-      username = 'user';
+      throw new BadRequestException(`Get parameter username is required!`);
     }
     return this.airportStateService.getActualData(username);
   }

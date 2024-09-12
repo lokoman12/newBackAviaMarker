@@ -70,7 +70,6 @@ export class RecordStatusService {
       groupname: ALL_GROUPS_SETTING_VALUE,
       value: dto.asJsonString(),
     } as UpdateSettingsDto;
-
     await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
     // } else {
     // }

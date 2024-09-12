@@ -210,7 +210,6 @@ class HistoryUserService {
       if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
         try {
           await this.prepareUserHistoryTable(nextFreeTableNumber, startTime, endTime, this.toiHistoryModel);
-
           // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
           const { allRecs, startId, endId, } = await this.getUserHistoryInfo(
             nextFreeTableNumber,
@@ -228,7 +227,9 @@ class HistoryUserService {
             login, startTime, endTime, startTime,
             startId, endId, startId,
             velocity, nextFreeTableNumber)
+            this.logger.log('-----> 2');
           await this.recordStatusService.setRecordStatus(recordDto);
+          this.logger.log('-----> 3');
 
           this.logger.log(`History info: nextFreeTableNumber: ${nextFreeTableNumber}, startId: ${startId}, endId: ${endId}`);
 
