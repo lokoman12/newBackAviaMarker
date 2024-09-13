@@ -1,5 +1,5 @@
-import { Position } from '@turf/turf';
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
+import { Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
+import { Table } from "src/history/types";
 
 export interface IToiHistory {
   id?: number;
@@ -37,6 +37,7 @@ export type FormularType = {
   Speed: number;
 };
 
+// Свой Table вызывает Table модуля sequelize-typescript, но делает параметр tableName обязательным
 @Table({ tableName: "toi_history" })
 export default class ToiHistory extends Model implements IToiHistory {
   @PrimaryKey

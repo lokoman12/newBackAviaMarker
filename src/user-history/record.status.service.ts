@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ALL_GROUPS_SETTING_VALUE } from "src/auth/consts";
 import { SettingsService } from "src/settings/settings.service";
 import { TimelineRecordDto } from "./timeline.record.dto";
@@ -20,6 +20,12 @@ export interface TimelineStartRecordResponse {
   startId: number,
   endId: number
 }
+
+export type UserHistoryInfoType = {
+  toiRecord: TimelineStartRecordResponse;
+  omnicomRecord: TimelineStartRecordResponse;
+  meteoRecord: TimelineStartRecordResponse;
+};
 
 export interface CurrentTimeRecord {
   currentId: number,
@@ -65,7 +71,7 @@ export class RecordStatusService {
     // Сохраняем, если ещё не в статусе записи
     // if (!isRecording) {
     const value = dto.asJsonString();
-    this.logger.log(`value: ${value}`);
+    // this.logger.log(`value: ${value}`);
     const valueToSave = {
       name: RECORD_SETTING_PROPERTY_NAME,
       username: dto.login,
@@ -95,14 +101,17 @@ export class RecordStatusService {
       await this.resetUserHistoryStatusOnException(login);
       throw new HistoryBadStateException(login, HistoryErrorCodeEnum.invalidDateValue, message);
     }
+
     // Обновим текущие шаг и время
-    const nextStatus = new TimelineRecordDto(
-      currentStatus.login,
-      currentStatus.startTime, currentStatus.endTime, nextCurrentTime,
-      currentStatus.startToiId, currentStatus.endToiId, nextCurrentStep,
-      currentStatus.startOmnicomId, currentStatus.endOmnicomId, nextCurrentStep,
-      currentStatus.startMeteoId, currentStatus.endMeteoId, nextCurrentStep,
-      currentStatus.velocity, currentStatus.tableNumber);
+    const nextStatus = new TimelineRecordDto({
+      fromDto: Object.assign(currentStatus, {
+        currentTime: nextCurrentTime,
+        currentToiId: nextCurrentStep,
+        urrentOmnicomId: nextCurrentStep,
+        currentMeteoId: nextCurrentStep
+      }),
+      nextCurrentStep, nextCurrentTime
+    });
     await this.setRecordStatus(nextStatus);
 
     const nextCurrent: NextCurrentTypeForResponse = { nextCurrentTime: nextCurrentTime.getTime(), nextCurrentStep };
@@ -138,13 +147,14 @@ export class RecordStatusService {
   async setCurrent(login: string, currentToiId: number, currentOmnicomId: number, currentTime: Date): Promise<any> {
     let record = await this.getRecordStatus(login);
     if (record) {
-      const newTimelineDto = new TimelineRecordDto(
-        record.login,
-        record.startTime, record.endTime, currentTime,
-        record.startToiId, record.endToiId, currentToiId,
-        record.startOmnicomId, record.endOmnicomId, currentOmnicomId,
-        record.startMeteoId, record.endMeteoId, 1,
-        record.velocity, record.tableNumber);
+      const newTimelineDto = new TimelineRecordDto({
+        login: record.login,
+        startTime: record.startTime, endTime: record.endTime, currentTime,
+        startToiId: record.startToiId, endToiId: record.endToiId, currentToiId,
+        startOmnicomId: record.startOmnicomId, endOmnicomId: record.endOmnicomId, currentOmnicomId,
+        startMeteoId: record.startMeteoId, endMeteoId: record.endMeteoId, currentMeteoId: 1,
+        velocity: record.velocity, tableNumber: record.tableNumber
+      });
       this.logger.log(`currentToiId: ${currentToiId} ,newTimelineDto: ${JSON.stringify(newTimelineDto)}`);
       const valueToSave = {
         name: RECORD_SETTING_PROPERTY_NAME,

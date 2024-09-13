@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType, PrimaryKey, Unique, AutoIncrement, AllowNull } from 'sequelize-typescript';
+import { Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
+import { Table } from "src/history/types";
 
 @Table({ tableName: 'meteo_history' })
 export default class MeteoHistory extends Model {

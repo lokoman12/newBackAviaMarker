@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { Table, Column, Model, DataType, Unique, NotEmpty, PrimaryKey, AllowNull, AutoIncrement } from 'sequelize-typescript';
-import { TimelineRecordDto } from 'src/user-history/timeline.record.dto';
 
 export interface ISetting {
   id: number;

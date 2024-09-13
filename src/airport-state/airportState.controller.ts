@@ -28,7 +28,7 @@ export class AirportStateController {
     @Req() req: Request
     ): Promise<AirportState> {
     // let username = (req.user as User)?.username;
-    this.logger.log(`username: ${username}`);
+    // this.logger.log(`username: ${username}`);
     if (isNull(username)) {
       throw new BadRequestException(`Get parameter username is required!`);
     }

@@ -1,12 +1,10 @@
-import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
 import { SettingsService } from "src/settings/settings.service";
 import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes } from "sequelize";
 import { ToiHistoryResponseType } from "./types";
-import dayjs from '../utils/dayjs';
-import { isNumber } from "lodash";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
 import { isNormalNumber } from "src/utils/number";
 import { TOI_HISTORY_TABLE_NAME } from "./consts";
@@ -85,7 +83,7 @@ class ToiHistoryService {
     const nextCurrentStep = nextCurrent.nextCurrentStep;
     const nextCurrentTime = nextCurrent.nextCurrentTime;
 
-    this.logger.log(`isNumber(value) && !isNaN(value) && isFinite(value) = ${isNumber(nextCurrentTime)} && ${!isNaN(nextCurrentTime)} && ${isFinite(nextCurrentTime)}`);
+    // this.logger.log(`isNumber(value) && !isNaN(value) && isFinite(value) = ${isNumber(nextCurrentTime)} && ${!isNaN(nextCurrentTime)} && ${isFinite(nextCurrentTime)}`);
     if (!isNormalNumber(nextCurrentStep)) {
       const message = `Ошибка при попытке получить следующий шаг '${nextCurrentStep}' воспроизведения истории для пользователя '${login}'`;
       this.logger.error(message);

@@ -11,29 +11,22 @@ import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history
 import { isNormalNumber } from "src/utils/number";
 import { OMNICOM_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from "./consts";
 import OmnicomHistory from "src/db/models/scoutHistory.model";
-
-export interface IHistoryClient {
-  id: number;
-  idFormular: number;
-  coordination: Array<number>;
-  H: number;
-  callsign: string;
-  status: number;
-  time: string;
-}
+import { HistoryTableType } from "./types";
 
 @Injectable()
-class OmnicomHistoryService {
-  private readonly logger = new Logger(OmnicomHistoryService.name);
+class HistoryService {
+  private readonly logger = new Logger(HistoryService.name);
 
   constructor(
     private readonly recordStatusService: RecordStatusService,
+    @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory,
     @InjectModel(OmnicomHistory) private readonly omnicomHistoryModel: typeof OmnicomHistory
   ) {
     this.logger.log('Сервис инициализирован!')
   }
 
   async getHistoryFromStartTillEnd(
+    model: HistoryTableType,
     timeStart: Date,
     timeEnd: Date
   ): Promise<Array<OmnicomHistory>> {
@@ -50,6 +43,7 @@ class OmnicomHistoryService {
   }
 
   async getCurrentHistory(
+    model: HistoryTableType,
     login: string
   ): Promise<OmnicomHistoryResponseType> {
     // Текущее состояние воспроизведения записи пользователя
@@ -101,7 +95,6 @@ class OmnicomHistoryService {
       },
     };
   }
-
 }
 
-export default OmnicomHistoryService;
+export default HistoryService;

@@ -1,7 +1,7 @@
-import { Injectable, Logger, NotAcceptableException } from "@nestjs/common";
-import { CurrentTimeRecord, RecordStatusService, TimelineStartRecordResponse } from "./record.status.service";
+import { Injectable, Logger } from "@nestjs/common";
+import { CurrentTimeRecord, RecordStatusService, UserHistoryInfoType, TimelineStartRecordResponse } from "./record.status.service";
 import { TimelineRecordDto } from "./timeline.record.dto";
-import { METEO_HISTORY_TABLE_NAME, NO_FREE_HISTORY_RECORD_TABLE, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, TOI_HISTORY_TABLE_NAME } from "../history/consts";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import ToiHistory from "src/db/models/toiHistory.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { SettingsService } from "src/settings/settings.service";
@@ -12,81 +12,14 @@ import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
 import OmnicomHistory from "src/db/models/scoutHistory.model";
 import MeteoHistory from "src/db/models/meteoHistory.model";
-
-
-type InsertHistorySqlType = (tableName: string, timeStart: Date, timeEnd: Date) => string;
-type DeleteHistorySqlType = (tableName: string) => string;
-
-// В нашем mysql почему-то не работают оконные (over partition) функции
-// Потому, чтобы нумеровать строки с одинаковым временем, использую
-// @id := if(...)
-// Внешний select под insert'ом отбрасывает лишнюю колонку prevTime,
-// нужную только для нумерования строк по группам одинакового времени
-const ToiHistoryAttributes = 'coordinates, Name, curs, alt, faza, Number, type, formular';
-const insertToiHistorySql: InsertHistorySqlType = (tableName: string, timeStart: Date, timeEnd: Date) =>
-  `INSERT INTO ${tableName} (
-    step, time, 
-    ${ToiHistoryAttributes}
-  )
-  SELECT 	
-  step, time, 
-  ${ToiHistoryAttributes}
-FROM (
-  SELECT 
-    @id := if(@prev_time = time, @id, @id + 1) AS step,
-    @prev_time := time AS prevTime, time,
-    ${ToiHistoryAttributes}
-  FROM toi_history
-  , (select @id := 0, @prev_time := null) AS t
-  WHERE Name != '' AND Number != 0 
-    AND time <= '${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}'
-    AND time >= '${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}'
-  ORDER BY time
-) history_record`;
-
-const OmnicomHistoryAttributes = 'Serial, GarNum, t_obn, Lat, Lon, Speed, Course';
-const insertOmnicomHistorySql: InsertHistorySqlType = (tableName: string, timeStart: Date, timeEnd: Date) =>
-  `INSERT INTO ${tableName} (
-    step, time, 
-    ${OmnicomHistoryAttributes}
-  )
-  SELECT 	
-  step, time, 
-  ${OmnicomHistoryAttributes}
-FROM (
-  SELECT 
-    @id := if(@prev_time = time, @id, @id + 1) AS step,
-    @prev_time := time AS prevTime, time,
-    ${OmnicomHistoryAttributes}
-  FROM omnicom_history
-  , (select @id := 0, @prev_time := null) AS t
-  WHERE time <= '${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}'
-    AND time >= '${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}'
-  ORDER BY time
-) history_record`;
-
-const MeteoHistoryAttributes = 'dTime, id_vpp, id_grp, Data';
-const insertMeteoHistorySql: InsertHistorySqlType = (tableName: string, timeStart: Date, timeEnd: Date) =>
-  `INSERT INTO ${tableName} (
-    step, time, 
-    ${MeteoHistoryAttributes}
-  )
-  SELECT 	
-  step, time, 
-  ${MeteoHistoryAttributes}
-FROM (
-  SELECT 
-    @id := if(@prev_time = time, @id, @id + 1) AS step,
-    @prev_time := time AS prevTime, time,
-    ${MeteoHistoryAttributes}
-  FROM meteo_history
-  , (select @id := 0, @prev_time := null) AS t
-  WHERE time <= '${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}'
-    AND time >= '${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)}'
-  ORDER BY time
-) history_record`;
-
-const deleteSql: DeleteHistorySqlType = (tableName: string) => `TRUNCATE ${tableName};`;
+import { getModelTableName } from "src/history/types";
+import { HistoryTableType } from "src/history/types";
+import { getCurrentHistoryInfoSql, getHistoryInfoSql, insertToiHistorySql } from "./sql";
+import { insertOmnicomHistorySql } from "./sql";
+import { insertMeteoHistorySql } from "./sql";
+import { deleteSql } from "./sql";
+import { InsertHistorySqlType } from "./types";
+import { OnlyTablenameParamSqlType } from "./types";
 
 @Injectable()
 class HistoryUserService {
@@ -138,14 +71,17 @@ class HistoryUserService {
    * @param timeEnd 
    */
   private async prepareUserHistoryTable(
-    tableName: string,
+    historyModel: HistoryTableType,
+    nextFreeTableNumber: number,
     timeStart: Date,
     timeEnd: Date,
-    historyModel: typeof ToiHistory | typeof OmnicomHistory | typeof MeteoHistory,
     insertHistorySql: InsertHistorySqlType,
-    deleteHistorySql: DeleteHistorySqlType
+    deleteHistorySql: OnlyTablenameParamSqlType
   ): Promise<void> {
+    const tableName = SettingsService.getRecordTableNameByIndex(getModelTableName(historyModel), nextFreeTableNumber);
     const deleteSql = deleteHistorySql(tableName);
+
+    this.logger.log(`historyModel: ${getModelTableName(historyModel)}`);
     this.logger.log(`Предварительно очищаем таблицу ${tableName} перед вставкой истории, ${deleteSql}`);
     try {
       await historyModel.sequelize.query(deleteSql);
@@ -168,19 +104,65 @@ class HistoryUserService {
     }
   }
 
+  private async prepareAllUserHistoryTables(
+    nextFreeTableNumber: number,
+    timeStart: Date,
+    timeEnd: Date,
+  ): Promise<void> {
+    await this.prepareUserHistoryTable(
+      this.toiHistoryModel, nextFreeTableNumber, timeStart, timeEnd, insertToiHistorySql, deleteSql
+    );
+    await this.prepareUserHistoryTable(
+      this.omnicomHistoryModel, nextFreeTableNumber, timeStart, timeEnd, insertOmnicomHistorySql, deleteSql
+    );
+    await this.prepareUserHistoryTable(
+      this.meteoHistoryModel, nextFreeTableNumber, timeStart, timeEnd, insertMeteoHistorySql, deleteSql
+    );
+  }
+
+  private async getUserAllHistoriesInfo(
+    login: string,
+    nextFreeTableNumber: number,
+    startTime: Date, endTime: Date
+  ): Promise<UserHistoryInfoType> {
+    // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
+    const toiRecord = await this.getUserHistoryInfo(
+      SettingsService.getRecordTableNameByIndex(getModelTableName(this.toiHistoryModel), nextFreeTableNumber)
+    );
+    this.logger.log(`Пользователь ${login}, toi history нашли строк: ${toiRecord.allRecs}`);
+
+    const omnicomRecord = await this.getUserHistoryInfo(
+      SettingsService.getRecordTableNameByIndex(getModelTableName(this.omnicomHistoryModel), nextFreeTableNumber)
+    );
+    this.logger.log(`Пользователь ${login}, omnicom history нашли строк: ${omnicomRecord.allRecs}`);
+
+    const meteoRecord = await this.getUserHistoryInfo(
+      SettingsService.getRecordTableNameByIndex(getModelTableName(this.meteoHistoryModel), nextFreeTableNumber)
+    );
+    this.logger.log(`Пользователь ${login}, toi history нашли строк: ${meteoRecord.allRecs}`);
+
+    const allHistoriesInfo: UserHistoryInfoType = {
+      toiRecord, omnicomRecord, meteoRecord,
+    };
+
+    if (allHistoriesInfo.toiRecord.allRecs === 0) {
+      const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
+      this.logger.error(message);
+      await this.recordStatusService.resetUserHistoryStatusOnException(login);
+      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.emptyHistoryResult, message);
+    }
+
+    return allHistoriesInfo;
+  }
+
   /**
   * 
   * @param tableNumber 
   */
   private async getUserHistoryInfo(
-    baseTableName: string,
-    tableNumber: number,
+    tableName: string
   ): Promise<TimelineStartRecordResponse> {
-    const tableName = SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, tableNumber);
-    const infoSql = `
-      SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId
-      FROM ${tableName}
-      `;
+    const infoSql = getHistoryInfoSql(tableName);
 
     try {
       await this.toiHistoryModel.sequelize.query(infoSql);
@@ -194,14 +176,14 @@ class HistoryUserService {
   }
 
   /**
-* 
-* @param tableNumber 
-*/
+  * 
+  * @param tableNumber 
+  */
   public async getTimeByStep(
     tableName: string,
     step: number,
   ): Promise<CurrentTimeRecord | null> {
-    const infoSql = `SELECT step as currentId, time as currentTime FROM ${tableName} where step = ${step}`;
+    const infoSql = getCurrentHistoryInfoSql(tableName, step);
 
     try {
       await this.toiHistoryModel.sequelize.query(infoSql);
@@ -231,52 +213,24 @@ class HistoryUserService {
       // Ищём свободный номер таблицы
       const nextFreeTableNumber = await this.getNextFreeTableNumber();
       if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
+        await this.prepareAllUserHistoryTables(nextFreeTableNumber, startTime, endTime);
+
         try {
-          const toiHistoryTableName = SettingsService.getRecordTableNameByIndex(TOI_HISTORY_TABLE_NAME, nextFreeTableNumber);
-          await this.prepareUserHistoryTable(toiHistoryTableName, startTime, endTime, this.toiHistoryModel, insertToiHistorySql, deleteSql);
-          
-          const omnicomHistoryTableName = SettingsService.getRecordTableNameByIndex(OMNICOM_HISTORY_TABLE_NAME, nextFreeTableNumber);
-          await this.prepareUserHistoryTable(omnicomHistoryTableName, startTime, endTime, this.omnicomHistoryModel, insertOmnicomHistorySql, deleteSql);
-
-          const meteoHistoryTableName = SettingsService.getRecordTableNameByIndex(METEO_HISTORY_TABLE_NAME, nextFreeTableNumber);
-          await this.prepareUserHistoryTable(meteoHistoryTableName, startTime, endTime, this.meteoHistoryModel, insertMeteoHistorySql, deleteSql);
-
-
-          // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
-          const { allRecs: allToiRecs, startId: startToiId, endId: endToiId, } = await this.getUserHistoryInfo(
-            TOI_HISTORY_TABLE_NAME, nextFreeTableNumber,
-          );
-          this.logger.log(`Пользователь ${login}, toi history нашли строк: ${allToiRecs}`);
-
-          const { allRecs: allOmnicomRecs, startId: startOmnicomId, endId: endOmnicomId, } = await this.getUserHistoryInfo(
-            OMNICOM_HISTORY_TABLE_NAME, nextFreeTableNumber,
-          );
-          this.logger.log(`Пользователь ${login}, omnicom history нашли строк: ${allOmnicomRecs}`);
-
-
-          const { allRecs: allMeteoRecs, startId: startMeteoId, endId: endMeteoId, } = await this.getUserHistoryInfo(
-            METEO_HISTORY_TABLE_NAME, nextFreeTableNumber,
-          );
-          this.logger.log(`Пользователь ${login}, toi history нашли строк: ${allMeteoRecs}`);
-
-          if (allToiRecs === 0) {
-            const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
-            this.logger.error(message);
-            await this.recordStatusService.resetUserHistoryStatusOnException(login);
-            throw new HistoryBadStateException(login, HistoryErrorCodeEnum.emptyHistoryResult, message);
-          }
+          // Получим информацию из сгенерированных таблиц о первом и последнем шагах
+          const userAllHistoriesInfo = await this.getUserAllHistoriesInfo(login, nextFreeTableNumber, startTime, endTime);
 
           // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
-          const recordDto = new TimelineRecordDto(
-            login, startTime, endTime, startTime,
-            startToiId, endToiId, startToiId,
-            startOmnicomId, endOmnicomId, startOmnicomId,
-            startMeteoId, endMeteoId, startMeteoId,
-            velocity, nextFreeTableNumber)
-          this.logger.log(`recordDto: ${JSON.stringify(recordDto)}`);
-          await this.recordStatusService.setRecordStatus(recordDto);
+          const recordDto = new TimelineRecordDto({
+            login, startTime, endTime, currentTime: startTime,
+            velocity, tableNumber: nextFreeTableNumber,
+            toiRecord: userAllHistoriesInfo.toiRecord,
+            omnicomRecord: userAllHistoriesInfo.omnicomRecord,
+            meteoRecord: userAllHistoriesInfo.meteoRecord,
+          });
 
-          this.logger.log(`History info: nextFreeTableNumber: ${nextFreeTableNumber}, startId: ${startToiId}, endId: ${endToiId}`);
+          // this.logger.log(`recordDto: ${JSON.stringify(recordDto)}`);
+          await this.recordStatusService.setRecordStatus(recordDto);
+          this.logger.log(`History info: nextFreeTableNumber: ${nextFreeTableNumber}, startId: ${userAllHistoriesInfo.toiRecord.startId}, endId: ${userAllHistoriesInfo.toiRecord.endId}`);
 
           return recordDto;
         } catch (e) {
