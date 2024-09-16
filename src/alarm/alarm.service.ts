@@ -15,7 +15,7 @@ export default class AlarmService {
 
   async getActualData(): Promise<Array<AlaramAM>> {
     try {
-      const alarms = await this.alarmModel.findAll();
+      const alarms = await this.alarmModel.findAll({raw: true});
       return alarms;
     } catch (error) {
       console.error('Error retrieving alarms:', error);

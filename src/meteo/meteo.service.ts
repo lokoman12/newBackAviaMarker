@@ -15,7 +15,8 @@ export default class MeteoService {
 
   async getActualData(): Promise<Array<Meteo>> {
     try {
-      const meteo = await this.meteoModel.findAll();
+      const meteo = await this.meteoModel.findAll({raw: true});
+      this.logger.log(`getActualData: ${meteo.length}`);
       return meteo;
     } catch (error) {
       console.error('Error retrieving meteo:', error);

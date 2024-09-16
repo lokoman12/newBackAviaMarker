@@ -15,7 +15,7 @@ export default class FplnService {
 
   async getActualData(): Promise<Array<AODB>> {
     try {
-      const flightPlan = await this.flightPlanModel.findAll();
+      const flightPlan = await this.flightPlanModel.findAll({raw: true});
       return flightPlan;
     } catch (error) {
       console.error('Error retrieving flight plan:', error);

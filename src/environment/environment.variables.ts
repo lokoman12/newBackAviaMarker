@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmpty, IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString, Max, Min, isBoolean, isEnum } from 'class-validator';
+import { IsBoolean, IsEmpty, IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString, Max, Min, isEnum, IsOptional } from 'class-validator';
 import { Airports } from "./types";
 import { IsDatabaseUrl } from './is.database.url';
 
@@ -48,8 +48,9 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   jwt_refresh_expires_in: string;
 
-  @IsBoolean()
-  enableCopyHistoryTables: boolean
+  @IsString()
+  @IsOptional()
+  enableCopyHistoryTables: string;
 
   @IsNumber()
   @IsPositive()

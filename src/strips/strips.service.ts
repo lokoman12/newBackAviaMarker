@@ -15,7 +15,7 @@ export default class StripsService {
 
   async getActualData(): Promise<Array<Strips>> {
     try {
-      const strips = await this.stripsModel.findAll();
+      const strips = await this.stripsModel.findAll({raw: true});
       return strips;
     } catch (error) {
       console.error('Error retrieving strips:', error);

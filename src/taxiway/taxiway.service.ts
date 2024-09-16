@@ -16,7 +16,7 @@ export default class TaxiwayService {
 
   async getActualData(): Promise<Array<Taxiway>> {
     try {
-      const taxiway = await this.taxiwayModel.findAll();
+      const taxiway = await this.taxiwayModel.findAll({raw: true});
       return taxiway;
     } catch (error) {
       console.error('Error retrieving taxiway:', error);

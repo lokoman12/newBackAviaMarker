@@ -38,7 +38,7 @@ export default class MeteoCopyToHistoryScheduler {
     const rowsForHistory = await this.meteoService.getActualData();
     const promises = [];
 
-    this.logger.log(`Копируем в историю meteo: ${rowsForHistory.length} строк`);
+    // this.logger.log(`Копируем в историю meteo: ${rowsForHistory.length} строк`);
 
     const time = new Date();
     rowsForHistory.forEach(it => {

@@ -15,7 +15,7 @@ export default class StandGeoService {
 
   async getActualData(): Promise<Array<StandsGeo>> {
     try {
-      const standGeo = await this.standsGeoModel.findAll();
+      const standGeo = await this.standsGeoModel.findAll({raw: true});
       return standGeo;
     } catch (error) {
       console.error('Error retrieving stands geo:', error);

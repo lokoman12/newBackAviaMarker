@@ -16,7 +16,7 @@ export default class PodhodService {
 
   async getActualData(): Promise<Array<Podhod>> {
     try {
-      const podhod = await this.podhodModel.findAll();
+      const podhod = await this.podhodModel.findAll({raw: true});
       return podhod;
     } catch (error) {
       console.error('Error retrieving podhod:', error);

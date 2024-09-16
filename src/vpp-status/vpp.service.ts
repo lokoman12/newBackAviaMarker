@@ -16,7 +16,7 @@ export default class VppService {
 
   async getActualData(): Promise<Array<VppStatus>> {
     try {
-      const vppStatus = await this.vppStatusModel.findAll();
+      const vppStatus = await this.vppStatusModel.findAll({raw: true});
       return vppStatus;
     } catch (error) {
       console.error('Error retrieving vpp:', error);

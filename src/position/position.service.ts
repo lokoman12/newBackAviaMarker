@@ -15,7 +15,7 @@ export default class PositionService {
 
   async getActualData(): Promise<Array<PositionAM>> {
     try {
-      const meteo = await this.positionModel.findAll();
+      const meteo = await this.positionModel.findAll({raw: true});
       return meteo;
     } catch (error) {
       console.error('Error retrieving position:', error);
