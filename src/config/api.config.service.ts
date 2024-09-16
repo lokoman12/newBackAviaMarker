@@ -12,8 +12,10 @@ export class ApiConfigService {
     private configService: ConfigService
   ) { }
 
-  getDisableCopyHistory() {
-    return this.configService.get<boolean>('disableCopyHistory');
+  isCopyHistoryEnabled() {
+    this.logger.log(`enableCopyHistoryTables: ${this.configService.get<string>('enableCopyHistoryTables')}`);
+    this.logger.log(`enableCopyHistoryTables1: ${this.configService.get<string>('enableCopyHistoryTables1')}`);
+    return this.configService.get<string>('enableCopyHistoryTables') === 'true';
   }
 
   getHistoryRecordTablesNumber() {

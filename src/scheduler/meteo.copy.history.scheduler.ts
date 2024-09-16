@@ -3,7 +3,6 @@ import { ApiConfigService } from "src/config/api.config.service";
 import { ExternalScheduler } from "./external.scheduler";
 import { InjectModel } from "@nestjs/sequelize";
 import { omit } from 'lodash';
-import OmnicomService from "src/omnicom/omnicom.service";
 import MeteoHistory from "src/db/models/meteoHistory.model";
 import MeteoService from "src/meteo/meteo.service";
 
@@ -20,7 +19,7 @@ export default class MeteoCopyToHistoryScheduler {
     @InjectModel(MeteoHistory) private readonly meteoHistoryModel: typeof MeteoHistory
   ) {
     this.logger.log('Init controller --------------------------->');
-    if (!configService.getDisableCopyHistory()) {
+    if (configService.isCopyHistoryEnabled()) {
       this.logger.warn('Включение копирования метео в историю');
       this.externalScheduler.addJob(
         MeteoCopyToHistoryScheduler.copyToHistoryJobName,

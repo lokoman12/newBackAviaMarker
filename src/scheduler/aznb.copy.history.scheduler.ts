@@ -24,7 +24,7 @@ export default class AznbCopyToHistoryScheduler {
     @InjectModel(AznbHistory) private readonly aznbHistoryModel: typeof AznbHistory
   ) {
     this.logger.log('Init controller --------------------------->');
-    if (!configService.getDisableCopyHistory()) {
+    if (configService.isCopyHistoryEnabled()) {
       this.logger.warn('Включение копирования азнб в историю');
       this.externalScheduler.addJob(
         AznbCopyToHistoryScheduler.copyToHistoryJobName,

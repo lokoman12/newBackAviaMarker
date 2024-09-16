@@ -20,7 +20,7 @@ export default class ToiCopyToHistoryScheduler {
   ) {
     this.logger.log('Init controller --------------------------->');
     
-    if (!configService.getDisableCopyHistory()) {
+    if (configService.isCopyHistoryEnabled()) {
       this.logger.warn('Включение копирования третички в историю');
       this.externalScheduler.addJob(
         ToiCopyToHistoryScheduler.copyToHistoryJobName,

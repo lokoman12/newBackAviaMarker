@@ -13,6 +13,7 @@ export enum HistoryErrorCodeEnum {
   copyHistoryError = 10,
   copyOmnicomError = 11,
   copyMeteoError = 12,
+  sqlPrepareTablesCanNotPerfomed = 13,
   unknownHistoryError = 100,
 Qwerty123
 };

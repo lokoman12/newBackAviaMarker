@@ -20,7 +20,7 @@ export default class OmnicomCopyToHistoryScheduler {
     private readonly omnicomHistoryModel: typeof OmnicomHistory,
   ) {
     this.logger.log('Init controller --------------------------->');
-    if (!configService.getDisableCopyHistory()) {
+    if (configService.isCopyHistoryEnabled()) {
       this.logger.warn('Включение копирования машинок в историю');
       this.externalScheduler.addJob(
         OmnicomCopyToHistoryScheduler.copyToHistoryJobName,

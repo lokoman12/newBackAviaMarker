@@ -23,7 +23,7 @@ export default class StandsCopyToHistoryScheduler {
   ) {
     this.logger.log('Init controller --------------------------->');
 
-    if (!configService.getDisableCopyHistory()) {
+    if (configService.isCopyHistoryEnabled()) {
       this.logger.warn('Включение копирования парковок в историю');
       this.externalScheduler.addJob(
         StandsCopyToHistoryScheduler.copyToHistoryJobName,

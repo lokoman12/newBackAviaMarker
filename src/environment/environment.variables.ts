@@ -49,7 +49,7 @@ export class EnvironmentVariables {
   jwt_refresh_expires_in: string;
 
   @IsBoolean()
-  disableCopyHistory: boolean
+  enableCopyHistoryTables: boolean
 
   @IsNumber()
   @IsPositive()
