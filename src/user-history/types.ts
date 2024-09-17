@@ -17,6 +17,9 @@ export type NextCurrentTypeForResponse = {
 export class TimelineDto {
   currentToiId?: number;
   currentOmnicomId?: number;
+  currentMeteoId?: number;
+  currentStandsId?: number;
+  currentAznbId?: number;
   currentTime: number;
 }
 
@@ -49,6 +52,14 @@ export type TimelineRecordAllParametersType = TimelineRecordCommonParametersType
   startMeteoId: number;
   endMeteoId: number;
   currentMeteoId: number;
+
+  startStandsId: number;
+  endStandsId: number;
+  currentStandsId: number;
+
+  startAznbId: number;
+  endAznbId: number;
+  currentAznbId: number;
 };
 
 export type TimelineRecordFromUserHistoryInfoParametersType = TimelineRecordCommonParametersType & UserHistoryInfoType;

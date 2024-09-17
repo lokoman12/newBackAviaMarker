@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
 import ToiHistoryService from './toi.history.service';
-import { ToiHistoryResponseType } from './types';
+import { HistoryResponseType } from './types';
 
 @Controller('/history')
 export class HistoryController {
@@ -23,7 +23,7 @@ export class HistoryController {
   @Get("/toi-from-history")
   async getAllToi(
     @Req() req: Request
-  ): Promise<ToiHistoryResponseType> {
+  ): Promise<HistoryResponseType> {
     const { username } = req.user as User;
     // this.logger.log(`Username from token: ${username}`);
     const result = await this.historyService.getCurrentHistory(username);
@@ -34,7 +34,7 @@ export class HistoryController {
   @Get("/omnicom-from-history")
   async getAllOmnicom(
     @Req() req: Request
-  ): Promise<ToiHistoryResponseType> {
+  ): Promise<HistoryResponseType> {
     const { username } = req.user as User;
     // this.logger.log(`Username from token: ${username}`);
     const result = await this.historyService.getCurrentHistory(username);

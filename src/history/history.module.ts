@@ -12,11 +12,19 @@ import { UserHistoryModule } from 'src/user-history/user.history.module';
 import OmnicomHistory from 'src/db/models/scoutHistory.model';
 import { OmnicomModule } from 'src/omnicom/omnicom.module';
 import OmnicomHistoryService from './omnicom.history.service';
+import { MeteoModule } from 'src/meteo/meteo.module';
+import { StandsModule } from 'src/stand-aodb/stand.aodb.module';
+import AznbHistory from 'src/db/models/aznbHistory.model';
+import MeteoHistory from 'src/db/models/meteoHistory.model';
+import StandsHistory from 'src/db/models/standsHistory.model';
+import { AznbModule } from 'src/aznb/aznb.module';
+import StandsHistoryService from './stands.history.service';
+import AznbHistoryService from './aznb.history.service';
 
 @Module({
-  imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory, OmnicomHistory]), ToiModule, OmnicomModule, UserHistoryModule],
-  providers: [ToiHistoryService, OmnicomHistoryService],
+  imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory]), ToiModule, OmnicomModule, MeteoModule, StandsModule, AznbModule, UserHistoryModule],
+  providers: [ToiHistoryService, OmnicomHistoryService, StandsHistoryService, AznbHistoryService],
   controllers: [HistoryController, RecordStatusController,],
-  exports: [ToiHistoryService, OmnicomHistoryService],
+  exports: [ToiHistoryService, OmnicomHistoryService, StandsHistoryService, AznbHistoryService],
 })
 export class HistoryModule { }

@@ -21,7 +21,7 @@ import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
 import { omit } from 'lodash';
 import { SettingsService } from 'src/settings/settings.service';
-import { OMNICOM_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
+import { AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 
 @Controller('/record-status')
 export class RecordStatusController {
@@ -109,10 +109,19 @@ export class RecordStatusController {
       const omnicomTableName = SettingsService.getRecordTableNameByIndex(OMNICOM_HISTORY_TABLE_NAME, recordStatus.tableNumber);
       const omnicomCurrent = await this.historyUserService.getTimeByStep(omnicomTableName, stepsCount);
 
+      const meteoTableName = SettingsService.getRecordTableNameByIndex(METEO_HISTORY_TABLE_NAME, recordStatus.tableNumber);
+      const meteoCurrent = await this.historyUserService.getTimeByStep(meteoTableName, stepsCount);
+
+      const standsTableName = SettingsService.getRecordTableNameByIndex(STANDS_HISTORY_TABLE_NAME, recordStatus.tableNumber);
+      const standsCurrent = await this.historyUserService.getTimeByStep(standsTableName, stepsCount);
+
+      const aznbTableName = SettingsService.getRecordTableNameByIndex(AZNB_HISTORY_TABLE_NAME, recordStatus.tableNumber);
+      const aznbCurrent = await this.historyUserService.getTimeByStep(aznbTableName, stepsCount);
+
       if (toiCurrent) {
         const toiHistoryResult = await this.recordStatusService.setCurrent(
           username,
-          toiCurrent.currentId, omnicomCurrent.currentId,
+          toiCurrent.currentId, omnicomCurrent.currentId, meteoCurrent.currentId, standsCurrent.currentId, aznbCurrent.currentId,
           dayjs.utc(toiCurrent.currentTime).toDate()
         );
 
@@ -143,7 +152,11 @@ export class RecordStatusController {
       throw new HistoryBadStateException(username, HistoryErrorCodeEnum.invalidDateValue, 'Задайте корректное значение для currentTime!');
     }
 
-    const result = await this.recordStatusService.setCurrent(username, timelineDto.currentToiId, timelineDto.currentOmnicomId, currentTimeDayjs.toDate());
+    const result = await this.recordStatusService.setCurrent(
+      username,
+      timelineDto.currentToiId, timelineDto.currentOmnicomId, timelineDto.currentMeteoId, timelineDto.currentStandsId, timelineDto.currentAznbId,
+      currentTimeDayjs.toDate()
+    );
     return result !== null ? {
       ...omit(result, ['logger']),
       startTime: result.startTime.getTime(),

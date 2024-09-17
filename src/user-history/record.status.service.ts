@@ -25,6 +25,7 @@ export type UserHistoryInfoType = {
   toiRecord: TimelineStartRecordResponse;
   omnicomRecord: TimelineStartRecordResponse;
   meteoRecord: TimelineStartRecordResponse;
+  standsRecord: TimelineStartRecordResponse;
 };
 
 export interface CurrentTimeRecord {
@@ -144,17 +145,24 @@ export class RecordStatusService {
     return result;
   }
 
-  async setCurrent(login: string, currentToiId: number, currentOmnicomId: number, currentTime: Date): Promise<any> {
+  async setCurrent(
+    login: string, 
+    currentToiId: number, currentOmnicomId: number, currentMeteoId: number, currentStandsId: number, currentAznbId: number,
+    currentTime: Date): Promise<any> {
     let record = await this.getRecordStatus(login);
+    
     if (record) {
       const newTimelineDto = new TimelineRecordDto({
         login: record.login,
         startTime: record.startTime, endTime: record.endTime, currentTime,
         startToiId: record.startToiId, endToiId: record.endToiId, currentToiId,
         startOmnicomId: record.startOmnicomId, endOmnicomId: record.endOmnicomId, currentOmnicomId,
-        startMeteoId: record.startMeteoId, endMeteoId: record.endMeteoId, currentMeteoId: 1,
+        startMeteoId: record.startMeteoId, endMeteoId: record.endMeteoId, currentMeteoId,
+        startStandsId: record.startStandsId, endStandsId: record.endStandsId, currentStandsId,
+        startAznbId: record.startAznbId, endAznbId: record.endAznbId, currentAznbId,
         velocity: record.velocity, tableNumber: record.tableNumber
       });
+
       this.logger.log(`currentToiId: ${currentToiId} ,newTimelineDto: ${JSON.stringify(newTimelineDto)}`);
       const valueToSave = {
         name: RECORD_SETTING_PROPERTY_NAME,

@@ -4,7 +4,7 @@ import ToiHistory, { IToiHistory } from "src/db/models/toiHistory.model";
 import { SettingsService } from "src/settings/settings.service";
 import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes } from "sequelize";
-import { ToiHistoryResponseType } from "./types";
+import { HistoryResponseType } from "./types";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
 import { isNormalNumber } from "src/utils/number";
 import { TOI_HISTORY_TABLE_NAME } from "./consts";
@@ -25,7 +25,7 @@ class ToiHistoryService {
 
   constructor(
     private readonly recordStatusService: RecordStatusService,
-    @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
+    @InjectModel(ToiHistory) private readonly historyModel: typeof ToiHistory
   ) {
     this.logger.log('Сервис инициализирован!')
   }
@@ -34,7 +34,7 @@ class ToiHistoryService {
     timeStart: Date,
     timeEnd: Date
   ): Promise<Array<IToiHistory>> {
-    const dbHistoryResult = await this.toiHistoryModel.findAll({
+    const dbHistoryResult = await this.historyModel.findAll({
       raw: true,
       where: {
         time: {
@@ -48,7 +48,7 @@ class ToiHistoryService {
 
   async getCurrentHistory(
     login: string
-  ): Promise<ToiHistoryResponseType> {
+  ): Promise<HistoryResponseType> {
     // Текущее состояние воспроизведения записи пользователя
     const status = await this.recordStatusService.getRecordStatus(login);
     if (!status) {
@@ -69,7 +69,7 @@ class ToiHistoryService {
     // this.logger.log(getHistorySql);
 
     // Получим значения для первого и последнего шагов сформированной для пользователя истории
-    const records = await this.toiHistoryModel.sequelize.query(
+    const records = await this.historyModel.sequelize.query(
       getHistorySql,
       { raw: true, model: ToiHistory, mapToModel: true, type: QueryTypes.SELECT, }
     );

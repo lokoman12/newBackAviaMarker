@@ -14,10 +14,14 @@ import { OmnicomModule } from 'src/omnicom/omnicom.module';
 import OmnicomHistory from 'src/db/models/scoutHistory.model';
 import { MeteoModule } from 'src/meteo/meteo.module';
 import MeteoHistory from 'src/db/models/meteoHistory.model';
+import { StandsModule } from 'src/stand-aodb/stand.aodb.module';
+import StandsHistory from 'src/db/models/standsHistory.model';
+import { AznbModule } from 'src/aznb/aznb.module';
+import AznbHistory from 'src/db/models/aznbHistory.model';
 
 @Module({
   providers: [ToadScheduler, HistoryUserService, RecordStatusService, ToiService],
-  imports: [ApiConfigModule, SettingsModule, MeteoModule, OmnicomModule, SequelizeModule.forFeature([Toi, Formular, ToiHistory, OmnicomHistory, MeteoHistory]),],
+  imports: [ApiConfigModule, SettingsModule, MeteoModule, OmnicomModule, StandsModule, AznbModule, SequelizeModule.forFeature([Toi, Formular, ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory]),],
   controllers: [RecordStatusController,],
   exports: [HistoryUserService, RecordStatusService,],
 })

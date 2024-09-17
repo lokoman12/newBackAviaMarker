@@ -20,7 +20,7 @@ import { UserHistoryModule } from 'src/user-history/user.history.module';
 
 
 @Module({
-  imports: [ApiConfigModule, ToiModule, AznbModule, OmnicomModule, StandsModule, StandGeoModule, PositionModule, StripsModule, FplnModule, VppStatusModule, MeteoModule, TaxiwayModule, AlarmModule, PodhodModule, HistoryModule, UserHistoryModule, HistoryModule],
+  imports: [ApiConfigModule, ToiModule, AznbModule, OmnicomModule, StandsModule, StandGeoModule, PositionModule, StripsModule, FplnModule, VppStatusModule, MeteoModule, TaxiwayModule, AlarmModule, PodhodModule, HistoryModule, UserHistoryModule],
   providers: [AirportStateService],
   controllers: [AirportStateController],
   exports: [AirportStateService],

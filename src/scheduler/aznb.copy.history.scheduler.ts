@@ -1,12 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ApiConfigService } from "src/config/api.config.service";
 import { ExternalScheduler } from "./external.scheduler";
-import OmnicomHistory from "src/db/models/scoutHistory.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { omit } from 'lodash';
-import OmnicomService from "src/omnicom/omnicom.service";
-import StandService from "src/stand-aodb/stand.service";
-import StandsHistory from "src/db/models/standsHistory.model";
 import { log } from "console";
 import AznbService from "src/aznb/aznb.service";
 import AznbHistory from "src/db/models/aznbHistory.model";

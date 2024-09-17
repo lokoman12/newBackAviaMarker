@@ -25,6 +25,14 @@ export class TimelineRecordDto {
   endMeteoId: number;
   currentMeteoId: number;
 
+  startStandsId: number;
+  endStandsId: number;
+  currentStandsId: number;
+
+  startAznbId: number;
+  endAznbId: number;
+  currentAznbId: number;
+
   velocity: number;
   tableNumber: number;
 
@@ -52,6 +60,15 @@ export class TimelineRecordDto {
       this.startMeteoId = params.startMeteoId;
       this.endMeteoId = params.endMeteoId;
       this.currentMeteoId = params.currentMeteoId;
+
+      this.startStandsId = params.startStandsId;
+      this.endStandsId = params.endStandsId;
+      this.currentStandsId = params.currentStandsId;
+
+      this.startAznbId = params.startAznbId;
+      this.endAznbId = params.endAznbId;
+      this.currentAznbId = params.currentAznbId;
+
     } else if (isTimelineRecordFromUserHistoryInfoParametersType(params)) {
       this.setCommonProperties(params);
 
@@ -66,6 +83,14 @@ export class TimelineRecordDto {
       this.startMeteoId = params.meteoRecord.startId;
       this.endMeteoId = params.meteoRecord.endId;
       this.currentMeteoId = params.meteoRecord.startId;
+
+      this.startStandsId = params.standsRecord.startId;
+      this.endStandsId = params.standsRecord.endId;
+      this.currentStandsId = params.standsRecord.startId;
+
+      this.startAznbId = params.standsRecord.startId;
+      this.endAznbId = params.standsRecord.endId;
+      this.currentAznbId = params.standsRecord.startId;
     } else {
       this.setCommonProperties(params.fromDto);
 
@@ -78,9 +103,17 @@ export class TimelineRecordDto {
       this.startMeteoId = params.fromDto.startMeteoId;
       this.endMeteoId = params.fromDto.endMeteoId;
 
+      this.startStandsId = params.fromDto.startStandsId;
+      this.endStandsId = params.fromDto.endStandsId;
+
+      this.startAznbId = params.fromDto.startAznbId;
+      this.endAznbId = params.fromDto.endAznbId;
+
       this.currentToiId = params.nextCurrentStep;
       this.currentOmnicomId = params.nextCurrentStep;
       this.currentMeteoId = params.nextCurrentStep;
+      this.currentStandsId = params.nextCurrentStep;
+      this.currentAznbId = params.nextCurrentStep;
       this.currentTime = params.nextCurrentTime;
     }
   }
@@ -104,6 +137,14 @@ export class TimelineRecordDto {
       endMeteoId: this.endMeteoId,
       currentMeteoId: this.currentMeteoId,
 
+      startStandsId: this.startStandsId,
+      endStandsId: this.endStandsId,
+      currentStandsId: this.currentStandsId,
+
+      startAznbId: this.startAznbId,
+      endAznbId: this.endAznbId,
+      currentAznbId: this.currentAznbId,
+
       velocity: this.velocity,
       tableNumber: this.tableNumber,
     };
@@ -122,6 +163,9 @@ export class TimelineRecordDto {
     const { startId: startToiId, endId: endToiId } = this.checkAndSwapIfStartMoreThenEnd(this.startToiId, this.endToiId);
     const { startId: startOmnicomId, endId: endOmnicomId } = this.checkAndSwapIfStartMoreThenEnd(this.startOmnicomId, this.endOmnicomId);
     const { startId: startMeteoId, endId: endMeteoId } = this.checkAndSwapIfStartMoreThenEnd(this.startMeteoId, this.endMeteoId);
+    const { startId: startStandsId, endId: endStandsId } = this.checkAndSwapIfStartMoreThenEnd(this.startStandsId, this.endStandsId);
+    const { startId: startAznbId, endId: endAznbId } = this.checkAndSwapIfStartMoreThenEnd(this.startAznbId, this.endAznbId);
+
     const { startId: startTime, endId: endTime } = this.checkAndSwapIfStartMoreThenEnd(this.startTime, this.endTime);
 
     return JSON.stringify({
@@ -143,6 +187,14 @@ export class TimelineRecordDto {
       startMeteoId: startMeteoId,
       endMeteoId: endMeteoId,
       currentMeteoId: this.currentMeteoId,
+
+      startStandsId: startStandsId,
+      endStandsId: endStandsId,
+      currentStandsId: this.currentStandsId,
+
+      startAznbId: startAznbId,
+      endAznbId: endAznbId,
+      currentAznbId: this.currentAznbId,
     });
   }
 
@@ -155,7 +207,9 @@ export class TimelineRecordDto {
         startTime, endTime, currentTime,
         startToiId, endToiId, currentToiId,
         startOmnicomId, endOmnicomId, currentOmnicomId,
-        startMeteoId, endMeteoId, currentMeteoId
+        startMeteoId, endMeteoId, currentMeteoId,
+        startStandsId, endStandsId, currentStandsId,
+        startAznbId, endAznbId, currentAznbId
       } = json;
 
       return new TimelineRecordDto({
@@ -169,7 +223,9 @@ export class TimelineRecordDto {
 
         startToiId, endToiId, currentToiId,
         startOmnicomId, endOmnicomId, currentOmnicomId,
-        startMeteoId, endMeteoId, currentMeteoId
+        startMeteoId, endMeteoId, currentMeteoId,
+        startStandsId, endStandsId, currentStandsId,
+        startAznbId, endAznbId, currentAznbId
       });
     } catch (e) {
       logger.error(`Строку ${valueString} невозможно преобразовать в тип TimelineRecordDto`, e);

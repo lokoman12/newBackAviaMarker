@@ -3,27 +3,26 @@ import { InjectModel } from "@nestjs/sequelize";
 import { SettingsService } from "src/settings/settings.service";
 import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes } from "sequelize";
+import { HistoryResponseType, getModelTableName } from "./types";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
 import { isNormalNumber } from "src/utils/number";
-import { OMNICOM_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from "./consts";
-import OmnicomHistory from "src/db/models/scoutHistory.model";
-import { HistoryResponseType, getModelTableName } from "./types";
+import StandsHistory from "src/db/models/standsHistory.model";
 
 @Injectable()
-class OmnicomHistoryService {
-  private readonly logger = new Logger(OmnicomHistoryService.name);
+class StandsHistoryService {
+  private readonly logger = new Logger(StandsHistoryService.name);
 
   constructor(
     private readonly recordStatusService: RecordStatusService,
-    @InjectModel(OmnicomHistory) private readonly historyModel: typeof OmnicomHistory
+    @InjectModel(StandsHistory) private readonly historyModel: typeof StandsHistory
   ) {
-    this.logger.log('Сервис инициализирован!')
+    this.logger.log('Сервис инициализирован!');
   }
 
   async getHistoryFromStartTillEnd(
     timeStart: Date,
     timeEnd: Date
-  ): Promise<Array<OmnicomHistory>> {
+  ): Promise<Array<StandsHistory>> {
     const dbHistoryResult = await this.historyModel.findAll({
       raw: true,
       where: {
@@ -62,7 +61,7 @@ class OmnicomHistoryService {
     // Получим значения для первого и последнего шагов сформированной для пользователя истории
     const records = await this.historyModel.sequelize.query(
       getHistorySql,
-      { raw: true, model: OmnicomHistory, mapToModel: true, type: QueryTypes.SELECT, }
+      { raw: true, model: StandsHistory, mapToModel: true, type: QueryTypes.SELECT, }
     );
 
     // Обновим текущие шаг и время
@@ -82,7 +81,7 @@ class OmnicomHistoryService {
     }
 
     return {
-      rows: records,
+      rows: records, 
       state: {
         nextCurrentStep,
         nextCurrentTime,
@@ -92,4 +91,4 @@ class OmnicomHistoryService {
 
 }
 
-export default OmnicomHistoryService;
+export default StandsHistoryService;

@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { Op } from 'sequelize';
 import { pick } from 'lodash';
 import { nonNull } from 'src/utils/common';
-import { ToiHistoryResponseType } from 'src/history/types';
+import { HistoryResponseType } from 'src/history/types';
 
 export interface ActualToi {
   toi: IToi;
@@ -23,7 +23,7 @@ export type ActualClientToi = Partial<IToi> & {
   formular: Array<IFormular>
 }
 
-export type GeneralToiResponseType = Array<ActualClientToi> | ToiHistoryResponseType;
+export type GeneralToiResponseType = Array<ActualClientToi> | HistoryResponseType;
 
 @Injectable()
 export default class ToiService {
@@ -72,6 +72,7 @@ export default class ToiService {
   }
 
   async getActualClientData(): Promise<Array<ActualClientToi>> {
+    this.logger.log(`Toi getActualData, start`);
     const attualToi = await this.getActualData();
     return attualToi.map(toiItem => {
       const [lat, lon] = flatOffsetMeterToLongitudeLatitude(

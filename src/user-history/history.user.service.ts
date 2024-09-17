@@ -14,12 +14,14 @@ import OmnicomHistory from "src/db/models/scoutHistory.model";
 import MeteoHistory from "src/db/models/meteoHistory.model";
 import { getModelTableName } from "src/history/types";
 import { HistoryTableType } from "src/history/types";
-import { getCurrentHistoryInfoSql, getHistoryInfoSql, insertToiHistorySql } from "./sql";
+import { getCurrentHistoryInfoSql, getHistoryInfoSql, insertAznbHistorySql, insertStandsHistorySql, insertToiHistorySql } from "./sql";
 import { insertOmnicomHistorySql } from "./sql";
 import { insertMeteoHistorySql } from "./sql";
 import { deleteSql } from "./sql";
 import { InsertHistorySqlType } from "./types";
 import { OnlyTablenameParamSqlType } from "./types";
+import StandsHistory from "src/db/models/standsHistory.model";
+import AznbHistory from "src/db/models/aznbHistory.model";
 
 @Injectable()
 class HistoryUserService {
@@ -31,7 +33,9 @@ class HistoryUserService {
     private readonly recordStatusService: RecordStatusService,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory,
     @InjectModel(OmnicomHistory) private readonly omnicomHistoryModel: typeof OmnicomHistory,
-    @InjectModel(MeteoHistory) private readonly meteoHistoryModel: typeof MeteoHistory
+    @InjectModel(MeteoHistory) private readonly meteoHistoryModel: typeof MeteoHistory,
+    @InjectModel(StandsHistory) private readonly standsHistoryModel: typeof StandsHistory,
+    @InjectModel(AznbHistory) private readonly aznbHistoryModel: typeof AznbHistory
   ) {
     this.logger.log('Сервис инициализирован!')
   }
@@ -119,6 +123,12 @@ class HistoryUserService {
     await this.prepareUserHistoryTable(
       this.meteoHistoryModel, nextFreeTableNumber, timeStart, timeEnd, insertMeteoHistorySql, deleteSql
     );
+    await this.prepareUserHistoryTable(
+      this.standsHistoryModel, nextFreeTableNumber, timeStart, timeEnd, insertStandsHistorySql, deleteSql
+    );
+    await this.prepareUserHistoryTable(
+      this.aznbHistoryModel, nextFreeTableNumber, timeStart, timeEnd, insertAznbHistorySql, deleteSql
+    );
   }
 
   private async getUserAllHistoriesInfo(
@@ -142,8 +152,13 @@ class HistoryUserService {
     );
     this.logger.log(`Пользователь ${login}, meteo history нашли строк: ${meteoRecord.allRecs}`);
 
+    const standsRecord = await this.getUserHistoryInfo(
+      SettingsService.getRecordTableNameByIndex(getModelTableName(this.standsHistoryModel), nextFreeTableNumber)
+    );
+    this.logger.log(`Пользователь ${login}, meteo history нашли строк: ${meteoRecord.allRecs}`);
+
     const allHistoriesInfo: UserHistoryInfoType = {
-      toiRecord, omnicomRecord, meteoRecord,
+      toiRecord, omnicomRecord, meteoRecord, standsRecord,
     };
 
     if (allHistoriesInfo.toiRecord.allRecs === 0) {
@@ -227,6 +242,7 @@ class HistoryUserService {
             toiRecord: userAllHistoriesInfo.toiRecord,
             omnicomRecord: userAllHistoriesInfo.omnicomRecord,
             meteoRecord: userAllHistoriesInfo.meteoRecord,
+            standsRecord: userAllHistoriesInfo.standsRecord,
           });
 
           // this.logger.log(`recordDto: ${JSON.stringify(recordDto)}`);

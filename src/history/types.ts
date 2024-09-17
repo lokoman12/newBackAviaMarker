@@ -1,24 +1,18 @@
-import assert from "assert";
 import { Model, TableOptions } from "sequelize-typescript";
+import AznbHistory from "src/db/models/aznbHistory.model";
 import MeteoHistory from "src/db/models/meteoHistory.model";
-import Scout from "src/db/models/scout.model";
 import OmnicomHistory from "src/db/models/scoutHistory.model";
+import StandsHistory from "src/db/models/standsHistory.model";
 import ToiHistory from "src/db/models/toiHistory.model";
-import { ActualClientToi } from "src/toi/toi.service";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
 import { isNull } from "src/utils/common";
 
-export type ToiHistoryResponseType = {
-  rows: Array<ActualClientToi>;
+export type HistoryResponseType = {
+  rows: Array<ToiHistory | OmnicomHistory | OmnicomHistory | MeteoHistory | StandsHistory | AznbHistory>;
   state: NextCurrentTypeForResponse;
 };
 
-export type OmnicomHistoryResponseType = {
-  rows: Array<Scout>;
-  state: NextCurrentTypeForResponse;
-};
-
-export type HistoryTableType = typeof ToiHistory | typeof OmnicomHistory | typeof MeteoHistory;
+export type HistoryTableType = typeof ToiHistory | typeof OmnicomHistory | typeof MeteoHistory | typeof StandsHistory | typeof AznbHistory;
 
 export type TableNameRequiredType = Required<Pick<TableOptions, 'tableName'>>;
 

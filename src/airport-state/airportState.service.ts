@@ -44,11 +44,16 @@ export default class AirportStateService {
   }
 
   async getActualData(username: string): Promise<AirportState> {
+    // Если включено воспроизведение истории, заполняем данными из исторических таблиц, вместо актуальных значений
+    let toi: GeneralToiResponseType;
+    let omnicom: GeneralOmnicomResponseType;
+
     try {
-      // Если включено воспроизведение истории, заполняем данными из исторических таблиц, вместо актуальных значений
-      let toi: GeneralToiResponseType;
-      let omnicom: GeneralOmnicomResponseType;
+      this.logger.log(`Airport-state getActualData, start, login: 
+      ${username}`);
       const isRecording = await this.recordStatusService.isInRecordStatus(username);
+
+      this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
       if (isRecording) {
         toi = await this.toiHistoryService.getCurrentHistory(username);
         omnicom = await this.omnicomHistoryService.getCurrentHistory(username);
