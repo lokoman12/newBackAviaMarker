@@ -1,31 +1,9 @@
 import { Logger } from "@nestjs/common";
 import dayjs from "../utils/dayjs";
 import { DATE_TIME_FORMAT } from "src/auth/consts";
-import { isNumber, isObject, isDate } from 'lodash';
-import { TimelineRecordParametersTypes } from "./types";
-import { TimelineRecordAllParametersType } from "./types";
+import { TimelineRecordAllParametersType, isTimelineRecordAllParametersType, isTimelineRecordFromUserHistoryInfoParametersType } from "./types";
 import { TimelineRecordFromUserHistoryInfoParametersType } from "./types";
 import { TimelineRecordFromCopyDtoType } from "./types";
-
-const isTimelineRecordAllParametersType = (param: TimelineRecordParametersTypes): param is TimelineRecordAllParametersType => {
-  return isNumber((param as TimelineRecordAllParametersType)?.startToiId)
-    && isNumber((param as TimelineRecordAllParametersType)?.endToiId)
-    && isNumber((param as TimelineRecordAllParametersType)?.currentToiId);
-};
-
-const isTimelineRecordFromUserHistoryInfoParametersType = (param: TimelineRecordParametersTypes): param is TimelineRecordFromUserHistoryInfoParametersType => {
-  return isObject((param as TimelineRecordFromUserHistoryInfoParametersType)?.toiRecord)
-    && isObject((param as TimelineRecordFromUserHistoryInfoParametersType)?.omnicomRecord)
-    && isObject((param as TimelineRecordFromUserHistoryInfoParametersType)?.meteoRecord)
-    && isNumber((param as TimelineRecordFromUserHistoryInfoParametersType)?.toiRecord?.startId)
-    && isNumber((param as TimelineRecordFromUserHistoryInfoParametersType)?.toiRecord?.endId);
-};
-
-const isTimelineRecordFromCopyDtoType = (param: TimelineRecordParametersTypes): param is TimelineRecordFromCopyDtoType => {
-  return isObject((param as TimelineRecordFromCopyDtoType)?.fromDto)
-    && isNumber((param as TimelineRecordFromCopyDtoType)?.nextCurrentStep)
-    && isDate((param as TimelineRecordFromCopyDtoType)?.nextCurrentTime);
-};
 
 export class TimelineRecordDto {
   private readonly logger = new Logger(TimelineRecordDto.name);
@@ -90,6 +68,16 @@ export class TimelineRecordDto {
       this.currentMeteoId = params.meteoRecord.startId;
     } else {
       this.setCommonProperties(params.fromDto);
+
+      this.startToiId = params.fromDto.startToiId;
+      this.endToiId = params.fromDto.endToiId;
+
+      this.startOmnicomId = params.fromDto.startOmnicomId;
+      this.endOmnicomId = params.fromDto.endOmnicomId;
+
+      this.startMeteoId = params.fromDto.startMeteoId;
+      this.endMeteoId = params.fromDto.endMeteoId;
+
       this.currentToiId = params.nextCurrentStep;
       this.currentOmnicomId = params.nextCurrentStep;
       this.currentMeteoId = params.nextCurrentStep;
@@ -162,24 +150,26 @@ export class TimelineRecordDto {
     const logger = new Logger(TimelineRecordDto.name);
     try {
       const json = JSON.parse(valueString);
+      const {
+        login, velocity, tableNumber,
+        startTime, endTime, currentTime,
+        startToiId, endToiId, currentToiId,
+        startOmnicomId, endOmnicomId, currentOmnicomId,
+        startMeteoId, endMeteoId, currentMeteoId
+      } = json;
+
       return new TimelineRecordDto({
-        login: json.login,
-        startTime: dayjs.utc(json.startTime, DATE_TIME_FORMAT).toDate(),
-        endTime: dayjs.utc(json.endTime, DATE_TIME_FORMAT).toDate(),
-        currentTime: dayjs.utc(json.currentTime, DATE_TIME_FORMAT).toDate(),
-        velocity: json.velocity, tableNumber: json.tableNumber,
+        login,
 
-        startToiId: json.startToiId,
-        endToiId: json.endToiId,
-        currentToiId: json.currentToiId,
+        startTime: dayjs.utc(startTime, DATE_TIME_FORMAT).toDate(),
+        endTime: dayjs.utc(endTime, DATE_TIME_FORMAT).toDate(),
+        currentTime: dayjs.utc(currentTime, DATE_TIME_FORMAT).toDate(),
 
-        startOmnicomId: json.startOmnicomId,
-        endOmnicomId: json.endOmnicomId,
-        currentOmnicomId: json.currentOmnicomId,
+        velocity, tableNumber,
 
-        startMeteoId: json.startMeteoId,
-        endMeteoId: json.endMeteoId,
-        currentMeteoId: json.currentMeteoId
+        startToiId, endToiId, currentToiId,
+        startOmnicomId, endOmnicomId, currentOmnicomId,
+        startMeteoId, endMeteoId, currentMeteoId
       });
     } catch (e) {
       logger.error(`Строку ${valueString} невозможно преобразовать в тип TimelineRecordDto`, e);

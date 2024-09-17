@@ -104,10 +104,10 @@ export class RecordStatusService {
 
     // Обновим текущие шаг и время
     const nextStatus = new TimelineRecordDto({
-      fromDto: Object.assign(currentStatus, {
+      fromDto: Object.assign({}, currentStatus, {
         currentTime: nextCurrentTime,
         currentToiId: nextCurrentStep,
-        urrentOmnicomId: nextCurrentStep,
+        currentOmnicomId: nextCurrentStep,
         currentMeteoId: nextCurrentStep
       }),
       nextCurrentStep, nextCurrentTime

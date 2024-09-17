@@ -78,27 +78,28 @@ class HistoryUserService {
     insertHistorySql: InsertHistorySqlType,
     deleteHistorySql: OnlyTablenameParamSqlType
   ): Promise<void> {
-    const tableName = SettingsService.getRecordTableNameByIndex(getModelTableName(historyModel), nextFreeTableNumber);
-    const deleteSql = deleteHistorySql(tableName);
+    const baseTableName = getModelTableName(historyModel);
+    const recordTableName = SettingsService.getRecordTableNameByIndex(baseTableName, nextFreeTableNumber);
+    const deleteSql = deleteHistorySql(recordTableName);
 
-    this.logger.log(`historyModel: ${getModelTableName(historyModel)}`);
-    this.logger.log(`Предварительно очищаем таблицу ${tableName} перед вставкой истории, ${deleteSql}`);
+    this.logger.log(`historyModel: ${baseTableName}`);
+    this.logger.log(`Предварительно очищаем таблицу ${recordTableName} перед вставкой истории, ${deleteSql}`);
     try {
       await historyModel.sequelize.query(deleteSql);
     } catch (e) {
-      const message = `Ошибка при очистке таблицы ${tableName}`;
+      const message = `Ошибка при очистке таблицы ${recordTableName}`;
       this.logger.error(message, e);
       throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlClearTableCanNotPerfomed, message);
     }
 
-    const insertSql = insertHistorySql(tableName, timeStart, timeEnd);
+    const insertSql = insertHistorySql(baseTableName, recordTableName, timeStart, timeEnd);
     this.logger.log(`sql: ${insertSql}`);
     this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
 
     try {
       await historyModel.sequelize.query(insertSql);
     } catch (e) {
-      const message = `Ошибка при вставке истории в таблицу ${tableName}`
+      const message = `Ошибка при вставке истории в таблицу ${recordTableName}`
       this.logger.error(message, e);
       throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlInsertTableCanNotPerfomed, message);
     }
@@ -139,7 +140,7 @@ class HistoryUserService {
     const meteoRecord = await this.getUserHistoryInfo(
       SettingsService.getRecordTableNameByIndex(getModelTableName(this.meteoHistoryModel), nextFreeTableNumber)
     );
-    this.logger.log(`Пользователь ${login}, toi history нашли строк: ${meteoRecord.allRecs}`);
+    this.logger.log(`Пользователь ${login}, meteo history нашли строк: ${meteoRecord.allRecs}`);
 
     const allHistoriesInfo: UserHistoryInfoType = {
       toiRecord, omnicomRecord, meteoRecord,
