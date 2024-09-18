@@ -70,6 +70,9 @@ export default class AirportStateService {
       this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
       if (isRecording) {
         toi = await this.toiHistoryService.getCurrentHistory(username);
+
+        let promises: Array<Promise<any>> = [];
+        
         omnicom = await this.omnicomHistoryService.getCurrentHistory(username);
         meteo = await this.meteoHistoryService.getCurrentHistory(username);
         stands = await this.standsHistoryService.getCurrentHistory(username);

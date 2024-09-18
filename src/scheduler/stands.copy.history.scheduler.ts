@@ -22,7 +22,7 @@ export default class StandsCopyToHistoryScheduler {
     this.logger.log('Init controller --------------------------->');
 
     if (configService.isCopyHistoryEnabled()) {
-      this.logger.warn('Включение копирования парковок в историю');
+      this.logger.warn(`Включение копирования парковок в историю standsCopyToHistoryCronMask:${this.configService.getStandsCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
         StandsCopyToHistoryScheduler.copyToHistoryJobName,
         this.configService.getStandsCopyToHistoryCronMask(),
@@ -35,23 +35,33 @@ export default class StandsCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    // this.logger.log('Копируем stands в иcторию');
-    // this.logger.log('Запуск джобы копирования актуальной третички в историю');
-    const rowsForHistory = await this.standService.getActualData();
-    const promises = [];
-
-    // this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
-
     const time = new Date();
-    rowsForHistory.forEach(it => {
-      const record = this.standsHistoryModel.create({
+    this.logger.log(`Копируем stands в иcторию time:${time}`);
+    const rowsForHistory = await this.standService.getActualData();
+
+    this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
+
+    const rowsToInsert = rowsForHistory.map(it => {
+      return {
         // Опустим колонку id, для хистори таблицы она будет сгенерирована
         ...omit(it, ['id']),
         time,
-      })
-      promises.push(record);
+      };
     });
-    await Promise.all(promises);
+    await this.standsHistoryModel.bulkCreate(
+      rowsToInsert
+    );
+
+    // const promises = [];
+    // rowsForHistory.forEach(it => {
+    //   const record = this.standsHistoryModel.create({
+    //     // Опустим колонку id, для хистори таблицы она будет сгенерирована
+    //     ...omit(it, ['id']),
+    //     time,
+    //   })
+    //   promises.push(record);
+    // });
+    // await Promise.all(promises);
   }
 
 }

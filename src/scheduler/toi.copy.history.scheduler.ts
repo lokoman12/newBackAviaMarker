@@ -19,9 +19,9 @@ export default class ToiCopyToHistoryScheduler {
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
     this.logger.log('Init controller --------------------------->');
-    
+
     if (configService.isCopyHistoryEnabled()) {
-      this.logger.warn('Включение копирования третички в историю');
+      this.logger.warn(`Включение копирования третички в историю, toiCopyToHistoryCronMask:${this.configService.getToiCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
         ToiCopyToHistoryScheduler.copyToHistoryJobName,
         this.configService.getToiCopyToHistoryCronMask(),
@@ -30,28 +30,37 @@ export default class ToiCopyToHistoryScheduler {
     } else {
       this.logger.warn('Копирование третички отключено в настройках');
     }
-    
+
     this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async copyToHistory() {
-    // this.logger.log('Копирование в иcторию');
-    // this.logger.log('Запуск джобы копирования актуальной третички в историю');
-    const rowsForHistory = await this.toiService.getActualClientData();
-    const promises = [];
-
-    // this.logger.log(`Копируем в историю toi: ${rowsForHistory.length} строк`);
-
     const time = new Date();
-    rowsForHistory.forEach(it => {
-      const record = this.toiHistoryModel.create({
-        // Опустим колонку id третички, для хистори таблицы она будет сгенерирована
+    this.logger.log(`Копирование третички в иcторию ${time}`);
+    const rowsForHistory = await this.toiService.getActualClientData();
+
+    this.logger.log(`Копируем в историю toi: ${rowsForHistory.length} строк`);
+
+    const rowsToInsert = rowsForHistory.map(it => {
+      return {
         ...omit(it, ['id']),
         time,
-      })
-      promises.push(record);
+      };
     });
-    await Promise.all(promises);
+    await this.toiHistoryModel.bulkCreate(
+      rowsToInsert
+    );
+
+    // const promises = [];
+    // rowsForHistory.forEach(it => {
+    //   const record = this.toiHistoryModel.create({
+    //     // Опустим колонку id третички, для хистори таблицы она будет сгенерирована
+    //     ...omit(it, ['id']),
+    //     time,
+    //   })
+    //   promises.push(record);
+    // });
+    // await Promise.all(promises);
   }
 
 }

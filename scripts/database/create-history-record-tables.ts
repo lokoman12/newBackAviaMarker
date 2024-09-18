@@ -81,11 +81,12 @@ const aznbHistoryTableNames = Array.from(
 const dropTableSql = (tableName: string) =>
   `DROP TABLE IF EXISTS ${tableName};`;
 
-const createMainToiHistorySql = (tableName: string) =>
-  `CREATE TABLE IF NOT EXISTS ${tableName} (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+  export const commonHistoryAttributes = `
+    id int(11) NOT NULL AUTO_INCREMENT,
+    time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+  `;
 
+  export const toiHistoryAttributes = `
   coordinates json NOT NULL,
 
   Name varchar(255) DEFAULT NULL,
@@ -96,6 +97,12 @@ const createMainToiHistorySql = (tableName: string) =>
   type int(11) NOT NULL,
 
   formular json NOT NULL,
+`;
+
+const createMainToiHistorySql = (tableName: string) =>
+  `CREATE TABLE IF NOT EXISTS ${tableName} (
+  ${commonHistoryAttributes}
+  ${toiHistoryAttributes}
 
   PRIMARY KEY (id),
   KEY time_idx (time)
@@ -163,14 +170,18 @@ const createRelativeOmnicomHistorySql = (tableName: string) =>
   KEY time_idx (time)
 )`;
 
+export const meteoHistoryAttributes = `
+  dTime double NOT NULL,
+  id_vpp tinyint(4) NOT NULL,
+  id_grp int(11) NOT NULL,
+  Data varchar(512) DEFAULT NULL,
+`;
 const createMainMeteoHistorySql = (tableName: string) =>
   `CREATE TABLE IF NOT EXISTS ${tableName} (
   id int(11) NOT NULL AUTO_INCREMENT,
   time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
 
-  id_vpp tinyint(4) NOT NULL,
-  id_grp int(11) NOT NULL,
-  Data varchar(512) DEFAULT NULL,
+  ${meteoHistoryAttributes}
   
   PRIMARY KEY (id),
   KEY time_idx (time)
@@ -182,9 +193,7 @@ const createRelativeMeteoHistorySql = (tableName: string) =>
   step int(11) NOT NULL,
   time datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
 
-  id_vpp tinyint(4) NOT NULL,
-  id_grp int(11) NOT NULL,
-  Data varchar(512) DEFAULT NULL,
+  ${meteoHistoryAttributes}
   
   PRIMARY KEY (id),
   KEY step (step),
@@ -332,7 +341,7 @@ const createHistoryRecordTables = async (tableNames: Array<string> | string, get
 
 (async () => {
   // Таблицу истории третички не чистим по умолчанию, пусть копится
-  // await prepareHistoryTables(TOI_HISTORY_TABLE_NAME, dropTableSql, createMainToiHistorySql);
+  await prepareHistoryTables(TOI_HISTORY_TABLE_NAME, dropTableSql, createMainToiHistorySql);
   await prepareHistoryTables(toiHistoryTableNames, dropTableSql, createRelativeToiHistorySql);
 
   await prepareMainAndRelativesHistoryTables(

@@ -21,12 +21,12 @@ export default class AznbCopyToHistoryScheduler {
   ) {
     this.logger.log('Init controller --------------------------->');
     if (configService.isCopyHistoryEnabled()) {
-      this.logger.warn('Включение копирования азнб в историю');
-      this.externalScheduler.addJob(
-        AznbCopyToHistoryScheduler.copyToHistoryJobName,
-        this.configService.getAznbCopyToHistoryCronMask(),
-        this.copyToHistory.bind(this)
-      );
+      this.logger.warn(`Включение копирования азнб в историю aznbCopyToHistoryCronMask:${this.configService.getAznbCopyToHistoryCronMask()}`);
+      // this.externalScheduler.addJob(
+      //   AznbCopyToHistoryScheduler.copyToHistoryJobName,
+      //   this.configService.getAznbCopyToHistoryCronMask(),
+      //   this.copyToHistory.bind(this)
+      // );
     } else {
       this.logger.warn('Копирование первички отключено в настройках');
     }
@@ -34,12 +34,11 @@ export default class AznbCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    // this.logger.log('Копируем stands в иcторию');
-    // this.logger.log('Запуск джобы копирования актуальной третички в историю');
+    this.logger.log('Копируем stands в иcторию');
     const rowsForHistory = await this.aznbService.getActualData();
     const promises = [];
 
-    // this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
+    this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
 
     const time = new Date();
     rowsForHistory.forEach(it => {

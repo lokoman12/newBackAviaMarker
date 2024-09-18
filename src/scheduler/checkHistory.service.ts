@@ -41,11 +41,11 @@ export class CheckHistoryService {
   async handleDailyCheck() {
     this.logger.log('++++++++ Running daily check of ToiHistory records +++++++++++++');
 
-    try {
-      const startTime = dayjs.utc()
-        .subtract(this.configService.getHowDaySave(), 'days');
-      this.logger.log(`Delete all records from history before: ${startTime.format(DATE_TIME_FORMAT)}`);
+    const startTime = dayjs.utc()
+      .subtract(this.configService.getHowDaySave(), 'days');
+    this.logger.log(`Delete all records from history before: ${startTime.format(DATE_TIME_FORMAT)}`);
 
+    try {
       await this.toiHistoryModel.destroy({
         where: {
           time: {
@@ -53,7 +53,11 @@ export class CheckHistoryService {
           },
         },
       });
+    } catch (error) {
+      this.logger.error('Ошибка удаления устаревшей истории третички:', error);
+    }
 
+    try {
       await this.aznbHistoryModel.destroy({
         where: {
           time: {
@@ -61,7 +65,11 @@ export class CheckHistoryService {
           },
         },
       });
+    } catch (error) {
+      this.logger.error('Ошибка удаления устаревшей истории первички:', error);
+    }
 
+    try {
       await this.standsHistoryModel.destroy({
         where: {
           time: {
@@ -69,7 +77,11 @@ export class CheckHistoryService {
           },
         },
       });
+    } catch (error) {
+      this.logger.error('Ошибка удаления устаревшей истории парковок:', error);
+    }
 
+    try {
       await this.omnicomHistoryModel.destroy({
         where: {
           time: {
@@ -77,7 +89,11 @@ export class CheckHistoryService {
           },
         },
       });
+    } catch (error) {
+      this.logger.error('Ошибка удаления устаревшей истории машинок:', error);
+    }
 
+    try {
       await this.meteoHistoryModel.destroy({
         where: {
           time: {
@@ -85,9 +101,8 @@ export class CheckHistoryService {
           },
         },
       });
-
     } catch (error) {
-      this.logger.error('Error during daily check:', error);
+      this.logger.error('Ошибка удаления устаревшей истории метео:', error);
     }
   }
 }

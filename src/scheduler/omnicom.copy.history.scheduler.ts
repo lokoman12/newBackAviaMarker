@@ -21,7 +21,7 @@ export default class OmnicomCopyToHistoryScheduler {
   ) {
     this.logger.log('Init controller --------------------------->');
     if (configService.isCopyHistoryEnabled()) {
-      this.logger.warn('Включение копирования машинок в историю');
+      this.logger.warn(`Включение копирования машинок в историю ${this.configService.getOmnicomCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
         OmnicomCopyToHistoryScheduler.copyToHistoryJobName,
         this.configService.getOmnicomCopyToHistoryCronMask(),
@@ -34,16 +34,14 @@ export default class OmnicomCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    // this.logger.log('Копируем omnicom в иcторию');
-    // this.logger.log('Запуск джобы копирования актуальной третички в историю');
-    const rowsForHistory = await this.omnicomService.getActualData();
-    const promises = [];
-
-    // this.logger.log(`Копируем в историю omnicom: ${rowsForHistory.length} строк`);
-
     const time = new Date();
-    rowsForHistory.forEach((it) => {
-      const record = this.omnicomHistoryModel.create({
+    this.logger.log(`Копируем omnicom в иcторию time:${time}`);
+    const rowsForHistory = await this.omnicomService.getActualData();
+
+    this.logger.log(`Копируем в историю omnicom: ${rowsForHistory.length} строк`);
+
+    const rowsToInsert = rowsForHistory.map(it => {
+      return {
         // Опустим колонку id, для хистори таблицы она будет сгенерирована
         time,
         Serial: it.Serial,
@@ -53,9 +51,27 @@ export default class OmnicomCopyToHistoryScheduler {
         Lon: it.Lon,
         Speed: it.Speed,
         Course: it.Course,
-      });
-      promises.push(record);
+      };
     });
-    await Promise.all(promises);
+    await this.omnicomHistoryModel.bulkCreate(
+      rowsToInsert
+    );
+
+    // const promises = [];
+    // rowsForHistory.forEach((it) => {
+    //   const record = this.omnicomHistoryModel.create({
+    //     // Опустим колонку id, для хистори таблицы она будет сгенерирована
+    //     time,
+    //     Serial: it.Serial,
+    //     GarNum: it.GarNum,
+    //     t_obn: it.t_obn,
+    //     Lat: it.Lat,
+    //     Lon: it.Lon,
+    //     Speed: it.Speed,
+    //     Course: it.Course,
+    //   });
+    //   promises.push(record);
+    // });
+    // await Promise.all(promises);
   }
 }
