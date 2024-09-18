@@ -20,11 +20,12 @@ import StandsHistory from 'src/db/models/standsHistory.model';
 import { AznbModule } from 'src/aznb/aznb.module';
 import StandsHistoryService from './stands.history.service';
 import AznbHistoryService from './aznb.history.service';
+import MeteoHistoryService from './meteo.history.service';
 
 @Module({
   imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory]), ToiModule, OmnicomModule, MeteoModule, StandsModule, AznbModule, UserHistoryModule],
-  providers: [ToiHistoryService, OmnicomHistoryService, StandsHistoryService, AznbHistoryService],
+  providers: [ToiHistoryService, OmnicomHistoryService, MeteoHistoryService, StandsHistoryService, AznbHistoryService],
   controllers: [HistoryController, RecordStatusController,],
-  exports: [ToiHistoryService, OmnicomHistoryService, StandsHistoryService, AznbHistoryService],
+  exports: [ToiHistoryService, OmnicomHistoryService, MeteoHistoryService, StandsHistoryService, AznbHistoryService],
 })
 export class HistoryModule { }

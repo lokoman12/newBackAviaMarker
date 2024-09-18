@@ -1,18 +1,18 @@
-import { Controller, Get, Injectable, Req } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import { flatOffsetMeterToLongitudeLatitude } from 'src/utils/XYtoLanLon';
 import Toi, { IToi } from 'src/db/models/toi.model';
 import Formular, { IFormular } from 'src/db/models/Formular.model';
 import { ApiConfigService } from 'src/config/api.config.service';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Request } from 'express';
 import { Op } from 'sequelize';
 import { pick } from 'lodash';
 import { nonNull } from 'src/utils/common';
 import { HistoryResponseType } from 'src/history/types';
+import Scout from 'src/db/models/scout.model';
+import Meteo from 'src/db/models/meteo.model';
+import Stands from 'src/db/models/stands.model';
+import Aznb from 'src/db/models/aznb.model';
 
 export interface ActualToi {
   toi: IToi;
@@ -23,7 +23,9 @@ export type ActualClientToi = Partial<IToi> & {
   formular: Array<IFormular>
 }
 
-export type GeneralToiResponseType = Array<ActualClientToi> | HistoryResponseType;
+export type GeneralActualType = Array<ActualClientToi> | Array<Scout> | Array<Meteo> | Array<Stands> | Array<Aznb>;
+
+export type GeneralResponseType = GeneralActualType | HistoryResponseType;
 
 @Injectable()
 export default class ToiService {

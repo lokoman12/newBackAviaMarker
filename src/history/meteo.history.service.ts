@@ -48,7 +48,8 @@ class MeteoHistoryService {
     }
 
     // Новый текущий шаг
-    const nextId = status.currentToiId + 1;
+    // const nextId = status.currentMeteoId + 1;
+    const nextId = status.currentMeteoId;
     // Получим имя таблицы истории для залогиненного пользователя
     const tableName = SettingsService.getRecordTableNameByIndex(METEO_HISTORY_TABLE_NAME, status.tableNumber);
 
@@ -66,12 +67,15 @@ class MeteoHistoryService {
 
     // Обновим текущие шаг и время
     // this.logger.log(`status.currentToiId: ${status.currentToiId}, nextId: ${nextId}, record[0].time: ${records?.[0]?.time || status.currentTime}`);
-    const nextCurrent = await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
-      login, nextId, records?.[0]?.time || status.currentTime
-    );
+    // const nextCurrent = await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
+      // login, nextId, records?.[0]?.time || status.currentTime
+    // );
     
-    const nextCurrentStep = nextCurrent.nextCurrentStep;
-    const nextCurrentTime = nextCurrent.nextCurrentTime;
+    // const nextCurrentStep = nextCurrent.nextCurrentStep;
+    // const nextCurrentTime = nextCurrent.nextCurrentTime;
+    const nextCurrentStep = status.currentOmnicomId;
+    const nextCurrentTime = status.currentTime.getTime();
+
 
     // this.logger.log(`isNumber(value) && !isNaN(value) && isFinite(value) = ${isNumber(nextCurrentTime)} && ${!isNaN(nextCurrentTime)} && ${isFinite(nextCurrentTime)}`);
     if (!isNormalNumber(nextCurrentStep)) {

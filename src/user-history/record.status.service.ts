@@ -109,7 +109,9 @@ export class RecordStatusService {
         currentTime: nextCurrentTime,
         currentToiId: nextCurrentStep,
         currentOmnicomId: nextCurrentStep,
-        currentMeteoId: nextCurrentStep
+        currentMeteoId: nextCurrentStep,
+        currentStandsId: nextCurrentStep,
+        currentAznbId: nextCurrentStep
       }),
       nextCurrentStep, nextCurrentTime
     });
