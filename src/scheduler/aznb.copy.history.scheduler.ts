@@ -22,11 +22,11 @@ export default class AznbCopyToHistoryScheduler {
     this.logger.log('Init controller --------------------------->');
     if (configService.isCopyHistoryEnabled()) {
       this.logger.warn(`Включение копирования азнб в историю aznbCopyToHistoryCronMask:${this.configService.getAznbCopyToHistoryCronMask()}`);
-      // this.externalScheduler.addJob(
-      //   AznbCopyToHistoryScheduler.copyToHistoryJobName,
-      //   this.configService.getAznbCopyToHistoryCronMask(),
-      //   this.copyToHistory.bind(this)
-      // );
+      this.externalScheduler.addJob(
+        AznbCopyToHistoryScheduler.copyToHistoryJobName,
+        this.configService.getAznbCopyToHistoryCronMask(),
+        this.copyToHistory.bind(this)
+      );
     } else {
       this.logger.warn('Копирование первички отключено в настройках');
     }
@@ -34,22 +34,33 @@ export default class AznbCopyToHistoryScheduler {
   }
 
   public async copyToHistory() {
-    this.logger.log('Копируем stands в иcторию');
+    const time = new Date();
+    this.logger.log(`Копируем stands в иcторию time:${time}`);
     const rowsForHistory = await this.aznbService.getActualData();
-    const promises = [];
 
     this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
 
-    const time = new Date();
-    rowsForHistory.forEach(it => {
-      const record = this.aznbHistoryModel.create({
+    const rowsToInsert = rowsForHistory.map(it => {
+      return {
         // Опустим колонку id, для хистори таблицы она будет сгенерирована
         ...omit(it, ['id']),
         time,
-      })
-      promises.push(record);
+      };
     });
-    await Promise.all(promises);
+    await this.aznbHistoryModel.bulkCreate(
+      rowsToInsert
+    );
+
+    // const promises = [];
+    // rowsForHistory.forEach(it => {
+    //   const record = this.aznbHistoryModel.create({
+    //     // Опустим колонку id, для хистори таблицы она будет сгенерирована
+    //     ...omit(it, ['id']),
+    //     time,
+    //   })
+    //   promises.push(record);
+    // });
+    // await Promise.all(promises);
   }
 
 }

@@ -22,7 +22,7 @@ export function degreesLonPerMeter(latitude: number) {
   return 1 / meters;
 }
 
-export function flatOffsetMeterToLongitudeLatitude(
+export function flatOffsetMeterToLonLatArray(
   cta: Position,
   dbX: number,
   dbY: number
@@ -32,4 +32,16 @@ export function flatOffsetMeterToLongitudeLatitude(
   const lon = cta[0] + dbX * lonPerMeter;
   const lat = cta[1] + dbY * latPerMeter;
   return [lat, lon];
+}
+
+export function flatOffsetMeterToLonLatObject(
+  cta: Position,
+  dbX: number,
+  dbY: number
+): { lat: number, lon: number } {
+  const lonPerMeter = degreesLonPerMeter(cta[1]);
+  const latPerMeter = degreesLatPerMeter(cta[1]);
+  const lon = cta[0] + dbX * lonPerMeter;
+  const lat = cta[1] + dbY * latPerMeter;
+  return { lat, lon };
 }

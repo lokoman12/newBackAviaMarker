@@ -33,4 +33,11 @@ export class ToiController {
     const formattedToi = this.toiService.getActualClientData();
     return formattedToi;
   }
+
+  @Public()
+  @Get('test')
+  async getToiForTest(@Req() req: Request): Promise<Array<any>> {
+    const formattedToi = this.toiService.getActualClientData();
+    return formattedToi;
+  }
 }
