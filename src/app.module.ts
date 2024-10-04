@@ -38,6 +38,7 @@ import { UserHistoryModule } from './user-history/user.history.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { AznbModule } from './aznb/aznb.module';
 import { AirportStateModule } from './airport-state/airportState.module';
+import { CopyHistoryModule } from './copy.history/copy-history.module';
 
 type NestModuleType = Type<NestModule>;
 function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
@@ -54,6 +55,8 @@ function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
     DatabaseModule,
     UsersModule,
     AuthModule,
+    SchedulerModule,
+    CopyHistoryModule,
     SettingsModule,
     ToiModule,
     SavePositionModule,

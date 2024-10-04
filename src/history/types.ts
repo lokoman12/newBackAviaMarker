@@ -7,12 +7,13 @@ import ToiHistory from "src/db/models/toiHistory.model";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
 import { isNull } from "src/utils/common";
 
+export type HistoryList = Array<ToiHistory | OmnicomHistory | OmnicomHistory | MeteoHistory | StandsHistory | AznbHistory>;
 export type HistoryResponseType = {
-  rows: Array<ToiHistory | OmnicomHistory | OmnicomHistory | MeteoHistory | StandsHistory | AznbHistory>;
+  rows: HistoryList;
   state: NextCurrentTypeForResponse;
 };
 
-export type HistoryTableType = typeof ToiHistory | typeof OmnicomHistory | typeof MeteoHistory | typeof StandsHistory | typeof AznbHistory;
+export type HistoryTableType = typeof ToiHistory | typeof OmnicomHistory | typeof MeteoHistory | typeof StandsHistory | typeof AznbHistory | typeof HistoryModel;
 
 export type TableNameRequiredType = Required<Pick<TableOptions, 'tableName'>>;
 
@@ -34,4 +35,12 @@ export function Table(options: TableOptions & TableNameRequiredType): Function {
     return (require('sequelize-typescript').Table as any)(options)(constructor);
   };
 }
+
+export abstract class HistoryModel<TModelAttributes extends {} = any, TCreationAttributes extends {} = TModelAttributes> extends Model<TModelAttributes, TCreationAttributes> {
+  id: number;
+  time: Date;
+}
+
+export type Constructor<T> = new (...args: any[]) => T;
+export type ModelType<T extends HistoryModel<T>> = Constructor<T> & typeof HistoryModel;
 

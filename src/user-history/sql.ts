@@ -2,6 +2,9 @@ import { DATE_TIME_FORMAT } from "src/auth/consts";
 import { OnlyTablenameParamSqlType, InsertHistorySqlType, CurrentHistoryInfoSql } from "./types";
 import dayjs from '../utils/dayjs';
 
+export const getHistorySql = (tableName: string, nextId: number) =>
+  `SELECT * FROM ${tableName} WHERE step = ${nextId}`;
+
 export const getHistoryInfoSql: OnlyTablenameParamSqlType = (tablename: string) =>
   `SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId FROM ${tablename}`;
 

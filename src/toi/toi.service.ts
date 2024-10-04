@@ -78,7 +78,7 @@ export default class ToiService {
   }
 
   async getActualClientDataOld(): Promise<Array<ActualClientToi>> {
-    this.logger.log(`Toi getActualData, start`);
+    // this.logger.log(`Toi getActualData, start`);
     const attualToi = await this.getActualData();
     return attualToi.map(toiItem => {
       const [lat, lon] = flatOffsetMeterToLonLatArray(
@@ -100,7 +100,7 @@ export default class ToiService {
   }
 
   async getActualClientData(): Promise<Array<any>> {
-    this.logger.log(`Toi getActualData, start`);
+    // this.logger.log(`Toi getActualData, start`);
 
     const activeAirportPosition = this.configService.getActiveAirportPosition();
     try {

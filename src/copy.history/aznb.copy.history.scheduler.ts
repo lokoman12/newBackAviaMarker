@@ -1,43 +1,43 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ApiConfigService } from "src/config/api.config.service";
-import { ExternalScheduler } from "./external.scheduler";
 import { InjectModel } from "@nestjs/sequelize";
 import { omit } from 'lodash';
-import MeteoHistory from "src/db/models/meteoHistory.model";
-import MeteoService from "src/meteo/meteo.service";
+import AznbService from "src/aznb/aznb.service";
+import AznbHistory from "src/db/models/aznbHistory.model";
+import { ExternalScheduler } from "src/scheduler/external.scheduler";
 
 @Injectable()
-export default class MeteoCopyToHistoryScheduler {
-  private readonly logger = new Logger(MeteoCopyToHistoryScheduler.name);
+export default class AznbCopyToHistoryScheduler {
+  private readonly logger = new Logger(AznbCopyToHistoryScheduler.name);
 
-  public static copyToHistoryJobName = 'MeteoCopyToHistory';
+  public static copyToHistoryJobName = 'AznbCopyToHistory';
 
   constructor(
     private configService: ApiConfigService,
     private externalScheduler: ExternalScheduler,
-    private meteoService: MeteoService,
-    @InjectModel(MeteoHistory) private readonly meteoHistoryModel: typeof MeteoHistory
+    private aznbService: AznbService,
+    @InjectModel(AznbHistory) private readonly aznbHistoryModel: typeof AznbHistory
   ) {
     this.logger.log('Init controller --------------------------->');
     if (configService.isCopyHistoryEnabled()) {
-      this.logger.warn(`Включение копирования метео в историю meteoCopyToHistoryCronMask:${this.configService.getMeteoCopyToHistoryCronMask()}`);
+      this.logger.warn(`Включение копирования азнб в историю aznbCopyToHistoryCronMask:${this.configService.getAznbCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
-        MeteoCopyToHistoryScheduler.copyToHistoryJobName,
-        this.configService.getMeteoCopyToHistoryCronMask(),
+        AznbCopyToHistoryScheduler.copyToHistoryJobName,
+        this.configService.getAznbCopyToHistoryCronMask(),
         this.copyToHistory.bind(this)
       );
     } else {
-      this.logger.warn('Копирование метео отключено в настройках');
+      this.logger.warn('Копирование первички отключено в настройках');
     }
     this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async copyToHistory() {
     const time = new Date();
-    this.logger.log(`Копируем meteo в иcторию time:${time}`);
-    const rowsForHistory = await this.meteoService.getActualData();
+    this.logger.log(`Копируем stands в иcторию time:${time}`);
+    const rowsForHistory = await this.aznbService.getActualData();
 
-    this.logger.log(`Копируем в историю meteo: ${rowsForHistory.length} строк`);
+    this.logger.log(`Копируем в историю stands: ${rowsForHistory.length} строк`);
 
     const rowsToInsert = rowsForHistory.map(it => {
       return {
@@ -46,13 +46,13 @@ export default class MeteoCopyToHistoryScheduler {
         time,
       };
     });
-    await this.meteoHistoryModel.bulkCreate(
+    await this.aznbHistoryModel.bulkCreate(
       rowsToInsert
     );
-    
+
     // const promises = [];
     // rowsForHistory.forEach(it => {
-    //   const record = this.meteoHistoryModel.create({
+    //   const record = this.aznbHistoryModel.create({
     //     // Опустим колонку id, для хистори таблицы она будет сгенерирована
     //     ...omit(it, ['id']),
     //     time,

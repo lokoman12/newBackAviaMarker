@@ -14,8 +14,8 @@ export enum HistoryErrorCodeEnum {
   copyOmnicomError = 11,
   copyMeteoError = 12,
   sqlPrepareTablesCanNotPerfomed = 13,
+  canNotSaveHistoryStage = 14,
   unknownHistoryError = 100,
-Qwerty123
 };
 
 export type ErrorObjectType = {

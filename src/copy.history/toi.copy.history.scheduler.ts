@@ -1,10 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ApiConfigService } from "src/config/api.config.service";
-import { ExternalScheduler } from "./external.scheduler";
 import ToiService from "src/toi/toi.service";
 import ToiHistory from "src/db/models/toiHistory.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { omit } from 'lodash';
+import { ExternalScheduler } from "src/scheduler/external.scheduler";
 
 @Injectable()
 export default class ToiCopyToHistoryScheduler {

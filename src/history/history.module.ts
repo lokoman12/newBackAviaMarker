@@ -21,11 +21,13 @@ import { AznbModule } from 'src/aznb/aznb.module';
 import StandsHistoryService from './stands.history.service';
 import AznbHistoryService from './aznb.history.service';
 import MeteoHistoryService from './meteo.history.service';
+import { SchedulerModule } from 'src/scheduler/scheduler.module';
 
 @Module({
-  imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory]), ToiModule, OmnicomModule, MeteoModule, StandsModule, AznbModule, UserHistoryModule],
+  imports: [ApiConfigModule, SettingsModule, SequelizeModule.forFeature([Toi, ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory]), ToiModule, OmnicomModule, MeteoModule, StandsModule, AznbModule, SchedulerModule, UserHistoryModule,],
   providers: [ToiHistoryService, OmnicomHistoryService, MeteoHistoryService, StandsHistoryService, AznbHistoryService],
   controllers: [HistoryController, RecordStatusController,],
-  exports: [ToiHistoryService, OmnicomHistoryService, MeteoHistoryService, StandsHistoryService, AznbHistoryService],
+  exports: [ToiHistoryService, OmnicomHistoryService, MeteoHistoryService, StandsHistoryService, AznbHistoryService,
+  ],
 })
 export class HistoryModule { }

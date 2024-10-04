@@ -17,7 +17,7 @@ export default class OmnicomService {
   }
 
   async getActualData(): Promise<Array<Scout>> {
-    this.logger.log(`Omnicom getActualData, start`);
+    // this.logger.log(`Omnicom getActualData, start`);
     try {
       const omnicom = await this.omnicomModel.findAll({raw: true});
       return omnicom;

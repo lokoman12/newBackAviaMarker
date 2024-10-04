@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Logger,
-  NotAcceptableException,
   ParseIntPipe,
   Post,
   Query,
@@ -19,15 +18,21 @@ import HistoryUserService from './history.user.service';
 import { TimelineDto } from './types';
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
-import { omit } from 'lodash';
+import { omit, pick } from 'lodash';
 import { SettingsService } from 'src/settings/settings.service';
 import { AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
+import { ExternalScheduler } from 'src/scheduler/external.scheduler';
+import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
 
 @Controller('/record-status')
 export class RecordStatusController {
   private readonly logger = new Logger(RecordStatusController.name);
 
+  public static createHistoryJobName = 'CreateHistory';
+
   constructor(
+    private readonly scheduler: ToadScheduler,
+    private readonly externalScheduler: ExternalScheduler,
     private readonly recordStatusService: RecordStatusService,
     private readonly historyUserService: HistoryUserService,
   ) { }
@@ -37,6 +42,20 @@ export class RecordStatusController {
     @Req() req: Request
   ) {
     throw new HistoryBadStateException("", HistoryErrorCodeEnum.emptyHistoryResult, 'Какая-то ошибка для проверки ручки');
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get("/get-history-stages")
+  async getHistoryStages(
+    @Req() req: Request
+  ) {
+    const { username } = req.user as User;
+    this.logger.log(`/get-history-stages, username from token: ${username}`);
+
+    const result = await this.recordStatusService.getRecordStatus(username);
+    return result !== null ? {
+      historyGenerateStages: result.historyGenerateStages,
+    } : {};
   }
 
   @UseGuards(AccessTokenGuard)
@@ -56,6 +75,10 @@ export class RecordStatusController {
     } : null;
   }
 
+  private async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number) {
+    await this.historyUserService.tryFillInUserHistoryTable(login, startTime, endTime, velocity);
+  }
+
   @UseGuards(AccessTokenGuard)
   @Get("/set")
   async setRecordStatus(
@@ -67,14 +90,58 @@ export class RecordStatusController {
     const { username } = req.user as User;
     this.logger.log(`/set, username from token: ${username}`);
     this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
-    const result = await this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
-    this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
+
+    if (this.externalScheduler.isJobExistsByName(RecordStatusController.createHistoryJobName)) {
+      this.externalScheduler.cancelJobByName(RecordStatusController.createHistoryJobName);
+    }
+
+    // Если задача была запущена, остановим
+    if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
+      this.logger.log('Check existing task');
+      this.scheduler.removeById(RecordStatusController.createHistoryJobName);
+    }
+    const task = new AsyncTask(
+      RecordStatusController.createHistoryJobName,
+      () => {
+        // return new Promise<void>((resolve) => {
+
+        // resolve();
+        // });
+        this.logger.log(`Start job for user ${username}`);
+        return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
+          .then(() => {
+            this.logger.log(`Stop job for user ${username}`);
+            // Завершим задачу после однократного исполнения
+            if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
+              this.logger.log(`Stopped job for user ${username}`);
+              this.scheduler.removeById(RecordStatusController.createHistoryJobName);
+            }
+          });
+      },
+      (err: Error) => {
+        this.logger.error(`Can not finish tryFillInUserHistoryTable for user ${username}, error: ${err}`);
+      }
+    );
+    // Интервал выполнения - 1 час. Через час задача снимется системой по таймауту
+    const job = new SimpleIntervalJob({ hours: 1, runImmediately: true, }, task);
+    this.scheduler.addSimpleIntervalJob(job);
+
+    // this.externalScheduler.addJob(
+    //   RecordStatusController.createHistoryJobName,
+    //   "0 0 0 * * *",
+    //   () => {
+    //     return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
+    //       .then(() => {
+    //         return;
+    //       });
+    //   });
+    // const result = await this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
 
     return {
-      ...result,
-      startTime: result.startTime.getTime(),
-      endTime: result.endTime.getTime(),
-      currentTime: result.currentTime.getTime(),
+      // ...result,
+      // startTime: result.startTime.getTime(),
+      // endTime: result.endTime.getTime(),
+      // currentTime: result.currentTime.getTime(),
     };
   }
 
@@ -121,7 +188,7 @@ export class RecordStatusController {
       if (toiCurrent) {
         const toiHistoryResult = await this.recordStatusService.setCurrent(
           username,
-          toiCurrent.currentId, omnicomCurrent.currentId, meteoCurrent.currentId, standsCurrent.currentId, aznbCurrent.currentId,
+          toiCurrent.currentId,
           dayjs.utc(toiCurrent.currentTime).toDate()
         );
 
@@ -154,7 +221,7 @@ export class RecordStatusController {
 
     const result = await this.recordStatusService.setCurrent(
       username,
-      timelineDto.currentToiId, timelineDto.currentOmnicomId, timelineDto.currentMeteoId, timelineDto.currentStandsId, timelineDto.currentAznbId,
+      timelineDto.currentToiId,
       currentTimeDayjs.toDate()
     );
     return result !== null ? {

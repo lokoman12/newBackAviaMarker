@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ApiConfigService } from 'src/config/api.config.service';
-import { ExternalScheduler } from './external.scheduler';
 import OmnicomHistory from 'src/db/models/scoutHistory.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { omit } from 'lodash';
 import OmnicomService from 'src/omnicom/omnicom.service';
+import { ExternalScheduler } from 'src/scheduler/external.scheduler';
 
 @Injectable()
 export default class OmnicomCopyToHistoryScheduler {

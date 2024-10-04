@@ -16,7 +16,7 @@ export class ExternalScheduler {
       taskId,
       () => {
         return callback().then(() => {
-          // this.logger.log(`Джоба ${taskId} завершена`);
+          this.logger.log(`Джоба ${taskId} завершена`);
         })
       },
       (e: Error) => {
@@ -56,8 +56,9 @@ export class ExternalScheduler {
     if (!id) {
       return false;
     }
-    const job = this.scheduler.getById(id);
-    return job?.id != undefined;
+    // const job = this.scheduler.getById(id);
+    // return job?.id != undefined;
+    return this.scheduler.existsById(id);
   }
 
   getJobByName(id: string): Job | undefined {

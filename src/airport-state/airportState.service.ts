@@ -17,7 +17,6 @@ import StandGeoService from 'src/stand-geo/stand.geo.service';
 import ToiHistoryService from 'src/history/toi.history.service';
 import { RecordStatusService } from 'src/user-history/record.status.service';
 import OmnicomHistoryService from 'src/history/omnicom.history.service';
-import MeteoHistoryService from 'src/history/meteo.history.service';
 import StandsHistoryService from 'src/history/stands.history.service';
 import AznbHistoryService from 'src/history/aznb.history.service';
 import { HistoryResponseType } from 'src/history/types';
@@ -25,6 +24,7 @@ import Scout from 'src/db/models/scout.model';
 import Meteo from 'src/db/models/meteo.model';
 import Stands from 'src/db/models/stands.model';
 import Aznb from 'src/db/models/aznb.model';
+import MeteoHistoryService from 'src/history/meteo.history.service';
 
 @Injectable()
 export default class AirportStateService {
@@ -63,16 +63,12 @@ export default class AirportStateService {
     let aznb: Array<Aznb> | HistoryResponseType;
 
     try {
-      this.logger.log(`Airport-state getActualData, start, login: 
-      ${username}`);
+      // this.logger.log(`Airport-state getActualData, start, login: ${username}`);
       const isRecording = await this.recordStatusService.isInRecordStatus(username);
 
-      this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
+      // this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
       if (isRecording) {
         toi = await this.toiHistoryService.getCurrentHistory(username);
-
-        let promises: Array<Promise<any>> = [];
-        
         omnicom = await this.omnicomHistoryService.getCurrentHistory(username);
         meteo = await this.meteoHistoryService.getCurrentHistory(username);
         stands = await this.standsHistoryService.getCurrentHistory(username);

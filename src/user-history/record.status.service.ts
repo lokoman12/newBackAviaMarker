@@ -5,9 +5,10 @@ import { TimelineRecordDto } from "./timeline.record.dto";
 import { UpdateSettingsDto } from "src/settings/types";
 import { RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
 import dayjs from "../utils/dayjs";
-import { NextCurrentTypeForResponse } from "./types";
+import { HistoryGenerateStagesType, NextCurrentTypeForResponse } from "./types";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
 import { nonNull } from "src/utils/common";
+import { keys, entries, cloneDeep } from 'lodash';
 
 export interface TimelineStartRecordRequest {
   timeStart: number,
@@ -26,6 +27,7 @@ export type UserHistoryInfoType = {
   omnicomRecord: TimelineStartRecordResponse;
   meteoRecord: TimelineStartRecordResponse;
   standsRecord: TimelineStartRecordResponse;
+  aznbRecord: TimelineStartRecordResponse;
 };
 
 export interface CurrentTimeRecord {
@@ -55,10 +57,24 @@ export class RecordStatusService {
     return result;
   }
 
+  private isHistoryStagesDone(historyStages: HistoryGenerateStagesType): boolean {
+    return Object.keys(historyStages)?.length === 5
+      && Object.entries(historyStages).every((entry) => entry[1] === true);
+  }
+
+  async isInHistoryGenerateStatus(login: string): Promise<boolean> {
+    try {
+      const recordStatus = await this.getRecordStatus(login);
+      return this.isHistoryStagesDone(recordStatus?.historyGenerateStages);
+    } catch (e) {
+      return false;
+    }
+  }
+
   async isInRecordStatus(login: string): Promise<boolean> {
     try {
       const recordStatus = await this.getRecordStatus(login);
-      return nonNull(recordStatus);
+      return this.isHistoryStagesDone(recordStatus?.historyGenerateStages);
     } catch (e) {
       return false;
     }
@@ -72,7 +88,6 @@ export class RecordStatusService {
     // Сохраняем, если ещё не в статусе записи
     // if (!isRecording) {
     const value = dto.asJsonString();
-    // this.logger.log(`value: ${value}`);
     const valueToSave = {
       name: RECORD_SETTING_PROPERTY_NAME,
       username: dto.login,
@@ -80,8 +95,6 @@ export class RecordStatusService {
       value,
     } as UpdateSettingsDto;
     await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
-    // } else {
-    // }
   }
 
   /**
@@ -104,18 +117,11 @@ export class RecordStatusService {
     }
 
     // Обновим текущие шаг и время
-    const nextStatus = new TimelineRecordDto({
-      fromDto: Object.assign({}, currentStatus, {
-        currentTime: nextCurrentTime,
-        currentToiId: nextCurrentStep,
-        currentOmnicomId: nextCurrentStep,
-        currentMeteoId: nextCurrentStep,
-        currentStandsId: nextCurrentStep,
-        currentAznbId: nextCurrentStep
-      }),
-      nextCurrentStep, nextCurrentTime
+    currentStatus.setNextCurrent({
+      nextCurrentTime: nextCurrentTime,
+      nextCurrentStep: nextCurrentStep,
     });
-    await this.setRecordStatus(nextStatus);
+    await this.setRecordStatus(currentStatus);
 
     const nextCurrent: NextCurrentTypeForResponse = { nextCurrentTime: nextCurrentTime.getTime(), nextCurrentStep };
     return nextCurrent;
@@ -149,29 +155,21 @@ export class RecordStatusService {
 
   async setCurrent(
     login: string, 
-    currentToiId: number, currentOmnicomId: number, currentMeteoId: number, currentStandsId: number, currentAznbId: number,
+    currentToiId: number,
     currentTime: Date): Promise<any> {
     let record = await this.getRecordStatus(login);
     
     if (record) {
-      const newTimelineDto = new TimelineRecordDto({
-        login: record.login,
-        startTime: record.startTime, endTime: record.endTime, currentTime,
-        startToiId: record.startToiId, endToiId: record.endToiId, currentToiId,
-        startOmnicomId: record.startOmnicomId, endOmnicomId: record.endOmnicomId, currentOmnicomId,
-        startMeteoId: record.startMeteoId, endMeteoId: record.endMeteoId, currentMeteoId,
-        startStandsId: record.startStandsId, endStandsId: record.endStandsId, currentStandsId,
-        startAznbId: record.startAznbId, endAznbId: record.endAznbId, currentAznbId,
-        velocity: record.velocity, tableNumber: record.tableNumber
-      });
+      const newTimelineDto = cloneDeep(record);
+      newTimelineDto.setNextCurrent({nextCurrentTime: currentTime, nextCurrentStep: currentToiId});
 
-      this.logger.log(`currentToiId: ${currentToiId} ,newTimelineDto: ${JSON.stringify(newTimelineDto)}`);
       const valueToSave = {
         name: RECORD_SETTING_PROPERTY_NAME,
         username: record.login,
         groupname: ALL_GROUPS_SETTING_VALUE,
         value: newTimelineDto.asJsonString(),
       } as UpdateSettingsDto;
+
       this.logger.log(`setCurrent, dto: ${JSON.stringify(newTimelineDto)}`);
       await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
 

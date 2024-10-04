@@ -1,11 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ApiConfigService } from "src/config/api.config.service";
-import { ExternalScheduler } from "./external.scheduler";
 import { InjectModel } from "@nestjs/sequelize";
 import { omit } from 'lodash';
 import StandService from "src/stand-aodb/stand.service";
 import StandsHistory from "src/db/models/standsHistory.model";
-import { log } from "console";
+import { ExternalScheduler } from "src/scheduler/external.scheduler";
 
 @Injectable()
 export default class StandsCopyToHistoryScheduler {

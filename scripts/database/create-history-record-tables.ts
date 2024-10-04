@@ -341,7 +341,7 @@ const createHistoryRecordTables = async (tableNames: Array<string> | string, get
 
 (async () => {
   // Таблицу истории третички не чистим по умолчанию, пусть копится
-  await prepareHistoryTables(TOI_HISTORY_TABLE_NAME, dropTableSql, createMainToiHistorySql);
+  // await prepareHistoryTables(TOI_HISTORY_TABLE_NAME, dropTableSql, createMainToiHistorySql);
   await prepareHistoryTables(toiHistoryTableNames, dropTableSql, createRelativeToiHistorySql);
 
   await prepareMainAndRelativesHistoryTables(
