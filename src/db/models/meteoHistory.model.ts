@@ -11,11 +11,17 @@ export default class MeteoHistory extends Model {
   })
   id: number;
 
-  @AllowNull(true)
   @Column({
     type: DataType.DATE,
+    allowNull: false,
   })
   time: Date;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  step: number;
 
   @Column({
     type: DataType.DOUBLE,

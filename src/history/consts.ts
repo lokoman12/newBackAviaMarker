@@ -1,9 +1,18 @@
 export const SQL_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%i:%s';
+
+export const ALREADY_EXISTS_HISTORY_RECORD_TABLE = -2;
+
 export const NO_FREE_HISTORY_RECORD_TABLE = -1;
 
 export const RECORD_DEFAULT_VELOCITY = 0;
 
+export const RECORD_TABLENUMBER_SETTING_PROPERTY_NAME = "recording_tablenumber";
+
+export const RECORD_GENERATE_STAGE_SETTING_PROPERTY_NAME = 'historyGenerateStages';
+
 export const RECORD_SETTING_PROPERTY_NAME = "recording";
+
+export const RECORD_LAST_STATUS_SETTING_PROPERTY_NAME = "recording_lastStatus";
 
 export const HISTORY_TEMPLATE_TOKEN = '_record';
 

@@ -1,8 +1,13 @@
 import { Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
 import { Table } from "src/history/types";
 
-export interface IToiHistory {
-  id?: number;
+export type IHistoryClientType = {
+  id: number;
+  step: number;
+  time: Date;
+}
+
+export interface IToiHistory extends IHistoryClientType {
   coordinates: LatLngType;
   Name?: string;
   curs: number;
@@ -11,7 +16,6 @@ export interface IToiHistory {
   Number: number;
   type: number;
   formular: Array<FormularType>;
-  time?: Date;
 };
 
 export type LatLngType = {
@@ -47,6 +51,18 @@ export default class ToiHistory extends Model implements IToiHistory {
     type: DataType.INTEGER,
   })
   id: number;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  time: Date;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  step: number;
 
   @AllowNull(false)
   @Column({
@@ -89,12 +105,6 @@ export default class ToiHistory extends Model implements IToiHistory {
     type: DataType.INTEGER,
   })
   type: number;
-
-  @Column({
-    type: DataType.DATE,
-    allowNull: true,
-  })
-  time: Date;
 
   @AllowNull(false)
   @Column({

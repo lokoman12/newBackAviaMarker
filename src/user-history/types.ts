@@ -1,8 +1,8 @@
 import { TimelineRecordDto } from "./timeline.record.dto";
-import { UserHistoryInfoType } from "./record.status.service";
 import { isNumber, isObject, isString, isDate } from 'lodash';
 import { isNull, nonNull } from "src/utils/common";
 import { BadRequestException } from "@nestjs/common";
+import { HistoryErrorCodeEnum } from "./user.bad.status.exception";
 
 export type RecordStatusResponseType = TimelineRecordDto | null;
 
@@ -40,7 +40,7 @@ export type TimelineRecordCommonParametersType = {
 };
 export type TimelineRecordParametersTypes = TimelineRecordCommonParametersType | TimelineRecordAllParametersType | TimelineRecordFromUserHistoryInfoParametersType | TimelineRecordFromCopyDtoType;
 
-export type TimelineRecordAllParametersType = TimelineRecordCommonParametersType & {
+export type TimelineRecordUserAllInfoType = {
   startToiId: number;
   endToiId: number;
   currentToiId: number;
@@ -50,6 +50,8 @@ export type TimelineRecordAllParametersType = TimelineRecordCommonParametersType
   endStandsId: number;
   endAznbId: number;
 };
+
+export type TimelineRecordAllParametersType = TimelineRecordCommonParametersType & TimelineRecordUserAllInfoType;
 
 export type TimelineRecordFromUserHistoryInfoParametersType = TimelineRecordCommonParametersType & UserHistoryInfoType;
 
@@ -98,7 +100,7 @@ export enum HistoryGenerateStagesEnum {
 
 export type HistoryGenerateStagesEnumKeys = keyof typeof HistoryGenerateStagesEnum;
 
-export type HistoryGenerateStagesType = Record<HistoryGenerateStagesEnum, boolean> | {};
+export type HistoryGenerateStagesType = Record<HistoryGenerateStagesEnum, HistoryErrorCodeEnum> | {};
 
 export const convertStringToHistoryGenerateStagesEnumKey = (param: string): HistoryGenerateStagesEnumKeys => {
   const enumInstance = Object.entries(HistoryGenerateStagesEnum).find(it => it[1] === param)?.[0];
@@ -106,5 +108,64 @@ export const convertStringToHistoryGenerateStagesEnumKey = (param: string): Hist
     return (enumInstance as unknown) as HistoryGenerateStagesEnumKeys;
   } else {
     throw new BadRequestException(`Can not map table name ${param} to stage`);
+  }
+};
+
+export const capitalizeFirstLetter = (input: string) => {
+  return input.charAt(0).toUpperCase() + input.slice(1);
+}
+
+export interface CurrentTimeRecord {
+  currentId: number;
+  currentTime: number;
+}
+
+export interface TimelineStartRecordResponse {
+  allRecs: number;
+  startId: number;
+  endId: number;
+}
+
+export interface TimelineStartRecordRequest {
+  timeStart: number;
+  timeEnd: number;
+  velocity: number;
+}
+
+export type UserHistoryInfoType = {
+  toiRecord: TimelineStartRecordResponse;
+  omnicomRecord: TimelineStartRecordResponse;
+  meteoRecord: TimelineStartRecordResponse;
+  standsRecord: TimelineStartRecordResponse;
+  aznbRecord: TimelineStartRecordResponse;
+};
+
+export const getInitUserAllInfo = (): UserHistoryInfoType => {
+  return {
+    toiRecord: {
+      allRecs: 0,
+      startId: 0,
+      endId: 0
+    },
+    omnicomRecord: {
+      allRecs: 0,
+      startId: 0,
+      endId: 0
+    },
+    meteoRecord: {
+      allRecs: 0,
+      startId: 0,
+      endId: 0
+    },
+    standsRecord: {
+      allRecs: 0,
+      startId: 0,
+      endId: 0
+    },
+    aznbRecord: {
+      allRecs: 0,
+      startId: 0,
+      endId: 0
+    },
   }
 };

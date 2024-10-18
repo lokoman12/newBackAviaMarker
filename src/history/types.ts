@@ -8,8 +8,16 @@ import { NextCurrentTypeForResponse } from "src/user-history/types";
 import { isNull } from "src/utils/common";
 
 export type HistoryList = Array<ToiHistory | OmnicomHistory | OmnicomHistory | MeteoHistory | StandsHistory | AznbHistory>;
+
+export type HistoryArrayOfLists = Array<Array<ToiHistory> | Array<OmnicomHistory> | Array<MeteoHistory> | Array<StandsHistory> | Array<AznbHistory>>;
+
 export type HistoryResponseType = {
   rows: HistoryList;
+  state: NextCurrentTypeForResponse;
+};
+
+export type HistoryResponsePackType = {
+  rows: HistoryArrayOfLists;
   state: NextCurrentTypeForResponse;
 };
 
@@ -39,6 +47,7 @@ export function Table(options: TableOptions & TableNameRequiredType): Function {
 export abstract class HistoryModel<TModelAttributes extends {} = any, TCreationAttributes extends {} = TModelAttributes> extends Model<TModelAttributes, TCreationAttributes> {
   id: number;
   time: Date;
+  step: number;
 }
 
 export type Constructor<T> = new (...args: any[]) => T;

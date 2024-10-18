@@ -4,8 +4,9 @@ import { DATE_TIME_FORMAT } from "src/auth/consts";
 import { HistoryGenerateStagesEnumKeys, HistoryGenerateStagesType, NextCurrentTypeForDb, TimelineRecordAllParametersType, TimelineRecordCommonParametersType, isTimelineRecordAllParametersType, isTimelineRecordCommonParametersType, isTimelineRecordFromUserHistoryInfoParametersType } from "./types";
 import { TimelineRecordFromUserHistoryInfoParametersType } from "./types";
 import { TimelineRecordFromCopyDtoType } from "./types";
-import { isObject, isBoolean } from 'lodash';
-import { UserHistoryInfoType } from "./record.status.service";
+import { isObject } from 'lodash';
+import { UserHistoryInfoType } from "./types";
+import { HistoryErrorCodeEnum } from "./user.bad.status.exception";
 
 export class TimelineRecordDto {
   private readonly logger = new Logger(TimelineRecordDto.name);
@@ -110,7 +111,11 @@ export class TimelineRecordDto {
     }
   }
 
-  public addHistoryGenerationStage(stage: HistoryGenerateStagesEnumKeys, result: boolean) {
+  public setHistoryGenerationStages(result: HistoryGenerateStagesType) {
+    this.historyGenerateStages = result;
+  }
+
+  public addHistoryGenerationStage(stage: HistoryGenerateStagesEnumKeys, result: HistoryErrorCodeEnum) {
     this.historyGenerateStages[stage] = result;
   }
 

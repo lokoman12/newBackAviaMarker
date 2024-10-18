@@ -19,7 +19,7 @@ export default class Settings extends Model implements ISetting {
   @Column({ type: DataType.INTEGER.UNSIGNED })
   id: number;
 
-  @Unique
+  @Unique("unique_user_group_property")
   @AllowNull(false)
   @Column({ type: DataType.STRING, })
   name!: string;
@@ -46,10 +46,12 @@ export default class Settings extends Model implements ISetting {
   value!: string;
 
   @AllowNull(true)
+  @Unique("unique_user_group_property")
   @Column({ type: DataType.STRING, })
   username: string;
 
   @AllowNull(true)
+  @Unique("unique_user_group_property")
   @Column({ type: DataType.STRING, })
   groupname: string;
 

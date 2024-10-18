@@ -1,12 +1,14 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CurrentTimeRecord, RecordStatusService, UserHistoryInfoType, TimelineStartRecordResponse } from "./record.status.service";
+import { RecordStatusService } from "./record.status.service";
+import { TimelineRecordUserAllInfoType, TimelineStartRecordResponse, capitalizeFirstLetter, getInitUserAllInfo } from "./types";
+import { CurrentTimeRecord } from "./types";
 import { TimelineRecordDto } from "./timeline.record.dto";
-import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
+import { NO_FREE_HISTORY_RECORD_TABLE, RECORD_SETTING_PROPERTY_NAME, RECORD_TABLENUMBER_SETTING_PROPERTY_NAME } from "../history/consts";
 import ToiHistory from "src/db/models/toiHistory.model";
 import { InjectConnection, InjectModel } from "@nestjs/sequelize";
 import { SettingsService } from "src/settings/settings.service";
 import { ApiConfigService } from "src/config/api.config.service";
-import { difference, head } from "lodash";
+import { difference, head, isNumber, mapKeys, mapValues, chain, entries, fromPairs, } from "lodash";
 import { DATE_TIME_FORMAT, EMPTY_STRING } from "src/auth/consts";
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
@@ -16,11 +18,14 @@ import { getModelTableName } from "src/history/types";
 import { HistoryTableType } from "src/history/types";
 import { getCurrentHistoryInfoSql, getHistoryInfoSql, insertAznbHistorySql, insertMeteoHistorySql, insertOmnicomHistorySql, insertStandsHistorySql, insertToiHistorySql } from "./sql";
 import { deleteSql } from "./sql";
-import { InsertHistorySqlType, convertStringToHistoryGenerateStagesEnumKey } from "./types";
+import { HistoryGenerateStagesEnum, HistoryGenerateStagesType, InsertHistorySqlType, convertStringToHistoryGenerateStagesEnumKey } from "./types";
 import { OnlyTablenameParamSqlType } from "./types";
 import StandsHistory from "src/db/models/standsHistory.model";
 import AznbHistory from "src/db/models/aznbHistory.model";
-import { Sequelize } from "sequelize";
+import { Sequelize, Transaction } from "sequelize";
+import Settings from "src/db/models/settings";
+import { isObject } from 'lodash';
+import { nonNull } from "src/utils/common";
 
 type AllHistoryModelsWithPrepareSqlType = Array<{
   model: HistoryTableType,
@@ -39,6 +44,7 @@ class HistoryUserService {
     private readonly recordStatusService: RecordStatusService,
     @InjectConnection()
     private readonly sequelize: Sequelize,
+    @InjectModel(Settings) private readonly settingsModel: typeof Settings,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory,
     @InjectModel(OmnicomHistory) private readonly omnicomHistoryModel: typeof OmnicomHistory,
     @InjectModel(MeteoHistory) private readonly meteoHistoryModel: typeof MeteoHistory,
@@ -74,6 +80,32 @@ class HistoryUserService {
         deleteHistorySql: deleteSql,
       },
     ];
+  }
+
+  async getNextFreeTableNumberNew() {
+    let usedTableNumbers = await this.settingsService
+      .getAllSettingsByName(RECORD_TABLENUMBER_SETTING_PROPERTY_NAME);
+    usedTableNumbers = usedTableNumbers
+      .map(it => parseInt(it.value))
+      .filter(it => !isNaN(it)) as Array<number>;
+
+    // Все имеющиеся номера
+    const allTableNumbers = Array.from(
+      { length: this.configService.getHistoryRecordTablesNumber() },
+      (_, index) => index
+    ) as Array<number>;
+    // Свободные
+    const freeTableNumbers = difference(allTableNumbers, usedTableNumbers)
+      .sort((x, y) => x - y);
+
+    let nextFreeTableNumber;
+    if (freeTableNumbers.length > 0) {
+      nextFreeTableNumber = head(freeTableNumbers);
+    } else {
+      nextFreeTableNumber = NO_FREE_HISTORY_RECORD_TABLE;
+    }
+
+    return nextFreeTableNumber
   }
 
   async getNextFreeTableNumber() {
@@ -132,7 +164,7 @@ class HistoryUserService {
     }
 
     const insertSql = insertHistorySql(baseTableName, recordTableName, timeStart, timeEnd);
-    this.logger.log(`sql: ${insertSql}`);
+    // this.logger.log(`sql: ${insertSql}`);
     this.logger.log(`Ищем в истории строки от даты ${dayjs.utc(timeStart).format(DATE_TIME_FORMAT)} до ${dayjs.utc(timeEnd).format(DATE_TIME_FORMAT)}`);
 
     try {
@@ -144,7 +176,8 @@ class HistoryUserService {
     }
 
     try {
-      await this.saveStage(login, historyModel);
+      this.logger.log('save prepareUserHistoryTable');
+      await this.saveStageByHistoryNameWithTx(login, baseTableName, HistoryErrorCodeEnum.continueCheck);
     } catch (e) {
       const message = `Ошибка при сохранении шага истории ${recordTableName} в базу`;
       this.logger.error(message, e);
@@ -152,13 +185,54 @@ class HistoryUserService {
     }
   }
 
-  private async saveStage(login: string, historyModel: HistoryTableType, result?: boolean) {
+  /**
+   * Сохраняет статус генерации номерной таблицы истории в сеттингах в виде JSON-string в поле value
+   * @param login 
+   * @param tableName имя базовой таблицы истории, из которой забираются строки в номерные таблицы
+   * @param result статус шага генерации номерной таблицы истории
+   */
+  private async saveStageByHistoryNameWithTx(login: string, tableName: string, result: HistoryErrorCodeEnum, stageStat?: Partial<TimelineRecordUserAllInfoType>) {
+    const stage = convertStringToHistoryGenerateStagesEnumKey(tableName);
+
+    try {
+      // Открываем транзакцию и лочим запись из таблицы Settings, так как пишем в таблицу асинхронно
+      await this.sequelize.transaction({ isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED }, async tx => {
+        // Перед заптсью нового значения, читаем строку с сеттингами и блокируем её на запись, чтобы не было lost updates
+        const recordSetting = await this.settingsModel.findOne({
+          where: {
+            name: RECORD_SETTING_PROPERTY_NAME, username: login,
+          },
+          lock: {
+            level: tx.LOCK.UPDATE,
+            of: Settings
+          },
+          transaction: tx,
+        });
+        if (recordSetting) {
+          let value = TimelineRecordDto.fromJsonString(recordSetting.getDataValue('value'));
+          const historyGenerateStages = value.historyGenerateStages;
+          historyGenerateStages[stage] = result;
+
+          this.logger.log(`value: ${JSON.stringify(value)}, stageStat: ${JSON.stringify(stageStat)}`);
+          if (nonNull(stageStat) && isObject(stageStat)) {
+            Object.assign(value, stageStat);
+            this.logger.log(`New value: ${JSON.stringify(value)}`);
+          }
+
+          await recordSetting.update({
+            value: value.asJsonString(),
+          }, { transaction: tx, });
+       }
+      });
+    } catch (err) {
+      this.logger.log(`Сохранить новый статус для истории ${stage} не получилось, ошибка: ${err}`);
+    }
+  }
+
+  private async saveStageByHistoryModelWithTx(login: string, historyModel: HistoryTableType, result: HistoryErrorCodeEnum, stageStat?: Partial<TimelineRecordUserAllInfoType>) {
     // Мапим конкретное значение HistoryGenerateStagesEnum на обязательный атрибут модели tableName
     const tableName = getModelTableName(historyModel);
-    const stage = convertStringToHistoryGenerateStagesEnumKey(tableName);
-    let status = await this.recordStatusService.getRecordStatus(login);
-    status.addHistoryGenerationStage(stage, result);
-    await this.recordStatusService.setRecordStatus(status);
+    await this.saveStageByHistoryNameWithTx(login, tableName, result, stageStat);
   }
 
   /**
@@ -170,27 +244,32 @@ class HistoryUserService {
     timeStart: Date,
     timeEnd: Date,
   ): Promise<void> {
-    await Promise.all(this.allHistoryModelsWithPrepareSql.map(async (it) => {
-      let stageResult = false;
-      try {
-        await this.prepareUserHistoryTable(
-          login, it.model, nextFreeTableNumber, timeStart, timeEnd, it.insertHistorySql, it.deleteHistorySql
-        );
-        stageResult = true;
-      } catch (e) {
-        stageResult = false;
-      }
-      try {
-        await this.saveStage(login, it.model, stageResult);
-      } catch (e) {
-        const tableName = getModelTableName(it.model);
-        this.logger.error(`Ошибка сохранения состояния этапа для таблицы ${tableName}`)
-      }
-    }));
+    // Ждём, когда все норемные таблицы истории сгенерируются и заполнятся значениями, затем сохраняем обновлённый статус
+    await Promise.allSettled(
+      this.allHistoryModelsWithPrepareSql.map(async (it) => {
+        let stageResult = HistoryErrorCodeEnum.unknownHistoryError;
+        try {
+          await this.prepareUserHistoryTable(
+            login, it.model, nextFreeTableNumber, timeStart, timeEnd, it.insertHistorySql, it.deleteHistorySql
+          );
+          stageResult = HistoryErrorCodeEnum.continueCheck;
+        } catch (e) {
+          if (e instanceof HistoryBadStateException) {
+            stageResult = (e as HistoryBadStateException).errorCode;
+          }
+        }
+        try {
+          this.logger.log('save prepareAllUserHistoryTables');
+          await this.saveStageByHistoryModelWithTx(login, it.model, stageResult);
+        } catch (e) {
+          const tableName = getModelTableName(it.model);
+          this.logger.error(`Ошибка сохранения состояния этапа для таблицы ${tableName}`)
+        }
+      }));
   }
 
   /**
-  * Вернуть количество строк, первый и последний шаги из номерной таблицы истории пользователя
+  * Вернуть количество строк, первый и saveStageByHistoryModelпоследний шаги из номерной таблицы истории пользователя
   * @param tableNumber 
   */
   private async getUserHistoryInfo(
@@ -217,35 +296,79 @@ class HistoryUserService {
     login: string,
     nextFreeTableNumber: number,
     startTime: Date, endTime: Date
-  ): Promise<UserHistoryInfoType> {
-    const promises: Array<Promise<TimelineStartRecordResponse>> = [];
+  ): Promise<void> {
+    const userAllInfo = getInitUserAllInfo();
+    const userAllInfoAfterSet = getInitUserAllInfo();
+    let userInfo: Partial<TimelineRecordUserAllInfoType>;
 
-    // Получим номер первого и последнего шагов из сгенерированной ранее таблицы
-    this.allHistoryModelsWithPrepareSql.forEach(it => {
-      const baseHistoryTableName = getModelTableName(it.model);
-      const userHistoryTableName = SettingsService.getRecordTableNameByIndex(
-        getModelTableName(it.model), nextFreeTableNumber
-      );
-      const info = this.getUserHistoryInfo(userHistoryTableName).then(it => {
-        this.logger.log(`Пользователь ${login}, ${baseHistoryTableName} нашли строк: ${it.allRecs}`);
-        return it;
+    await Promise.allSettled(
+      this.allHistoryModelsWithPrepareSql.map(async it => {
+        const historyTableName = getModelTableName(it.model);
+        const userHistoryTableName = SettingsService.getRecordTableNameByIndex(
+          getModelTableName(it.model), nextFreeTableNumber
+        );
+        this.logger.log(`Пишем шаг базовая таблица ${historyTableName}, таблица пользователя ${userHistoryTableName}`);
+
+        try {
+          const info = await this.getUserHistoryInfo(userHistoryTableName);
+          this.logger.log(`Пользователь ${login}, ${historyTableName} нашли строк: ${info.allRecs}`);
+
+          const stage = convertStringToHistoryGenerateStagesEnumKey(historyTableName);
+          userAllInfo[`${stage}Record`] = info;
+          userInfo = {
+            [`end${capitalizeFirstLetter(stage)}Id`]: info.endId,
+          };
+          if (historyTableName === HistoryGenerateStagesEnum.toi) {
+            userInfo = {
+              ...userInfo,
+              [`start${capitalizeFirstLetter(stage)}Id`]: info.startId,
+              [`current${capitalizeFirstLetter(stage)}Id`]: info.startId,
+            }
+          }
+          // this.logger.log(`${stage}, userInfo: ${JSON.stringify(userInfo)}`);
+
+          if (info.allRecs === 0) {
+            const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
+            this.logger.error(message);
+
+            await this.saveStageByHistoryNameWithTx(login, historyTableName, HistoryErrorCodeEnum.emptyHistoryResult, userInfo).catch(e => {
+              const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
+              this.logger.error(message, e);
+            });
+          } else {
+            await this.saveStageByHistoryNameWithTx(login, historyTableName, HistoryErrorCodeEnum.noErrors, userInfo).catch(e => {
+              const message = `Ошибка сохранения информации по шагу истории в базу для таблицы ${historyTableName}`;
+              this.logger.error(message, e);
+            });
+          }
+
+          // const stage = convertStringToHistoryGenerateStagesEnumKey(historyTableName);
+          // userAllInfo[`${stage}Record`] = info;
+          // userInfo = {
+          //   [`end${capitalizeFirstLetter(stage)}Id`]: info.endId,
+          // };
+          // if (historyTableName === HistoryGenerateStagesEnum.toi) {
+          //   userInfo = {
+          //     ...userInfo,
+          //     [`start${capitalizeFirstLetter(stage)}Id`]: info.startId,
+          //     [`current${capitalizeFirstLetter(stage)}Id`]: info.startId,
+          //   }
+          // }
+          // this.logger.log(`${stage}, userInfo: ${JSON.stringify(userInfo)}`);
+          // await this.saveUserInfoByHistoryNameWithTx(login, historyTableName, userInfo).catch(e => {
+          //   const message = `Ошибка сохранения статистики по шагу истории в базу для таблицы ${historyTableName}`;
+          //   this.logger.error(message, e);
+          // });
+        } catch (e) {
+          const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
+          // await this.saveStageByHistoryNameWithTx(login, historyTableName, HistoryErrorCodeEnum.canNotSaveHistoryStage).catch(e => {
+            // const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
+            // this.logger.error(message, e);
+          // });
+        }
+      })).then(() => {
+        this.logger.log(`userAllInfo: ${JSON.stringify(userAllInfo)}`);
       });
-      promises.push(info);
-    });
-
-    const allInfoArray = await Promise.all(promises);
-    const allHistoriesInfoResult: UserHistoryInfoType = {
-      toiRecord: allInfoArray[0], omnicomRecord: allInfoArray[1], meteoRecord: allInfoArray[2], standsRecord: allInfoArray[3], aznbRecord: allInfoArray[4],
-    };
-
-    if (allHistoriesInfoResult.toiRecord.allRecs === 0) {
-      const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
-      this.logger.error(message);
-      await this.recordStatusService.resetUserHistoryStatusOnException(login);
-      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.emptyHistoryResult, message);
-    }
-
-    return allHistoriesInfoResult;
   }
 
   /**
@@ -277,7 +400,7 @@ class HistoryUserService {
     }
   }
 
-  async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number): Promise<TimelineRecordDto> {
+  async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number): Promise<void> {
     // Проверяем, вдруг юзер уже получает историю, а значит - за ним закреплены таблицы
     const inRecordStatus = await this.recordStatusService.isInRecordStatus(login);
     // Пробуем найти и выделить свободную таблицу
@@ -293,31 +416,35 @@ class HistoryUserService {
 
         await this.prepareAllUserHistoryTables(login, nextFreeTableNumber, startTime, endTime);
 
-        try {
-          // Получим информацию из сгенерированных таблиц о первом и последнем шагах
-          const userAllHistoriesInfo = await this.getUserAllHistoriesInfo(login, nextFreeTableNumber, startTime, endTime);
-          // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
-          const recordDto = await this.recordStatusService.getRecordStatus(login);
-          await this.recordStatusService.setRecordStatus(recordDto.setHistoriesInfo(userAllHistoriesInfo));
-          return recordDto;
-        } catch (e) {
-          if (e instanceof HistoryBadStateException) {
-            throw e;
-          } else {
-            let message = `Ошибка при попытке сформировать таблицу истории с номером ${nextFreeTableNumber} для пользователя ${login}`;
-            this.logger.error(message);
-            await this.recordStatusService.resetUserHistoryStatusOnException(login);
-            throw new HistoryBadStateException(login, HistoryErrorCodeEnum.unknownHistoryError, 'Неизвестная ошибка');
-          }
-        }
+        // try {
+        // Получим информацию из сгенерированных таблиц о первом и последнем шагах
+        await this.getUserAllHistoriesInfo(login, nextFreeTableNumber, startTime, endTime);
+        // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
+        // const recordDto = await this.recordStatusService.getRecordStatus(login);
+        // await this.recordStatusService.setRecordStatus(recordDto.setHistoriesInfo(userAllHistoriesInfo));
+        // return recordDto;
+        // } catch (e) {
+        // if (e instanceof HistoryBadStateException) {
+        // throw e;
+        // } else {
+        // let message = `Ошибка при попытке сформировать таблицу истории с номером ${nextFreeTableNumber} для пользователя ${login}`;
+        // this.logger.error(message);
+        // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
+        // await this.recordStatusService.resetUserHistoryStatusOnException(login);
+        // throw new HistoryBadStateException(login, HistoryErrorCodeEnum.unknownHistoryError, 'Неизвестная ошибка');
+        // }
+        // }
       }
     } else {
       const message = `Пользователь ${login} находится в статусе воспроизведения истории`;
       this.logger.error(message);
-      await this.recordStatusService.resetUserHistoryStatusOnException(login);
+      // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
+      // await this.recordStatusService.resetUserHistoryStatusOnException(login);
       throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userIsAlreadyInRecordStatus, message);
     }
   }
 }
 
 export default HistoryUserService;
+
+

@@ -2,38 +2,14 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ALL_GROUPS_SETTING_VALUE } from "src/auth/consts";
 import { SettingsService } from "src/settings/settings.service";
 import { TimelineRecordDto } from "./timeline.record.dto";
-import { UpdateSettingsDto } from "src/settings/types";
-import { RECORD_SETTING_PROPERTY_NAME } from "../history/consts";
-import dayjs from "../utils/dayjs";
+import { CreateSettingsDto, UpdateSettingsDto } from "src/settings/types";
+import { RECORD_SETTING_PROPERTY_NAME, RECORD_TABLENUMBER_SETTING_PROPERTY_NAME } from "../history/consts";
 import { HistoryGenerateStagesType, NextCurrentTypeForResponse } from "./types";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
-import { nonNull } from "src/utils/common";
-import { keys, entries, cloneDeep } from 'lodash';
-
-export interface TimelineStartRecordRequest {
-  timeStart: number,
-  timeEnd: number,
-  velocity: number
-}
-
-export interface TimelineStartRecordResponse {
-  allRecs: number,
-  startId: number,
-  endId: number
-}
-
-export type UserHistoryInfoType = {
-  toiRecord: TimelineStartRecordResponse;
-  omnicomRecord: TimelineStartRecordResponse;
-  meteoRecord: TimelineStartRecordResponse;
-  standsRecord: TimelineStartRecordResponse;
-  aznbRecord: TimelineStartRecordResponse;
-};
-
-export interface CurrentTimeRecord {
-  currentId: number,
-  currentTime: number
-}
+import { cloneDeep } from 'lodash';
+import { isNormalNumber, isPositiveNormalNumber } from "src/utils/number";
+import { Transaction } from "sequelize";
+import dayjs from "../utils/dayjs";
 
 @Injectable()
 export class RecordStatusService {
@@ -45,27 +21,71 @@ export class RecordStatusService {
     this.logger.log('Сервис инициализирован!')
   }
 
+  async getUserTablenumber(username: string): Promise<number> {
+    const result = await this.settingsService.getUserSettingValueByName(
+      RECORD_TABLENUMBER_SETTING_PROPERTY_NAME, username, "-1");
+    return parseInt(result);
+  }
+
+  async hasUserTablenumber(username: string): Promise<boolean> {
+    try {
+      const recordStatus = await this.getUserTablenumber(username);
+      return recordStatus > -1;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  public async setTablenumber(username: string, tablenumber: number): Promise<void> {
+    // const isRecording = await this.isInRecordStatus(dto.login);
+    // Сохраняем, если ещё не в статусе записи
+    // if (!isRecording) {
+    const valueToSave = {
+      name: RECORD_TABLENUMBER_SETTING_PROPERTY_NAME,
+      username,
+      groupname: ALL_GROUPS_SETTING_VALUE,
+      value: JSON.stringify(tablenumber),
+    } as CreateSettingsDto;
+    this.logger.log(JSON.stringify(valueToSave));
+    await this.settingsService.createSetting(valueToSave);
+  }
+
+  public async resetTablenumber(username: string): Promise<void> {
+    const hasTablenumber = await this.hasUserTablenumber(username);
+    // Сохраняем, если ещё не в статусе записи
+    if (hasTablenumber) {
+      await this.settingsService.removeSettingByName(RECORD_TABLENUMBER_SETTING_PROPERTY_NAME, username);
+    }
+  }
+
   async resetUserHistoryStatusOnException(login: string) {
     this.logger.warn(`Не получилось включить воспроизведение записи пользователем ${login}. Сбрасываем статус. Нет смысла продолжать`);
     await this.resetRecordStatus(login);
   }
 
-  async getRecordStatus(login: string): Promise<TimelineRecordDto | null> {
+  async getRecordStatus(login: string, tx?: Transaction): Promise<TimelineRecordDto | null> {
+    // tx && this.logger.log(`getRecordStatus within transaction`);
+
     const result = await this.settingsService.getTypedUserSettingValueByName<TimelineRecordDto>(
-      TimelineRecordDto.fromJsonString, RECORD_SETTING_PROPERTY_NAME, login
+      TimelineRecordDto.fromJsonString, RECORD_SETTING_PROPERTY_NAME, login, undefined, tx
     );
     return result;
   }
 
   private isHistoryStagesDone(historyStages: HistoryGenerateStagesType): boolean {
     return Object.keys(historyStages)?.length === 5
-      && Object.entries(historyStages).every((entry) => entry[1] === true);
+      && Object.entries(historyStages).every((entry) => entry[1] === HistoryErrorCodeEnum.noErrors);
+  }
+
+  private isHistoryStagesProceeded(historyStages: HistoryGenerateStagesType): boolean {
+    return Object.keys(historyStages)?.length === 5
+      && Object.entries(historyStages).every((entry) => isPositiveNormalNumber(entry[1]));
   }
 
   async isInHistoryGenerateStatus(login: string): Promise<boolean> {
     try {
       const recordStatus = await this.getRecordStatus(login);
-      return this.isHistoryStagesDone(recordStatus?.historyGenerateStages);
+      return !this.isHistoryStagesProceeded(recordStatus?.historyGenerateStages);
     } catch (e) {
       return false;
     }
@@ -74,7 +94,9 @@ export class RecordStatusService {
   async isInRecordStatus(login: string): Promise<boolean> {
     try {
       const recordStatus = await this.getRecordStatus(login);
-      return this.isHistoryStagesDone(recordStatus?.historyGenerateStages);
+      return this.isHistoryStagesDone(recordStatus?.historyGenerateStages)
+        && isNormalNumber(recordStatus?.startToiId) && isNormalNumber(recordStatus?.currentToiId)
+        && isNormalNumber(recordStatus?.endToiId);
     } catch (e) {
       return false;
     }
@@ -83,7 +105,7 @@ export class RecordStatusService {
   /**
    * Устанавливаем или сбрасываем статус записи.
    */
-  public async setRecordStatus(dto: TimelineRecordDto): Promise<void> {
+  public async setRecordStatus(dto: TimelineRecordDto, tx?: Transaction): Promise<void> {
     // const isRecording = await this.isInRecordStatus(dto.login);
     // Сохраняем, если ещё не в статусе записи
     // if (!isRecording) {
@@ -94,7 +116,7 @@ export class RecordStatusService {
       groupname: ALL_GROUPS_SETTING_VALUE,
       value,
     } as UpdateSettingsDto;
-    await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave);
+    await this.settingsService.updateSettingValueByPropertyNameAndUsername(valueToSave, tx);
   }
 
   /**
@@ -154,14 +176,14 @@ export class RecordStatusService {
   }
 
   async setCurrent(
-    login: string, 
+    login: string,
     currentToiId: number,
     currentTime: Date): Promise<any> {
     let record = await this.getRecordStatus(login);
-    
+
     if (record) {
       const newTimelineDto = cloneDeep(record);
-      newTimelineDto.setNextCurrent({nextCurrentTime: currentTime, nextCurrentStep: currentToiId});
+      newTimelineDto.setNextCurrent({ nextCurrentTime: currentTime, nextCurrentStep: currentToiId });
 
       const valueToSave = {
         name: RECORD_SETTING_PROPERTY_NAME,

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
+import { LOCK, Op, Transaction } from 'sequelize';
 import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
@@ -13,8 +13,8 @@ export class SettingsService {
 
   // --- Имя нумерованной таблицы с записями из соответствующей истории
   private static getHistoryRecordTableName = (historyTableName: string) => {
-  return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
-}
+    return `${historyTableName}${HISTORY_TEMPLATE_TOKEN}`;
+  }
 
   public static getRecordTableNameByIndex(tableName: string, tableNumber: number) {
     return `${this.getHistoryRecordTableName(tableName)}_${tableNumber}`;
@@ -81,12 +81,15 @@ export class SettingsService {
     return result || [];
   }
 
-  async getUserSettingValueByName(name: string, username: string, defaultValue?: string): Promise<string | null> {
+  async getUserSettingValueByName(name: string, username: string, defaultValue?: string, tx?: Transaction): Promise<string | null> {
+    const lock = tx ? { lock: LOCK.UPDATE, } : {};
     const result = await this.settingsModel.findOne({
       where: {
         name, username,
       },
       attributes: ['value'],
+      ...lock,
+      transaction: tx || null,
     });
 
     // Возвращаем значение по умолчанию, когда не нашли свойство в базе
@@ -107,8 +110,9 @@ export class SettingsService {
   * @param defaultValue значение по умолчанию, опционально
   * @returns 
   */
-  async getTypedUserSettingValueByName<T>(mapFunction: (value: string) => T, name: string, username: string, defaultValue?: string): Promise<T | null> {
-    const strResult = await this.getUserSettingValueByName(name, username, defaultValue);
+  async getTypedUserSettingValueByName<T>(mapFunction: (value: string) => T, name: string, username: string, defaultValue?: string, tx?: Transaction): Promise<T | null> {
+    // tx && this.logger.log(`getTypedUserSettingValueByName within transaction`);
+    const strResult = await this.getUserSettingValueByName(name, username, defaultValue, tx);
     return nonNull(strResult) ? mapFunction(strResult) : null;
   }
 
@@ -124,7 +128,7 @@ export class SettingsService {
   }
 
   async createSetting(dto: CreateSettingsDto): Promise<void> {
-    await this.settingsModel.create({ dto, });
+    await this.settingsModel.create({ ...dto, });
   }
 
   async updateSetting(id: number, dto: UpdateSettingsDto): Promise<void> {
@@ -136,7 +140,7 @@ export class SettingsService {
     );
   }
 
-  async updateSettingValueByPropertyNameAndUsername(dto: UpdateSettingsDto): Promise<void> {
+  async updateSettingValueByPropertyNameAndUsername(dto: UpdateSettingsDto, tx?: Transaction): Promise<void> {
     // this.logger.log(`setRecordStatus ${dto.name}, ${dto.username}`);
 
     const item = {
@@ -149,11 +153,11 @@ export class SettingsService {
       name: dto.name,
       username: dto.username,
     };
-    const model = await this.settingsModel.findOne({ raw: true, where, });
+    const model = await this.settingsModel.findOne({ raw: true, where, transaction: tx || null });
     if (model) {
-      await this.settingsModel.update(item, { where, });
+      await this.settingsModel.update(item, { where, transaction: tx || null });
     } else {
-      await this.settingsModel.create(item);
+      await this.settingsModel.create(item, { transaction: tx || null });
     }
   }
 

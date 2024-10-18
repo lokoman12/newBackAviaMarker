@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import Scout from 'src/db/models/scout.model';
 import { HistoryResponseType } from 'src/history/types';
 
-export type GeneralOmnicomResponseType = Array<Scout> | HistoryResponseType;
+// export type GeneralOmnicomResponseType = Array<Scout> | HistoryResponseType;
 
 @Injectable()
 export default class OmnicomService {

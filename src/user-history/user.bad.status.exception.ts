@@ -1,6 +1,9 @@
 import { Logger, InternalServerErrorException } from "@nestjs/common";
 
 export enum HistoryErrorCodeEnum {
+  noErrors = 0,
+  continueCheck = -1,
+
   userStatusNotFound = 1,
   emptyHistoryResult = 2,
   invalidDateValue = 3,
@@ -15,6 +18,7 @@ export enum HistoryErrorCodeEnum {
   copyMeteoError = 12,
   sqlPrepareTablesCanNotPerfomed = 13,
   canNotSaveHistoryStage = 14,
+  invalidCurrentHistoryStep = 15,
   unknownHistoryError = 100,
 };
 
@@ -25,6 +29,8 @@ export type ErrorObjectType = {
 
 export class HistoryBadStateException extends InternalServerErrorException {
   private readonly logger = new Logger(HistoryBadStateException.name);
+
+  errorCode: HistoryErrorCodeEnum;
 
   constructor(login: string, code: HistoryErrorCodeEnum, description?: string) {
     let message = `Ошибка при работе с историей пользователя ${login}!`;
@@ -46,9 +52,12 @@ export class HistoryBadStateException extends InternalServerErrorException {
         description: `Ошибка при работе с историей пользователя ${login}. ${message}!`,
       }
     );
+
     this.name = this.constructor.name;
     this.message = message;
     this.stack = error.stack;
+    this.errorCode = code;
+
     Error.captureStackTrace(this, this.constructor);
     this.logger.error(error.stack);
   }

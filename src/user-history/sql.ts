@@ -2,8 +2,25 @@ import { DATE_TIME_FORMAT } from "src/auth/consts";
 import { OnlyTablenameParamSqlType, InsertHistorySqlType, CurrentHistoryInfoSql } from "./types";
 import dayjs from '../utils/dayjs';
 
+export const DEFAULT_PART_SIZE = 10;
+
+export const getCurrentStepByTimeSql = (tableName: string, nextId: number) =>
+  `SELECT step FROM ${tableName} WHERE step = ${nextId} limit 1`;
+
+export const getCurrentTimeByStepSql = (tableName: string, nextId: number) =>
+  `SELECT time FROM ${tableName} WHERE step = ${nextId} limit 1`;
+
 export const getHistorySql = (tableName: string, nextId: number) =>
   `SELECT * FROM ${tableName} WHERE step = ${nextId}`;
+
+export const getHistorySqlByPack = (tableName: string, nextId: number, partSize: number = DEFAULT_PART_SIZE) =>
+  `SELECT * FROM ${tableName} WHERE step BETWEEN ${nextId} AND ${nextId + partSize - 1} order by step`;
+
+export const getHistorySqlBySteps = (tableName: string, startStep: number, finishStep: number) =>
+`SELECT * FROM ${tableName} WHERE step BETWEEN ${startStep} AND ${finishStep} order by step`;
+
+export const getHistorySqlAllRecords = (tableName: string) =>
+`SELECT * FROM ${tableName} order by step`;
 
 export const getHistoryInfoSql: OnlyTablenameParamSqlType = (tablename: string) =>
   `SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId FROM ${tablename}`;
@@ -13,7 +30,7 @@ export const getCurrentHistoryInfoSql: CurrentHistoryInfoSql = (tablename: strin
 
 export const deleteSql: OnlyTablenameParamSqlType = (tableName: string) => `TRUNCATE ${tableName};`;
 
-// В нашем mysql почему-то не работают оконные (over partition) функции
+// В нашей версии mysql не работают оконные (over partition) функции
 // Потому, чтобы нумеровать строки с одинаковым временем, использую
 // @id := if(...)
 // Внешний select под insert'ом отбрасывает лишнюю колонку prevTime,

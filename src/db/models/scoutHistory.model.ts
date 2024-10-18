@@ -1,9 +1,8 @@
 import { Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
 import { Table } from "src/history/types";
+import { IHistoryClientType } from './toiHistory.model';
 
-export interface IOmnicomHistory {
-  id: number;
-  time?: Date;
+export interface IOmnicomHistory extends IHistoryClientType {
   Serial: string;
   GarNum: string;
   t_obn: number;
@@ -23,11 +22,17 @@ export default class OmnicomHistory extends Model implements OmnicomHistory {
   })
   id: number;
 
-  @AllowNull(true)
   @Column({
     type: DataType.DATE,
+    allowNull: false,
   })
   time: Date;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  step: number;
 
   @Column({
     type: DataType.STRING(10),

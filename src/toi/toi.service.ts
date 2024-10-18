@@ -8,7 +8,7 @@ import { ApiConfigService } from 'src/config/api.config.service';
 import { BelongsTo, Op, Sequelize } from 'sequelize';
 import { pick, omit } from 'lodash';
 import { nonNull } from 'src/utils/common';
-import { HistoryResponseType } from 'src/history/types';
+import { HistoryResponsePackType, HistoryResponseType } from 'src/history/types';
 import Scout from 'src/db/models/scout.model';
 import Meteo from 'src/db/models/meteo.model';
 import Stands from 'src/db/models/stands.model';
@@ -27,6 +27,8 @@ export type ActualClientToi = Partial<IToi> & {
 export type GeneralActualType = Array<ActualClientToi> | Array<Scout> | Array<Meteo> | Array<Stands> | Array<Aznb>;
 
 export type GeneralResponseType = GeneralActualType | HistoryResponseType;
+
+export type GeneralResponsePackType = GeneralActualType | HistoryResponsePackType;
 
 @Injectable()
 export default class ToiService {

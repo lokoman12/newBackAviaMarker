@@ -9,7 +9,6 @@ import { WinstonModule, utilities } from 'nest-winston';
 import * as path from 'path';
 import * as winston from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
-import * as Transport from 'winston-transport';
 
 declare const module: any;
 

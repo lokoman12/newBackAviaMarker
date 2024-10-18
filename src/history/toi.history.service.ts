@@ -6,16 +6,7 @@ import { Sequelize } from "sequelize";
 import { TimelineRecordDto } from "src/user-history/timeline.record.dto";
 import HistoryService from "./history.service";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
-
-export interface IHistoryClient {
-  id: number;
-  idFormular: number;
-  coordination: Array<number>;
-  H: number;
-  callsign: string;
-  status: number;
-  time: string;
-}
+import { DEFAULT_PART_SIZE } from "src/user-history/sql";
 
 @Injectable()
 class ToiHistoryService extends HistoryService<ToiHistory> {
@@ -31,15 +22,16 @@ class ToiHistoryService extends HistoryService<ToiHistory> {
     this.logger.log('Сервис инициализирован!')
   }
 
-  getNextId(currentId: number): number {
-    return currentId + 1;
+  getNextId(status: TimelineRecordDto): number {
+    const nextValue = status.currentToiId + DEFAULT_PART_SIZE;
+    return nextValue >= status.endToiId ? status.endToiId : nextValue;
   }
 
   async updateStateIfRequiredAndGetNextState(login: string, nextId: number, status: TimelineRecordDto): Promise<NextCurrentTypeForResponse> {
-    const records = await this.getHistoryRecords(nextId, status);
+    const currentTime = await this.getCurrentTimeByStep(nextId, status.tableNumber);
 
     const nextCurrent = await this.recordStatusService.setNextCurrentPropertiesRecordStatus(
-      login, nextId, records?.[0]?.time || status.currentTime
+      login, nextId, currentTime || status.currentTime
     );
 
     const nextCurrentStep = nextCurrent.nextCurrentStep;

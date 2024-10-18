@@ -12,9 +12,15 @@ export default class StandsHistory extends Model {
 
   @Column({
     type: DataType.DATE,
-    allowNull: true,
+    allowNull: false,
   })
   time: Date;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  step: number;
 
   @Column({
     type: DataType.STRING,

@@ -2,7 +2,8 @@ import { SequelizeModuleOptions } from '@nestjs/sequelize';
 import { DbConnectionPropertiesType } from './types';
 import { DATABASE_URL_REGEX } from 'src/environment/is.database.url';
 import { Dialect } from 'sequelize';
-
+import * as winston from 'winston';
+import { utilities } from 'nest-winston';
 
 export const getSequelizeDbUriConfig = (uri: string): SequelizeModuleOptions => {
   return {
@@ -13,6 +14,25 @@ export const getSequelizeDbUriConfig = (uri: string): SequelizeModuleOptions => 
     models: [__dirname + '/models'],
   }
 };
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.ms(),
+        utilities.format.nestLike('Seqielize', {
+          colors: true,
+          prettyPrint: true,
+          processId: true,
+          appName: true,
+        }),
+      )
+    }),
+  ],
+});
 
 export const getSequelizeDbConnectionPropertiesConfig = (uri: string): SequelizeModuleOptions => {
   DATABASE_URL_REGEX
@@ -29,7 +49,7 @@ export const getSequelizeDbConnectionPropertiesConfig = (uri: string): Sequelize
       define: {
         timestamps: false,
       },
-      logging: false,
+      logging: false,//(msg) => logger.info(msg),
     }
 
     return {

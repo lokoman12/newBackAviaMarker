@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import ToiService, { ActualClientToi } from 'src/toi/toi.service';
-import { AirportState, emptyAirportState } from './types';
+import { AirportState, AirportStateAllHistory, AirportStatePack, emptyAirportState, emptyAirportStateHistory } from './types';
 import OmnicomService from 'src/omnicom/omnicom.service';
 import StandService from 'src/stand-aodb/stand.service';
 import AznbService from 'src/aznb/aznb.service';
@@ -19,12 +19,13 @@ import { RecordStatusService } from 'src/user-history/record.status.service';
 import OmnicomHistoryService from 'src/history/omnicom.history.service';
 import StandsHistoryService from 'src/history/stands.history.service';
 import AznbHistoryService from 'src/history/aznb.history.service';
-import { HistoryResponseType } from 'src/history/types';
+import { HistoryArrayOfLists, HistoryResponsePackType, HistoryResponseType } from 'src/history/types';
 import Scout from 'src/db/models/scout.model';
 import Meteo from 'src/db/models/meteo.model';
 import Stands from 'src/db/models/stands.model';
 import Aznb from 'src/db/models/aznb.model';
 import MeteoHistoryService from 'src/history/meteo.history.service';
+import dayjs from "../utils/dayjs";
 
 @Injectable()
 export default class AirportStateService {
@@ -54,25 +55,25 @@ export default class AirportStateService {
     this.logger.log('Init service');
   }
 
-  async getActualData(username: string): Promise<AirportState> {
+  async getActualData(username: string, isForHistory?: boolean): Promise<AirportState> {
     // Если включено воспроизведение истории, заполняем данными из исторических таблиц, вместо актуальных значений
     let toi: Array<ActualClientToi> | HistoryResponseType;
     let omnicom: Array<Scout> | HistoryResponseType;
-    let meteo: Array<Meteo> | HistoryResponseType;;
+    let meteo: Array<Meteo> | HistoryResponseType;
     let stands: Array<Stands> | HistoryResponseType;
     let aznb: Array<Aznb> | HistoryResponseType;
 
     try {
       // this.logger.log(`Airport-state getActualData, start, login: ${username}`);
-      const isRecording = await this.recordStatusService.isInRecordStatus(username);
+      // const isRecording = await this.recordStatusService.isInRecordStatus(username);
 
       // this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
-      if (isRecording) {
-        toi = await this.toiHistoryService.getCurrentHistory(username);
-        omnicom = await this.omnicomHistoryService.getCurrentHistory(username);
-        meteo = await this.meteoHistoryService.getCurrentHistory(username);
-        stands = await this.standsHistoryService.getCurrentHistory(username);
-        aznb = await this.aznbHistoryService.getCurrentHistory(username);
+      if (isForHistory) {
+        toi = [];
+        omnicom = [];
+        meteo = [];
+        stands = [];
+        aznb = [];
       } else {
         toi = await this.toiService.getActualClientData();
         omnicom = await this.omnicomService.getActualData();
@@ -117,4 +118,56 @@ export default class AirportStateService {
     }
   }
 
+  async getActualDataAllHistory(tableNumber: number, startStep?: number, finishStep?: number): Promise<AirportStateAllHistory> {
+    // Если включено воспроизведение истории, заполняем данными из исторических таблиц, вместо актуальных значений
+    let toi: HistoryArrayOfLists;
+    let omnicom: HistoryArrayOfLists;
+    let meteo: HistoryArrayOfLists;
+    let stands: HistoryArrayOfLists;
+    let aznb: HistoryArrayOfLists;
+
+    try {
+      // this.logger.log(`Airport-state getActualData, start, login: ${username}`);
+      // const isRecording = await this.recordStatusService.isInRecordStatus(username);
+
+      this.logger.log(`Airport-state getActualData, tableNumber: ${tableNumber}, startStep: ${startStep}, finishStep: ${finishStep}`);
+
+      toi = await this.toiHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
+      this.logger.log(`Airport-state getActualData, toi`);
+      omnicom = await this.omnicomHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
+      this.logger.log(`Airport-state getActualData, omnicom`);
+      meteo = await this.meteoHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
+      this.logger.log(`Airport-state getActualData, meteo`);
+      stands = await this.standsHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
+      this.logger.log(`Airport-state getActualData, stands`);
+      aznb = await this.aznbHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
+      this.logger.log(`Airport-state getActualData, aznb`);
+
+      const firstToiFromFirstStep = toi[0]?.[0];
+      const startTime = dayjs(firstToiFromFirstStep?.time).toDate().getTime();
+      const endTime = toi.length > 0 ? dayjs(toi[toi.length - 1]?.[0]?.time).toDate().getTime() : NaN;
+      this.logger.log(`allSteps: ${toi.length}, startTime ${startTime}, endTime ${endTime}, currentStep: ${firstToiFromFirstStep?.step}`)
+      const airportStateAllHistory = {
+        ...emptyAirportStateHistory,
+        metaInfo: {
+          startTime,
+          currentTime: startTime,
+          endTime,
+          currentStep: firstToiFromFirstStep?.step,
+          tableNumber,
+          allSteps: toi.length,
+        },
+        toi,
+        omnicom,
+        meteo,
+        stands,
+        aznb,
+      };
+
+      return airportStateAllHistory;
+    } catch (error) {
+      console.error('Error retrieving airport info:', error);
+      throw error;
+    }
+  }
 }

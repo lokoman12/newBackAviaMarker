@@ -20,7 +20,7 @@ import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
 import { omit, pick } from 'lodash';
 import { SettingsService } from 'src/settings/settings.service';
-import { AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
+import { ALREADY_EXISTS_HISTORY_RECORD_TABLE, AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, NO_FREE_HISTORY_RECORD_TABLE, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 import { ExternalScheduler } from 'src/scheduler/external.scheduler';
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
 
@@ -44,6 +44,53 @@ export class RecordStatusController {
     throw new HistoryBadStateException("", HistoryErrorCodeEnum.emptyHistoryResult, 'Какая-то ошибка для проверки ручки');
   }
 
+  // @UseGuards(AccessTokenGuard)
+  @Get("/get-tablenumber")
+  async getTablenumber(
+    @Query("username") username: string,
+    @Req() req: Request
+  ) {
+    const value = await this.recordStatusService.getUserTablenumber(username);
+    return value;
+  }
+
+  // @UseGuards(AccessTokenGuard)
+  @Get("/set-tablenumber")
+  async setTablenumber(
+    @Query("username") username: string,
+    // @Query("tablenumber", new ParseIntPipe) tablenumber: number,
+    @Req() req: Request
+  ) {
+    const hasTablenumber = await this.recordStatusService.hasUserTablenumber(username);
+    if (hasTablenumber) {
+      return ALREADY_EXISTS_HISTORY_RECORD_TABLE;
+    }
+
+    const tablenumber = await this.historyUserService.getNextFreeTableNumberNew();
+    this.logger.log(tablenumber);
+
+    if (tablenumber > NO_FREE_HISTORY_RECORD_TABLE) {
+      await this.recordStatusService.setTablenumber(username, tablenumber);
+    }
+
+    return tablenumber;
+  }
+
+  // @UseGuards(AccessTokenGuard)
+  @Get("/reset-tablenumber")
+  async resetTablenumber(
+    @Query("username") username: string,
+    @Req() req: Request
+  ) {
+    const hasTablenumber = await this.recordStatusService.hasUserTablenumber(username);
+    if (hasTablenumber) {
+      await this.recordStatusService.resetTablenumber(username);
+      return true;
+    }
+
+    return false;
+  }
+
   @UseGuards(AccessTokenGuard)
   @Get("/get-history-stages")
   async getHistoryStages(
@@ -61,6 +108,7 @@ export class RecordStatusController {
   @UseGuards(AccessTokenGuard)
   @Get("/get")
   async getRecordStatus(
+    // @Query("username") username?: string,
     @Req() req: Request
   ) {
     const { username } = req.user as User;
@@ -75,8 +123,69 @@ export class RecordStatusController {
     } : null;
   }
 
-  private async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number) {
-    await this.historyUserService.tryFillInUserHistoryTable(login, startTime, endTime, velocity);
+  // @UseGuards(AccessTokenGuard)
+  @Get("/set-new")
+  async setRecordStatusNew(
+    @Query("username") username: string,
+    @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,
+    @Query("timeEnd", new ParseDatePipe(true)) timeEnd: Date,
+    @Query("velocity", new ParseIntPipe) velocity: number,
+    @Req() req: Request
+  ) {
+    // const { username } = req.user as User;
+    // this.logger.log(`/set, username from token: ${username}`);
+    this.logger.log(`/set, request: ${username} ${timeStart}, ${timeEnd}, ${velocity}`);
+
+
+    const hasTablenumber = await this.recordStatusService.hasUserTablenumber(username);
+    if (hasTablenumber) {
+      return ALREADY_EXISTS_HISTORY_RECORD_TABLE;
+    }
+
+    const tablenumber = await this.historyUserService.getNextFreeTableNumberNew();
+    this.logger.log(tablenumber);
+
+    if (tablenumber > NO_FREE_HISTORY_RECORD_TABLE) {
+      await this.recordStatusService.setTablenumber(username, tablenumber);
+    } else {
+      return NO_FREE_HISTORY_RECORD_TABLE;
+    }
+
+
+    if (this.externalScheduler.isJobExistsByName(RecordStatusController.createHistoryJobName)) {
+      this.externalScheduler.cancelJobByName(RecordStatusController.createHistoryJobName);
+    }
+
+    // Если задача была запущена, остановим
+    if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
+      this.logger.log('Check existing task');
+      this.scheduler.removeById(RecordStatusController.createHistoryJobName);
+    }
+    const task = new AsyncTask(
+      RecordStatusController.createHistoryJobName,
+      () => {
+        this.logger.log(`Start job for user ${username}, start time: ${new Date()}`);
+        const time = new Date().getTime();
+
+        return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
+          .then(() => {
+            this.logger.log(`Stop job for user ${username}, end date: ${new Date()}, time spent: ${new Date().getTime() / time * 1000} seconds`);
+            // Завершим задачу после однократного исполнения
+            if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
+              this.logger.log(`Stopped job for user ${username}`);
+              this.scheduler.removeById(RecordStatusController.createHistoryJobName);
+            }
+          });
+      },
+      (err: Error) => {
+        this.logger.error(`Can not finish tryFillInUserHistoryTable for user ${username}, error: ${err}`);
+      }
+    );
+    // Интервал выполнения - 1 час. Через час задача снимется системой по таймауту
+    const job = new SimpleIntervalJob({ hours: 1, runImmediately: true, }, task);
+    this.scheduler.addSimpleIntervalJob(job);
+
+    return tablenumber;
   }
 
   @UseGuards(AccessTokenGuard)
@@ -125,17 +234,6 @@ export class RecordStatusController {
     // Интервал выполнения - 1 час. Через час задача снимется системой по таймауту
     const job = new SimpleIntervalJob({ hours: 1, runImmediately: true, }, task);
     this.scheduler.addSimpleIntervalJob(job);
-
-    // this.externalScheduler.addJob(
-    //   RecordStatusController.createHistoryJobName,
-    //   "0 0 0 * * *",
-    //   () => {
-    //     return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
-    //       .then(() => {
-    //         return;
-    //       });
-    //   });
-    // const result = await this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity);
 
     return {
       // ...result,
@@ -203,6 +301,15 @@ export class RecordStatusController {
 
       return null;
     }
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get("/set-current-by-step-id")
+  async setCurrentByStepId(
+    @Body() timelineDto: TimelineDto,
+    @Req() req: Request
+  ) {
+
   }
 
   @UseGuards(AccessTokenGuard)
