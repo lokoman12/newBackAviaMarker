@@ -221,7 +221,7 @@ abstract class HistoryService<T extends HistoryModel<T>> {
       historySql = getHistorySqlAllRecords(tableName);
     }
 
-
+    this.logger.log(`getHistoryAllRecords: ${historySql}`);
     // Получим значения для первого и последнего шагов сформированной для пользователя истории
     const rawRecords = await this.sequelize.query(
       historySql,

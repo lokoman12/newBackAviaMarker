@@ -167,7 +167,7 @@ export class RecordStatusController {
         this.logger.log(`Start job for user ${username}, start time: ${new Date()}`);
         const time = new Date().getTime();
 
-        return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
+        return this.historyUserService.tryFillInUserHistoryTable(username, tablenumber, timeStart, timeEnd, velocity)
           .then(() => {
             this.logger.log(`Stop job for user ${username}, end date: ${new Date()}, time spent: ${new Date().getTime() / time * 1000} seconds`);
             // Завершим задачу после однократного исполнения
@@ -188,60 +188,60 @@ export class RecordStatusController {
     return tablenumber;
   }
 
-  @UseGuards(AccessTokenGuard)
-  @Get("/set")
-  async setRecordStatus(
-    @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,
-    @Query("timeEnd", new ParseDatePipe(true)) timeEnd: Date,
-    @Query("velocity", new ParseIntPipe) velocity: number,
-    @Req() req: Request
-  ) {
-    const { username } = req.user as User;
-    this.logger.log(`/set, username from token: ${username}`);
-    this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
+  // @UseGuards(AccessTokenGuard)
+  // @Get("/set")
+  // async setRecordStatus(
+  //   @Query("timeStart", new ParseDatePipe(true)) timeStart: Date,
+  //   @Query("timeEnd", new ParseDatePipe(true)) timeEnd: Date,
+  //   @Query("velocity", new ParseIntPipe) velocity: number,
+  //   @Req() req: Request
+  // ) {
+  //   const { username } = req.user as User;
+  //   this.logger.log(`/set, username from token: ${username}`);
+  //   this.logger.log(`/set, request: ${timeStart}, ${timeEnd}, ${velocity}`);
 
-    if (this.externalScheduler.isJobExistsByName(RecordStatusController.createHistoryJobName)) {
-      this.externalScheduler.cancelJobByName(RecordStatusController.createHistoryJobName);
-    }
+  //   if (this.externalScheduler.isJobExistsByName(RecordStatusController.createHistoryJobName)) {
+  //     this.externalScheduler.cancelJobByName(RecordStatusController.createHistoryJobName);
+  //   }
 
-    // Если задача была запущена, остановим
-    if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
-      this.logger.log('Check existing task');
-      this.scheduler.removeById(RecordStatusController.createHistoryJobName);
-    }
-    const task = new AsyncTask(
-      RecordStatusController.createHistoryJobName,
-      () => {
-        // return new Promise<void>((resolve) => {
+  //   // Если задача была запущена, остановим
+  //   if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
+  //     this.logger.log('Check existing task');
+  //     this.scheduler.removeById(RecordStatusController.createHistoryJobName);
+  //   }
+  //   const task = new AsyncTask(
+  //     RecordStatusController.createHistoryJobName,
+  //     () => {
+  //       // return new Promise<void>((resolve) => {
 
-        // resolve();
-        // });
-        this.logger.log(`Start job for user ${username}`);
-        return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
-          .then(() => {
-            this.logger.log(`Stop job for user ${username}`);
-            // Завершим задачу после однократного исполнения
-            if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
-              this.logger.log(`Stopped job for user ${username}`);
-              this.scheduler.removeById(RecordStatusController.createHistoryJobName);
-            }
-          });
-      },
-      (err: Error) => {
-        this.logger.error(`Can not finish tryFillInUserHistoryTable for user ${username}, error: ${err}`);
-      }
-    );
-    // Интервал выполнения - 1 час. Через час задача снимется системой по таймауту
-    const job = new SimpleIntervalJob({ hours: 1, runImmediately: true, }, task);
-    this.scheduler.addSimpleIntervalJob(job);
+  //       // resolve();
+  //       // });
+  //       this.logger.log(`Start job for user ${username}`);
+  //       return this.historyUserService.tryFillInUserHistoryTable(username, timeStart, timeEnd, velocity)
+  //         .then(() => {
+  //           this.logger.log(`Stop job for user ${username}`);
+  //           // Завершим задачу после однократного исполнения
+  //           if (this.scheduler.existsById(RecordStatusController.createHistoryJobName)) {
+  //             this.logger.log(`Stopped job for user ${username}`);
+  //             this.scheduler.removeById(RecordStatusController.createHistoryJobName);
+  //           }
+  //         });
+  //     },
+  //     (err: Error) => {
+  //       this.logger.error(`Can not finish tryFillInUserHistoryTable for user ${username}, error: ${err}`);
+  //     }
+  //   );
+  //   // Интервал выполнения - 1 час. Через час задача снимется системой по таймауту
+  //   const job = new SimpleIntervalJob({ hours: 1, runImmediately: true, }, task);
+  //   this.scheduler.addSimpleIntervalJob(job);
 
-    return {
-      // ...result,
-      // startTime: result.startTime.getTime(),
-      // endTime: result.endTime.getTime(),
-      // currentTime: result.currentTime.getTime(),
-    };
-  }
+  //   return {
+  //     // ...result,
+  //     // startTime: result.startTime.getTime(),
+  //     // endTime: result.endTime.getTime(),
+  //     // currentTime: result.currentTime.getTime(),
+  //   };
+  // }
 
   @UseGuards(AccessTokenGuard)
   @Get("/move-current")
@@ -347,6 +347,13 @@ export class RecordStatusController {
     const { username } = req.user as User;
     this.logger.log(`/reset, username from token: ${username}`);
     await this.recordStatusService.resetRecordStatus(username);
+
+    const hasTablenumber = await this.recordStatusService.hasUserTablenumber(username);
+    if (hasTablenumber) {
+      await this.recordStatusService.resetTablenumber(username);
+      return true;
+    }
+
     return;
   }
 }

@@ -400,14 +400,15 @@ class HistoryUserService {
     }
   }
 
-  async tryFillInUserHistoryTable(login: string, startTime: Date, endTime: Date, velocity: number): Promise<void> {
+  async tryFillInUserHistoryTable(login: string, tablenumber: number, startTime: Date, endTime: Date, velocity: number): Promise<void> {
     // Проверяем, вдруг юзер уже получает историю, а значит - за ним закреплены таблицы
     const inRecordStatus = await this.recordStatusService.isInRecordStatus(login);
     // Пробуем найти и выделить свободную таблицу
     if (!inRecordStatus) {
       // Ищём свободный номер таблицы
-      const nextFreeTableNumber = await this.getNextFreeTableNumber();
-      if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
+      const nextFreeTableNumber = tablenumber;
+      // const nextFreeTableNumber = await this.getNextFreeTableNumber();
+      // if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
         await this.recordStatusService.setRecordStatus(new TimelineRecordDto({
           login, startTime, endTime, currentTime: startTime,
           velocity, tableNumber: nextFreeTableNumber,
@@ -435,13 +436,13 @@ class HistoryUserService {
         // }
         // }
       }
-    } else {
-      const message = `Пользователь ${login} находится в статусе воспроизведения истории`;
-      this.logger.error(message);
-      // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
-      // await this.recordStatusService.resetUserHistoryStatusOnException(login);
-      throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userIsAlreadyInRecordStatus, message);
-    }
+    // } else {
+    //   const message = `Пользователь ${login} находится в статусе воспроизведения истории`;
+    //   this.logger.error(message);
+    //   // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
+    //   // await this.recordStatusService.resetUserHistoryStatusOnException(login);
+    //   throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userIsAlreadyInRecordStatus, message);
+    // }
   }
 }
 

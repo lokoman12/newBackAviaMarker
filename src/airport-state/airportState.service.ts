@@ -133,7 +133,7 @@ export default class AirportStateService {
       this.logger.log(`Airport-state getActualData, tableNumber: ${tableNumber}, startStep: ${startStep}, finishStep: ${finishStep}`);
 
       toi = await this.toiHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
-      this.logger.log(`Airport-state getActualData, toi`);
+      this.logger.log(`Airport-state getActualData, toi, ${toi.length}`);
       omnicom = await this.omnicomHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
       this.logger.log(`Airport-state getActualData, omnicom`);
       meteo = await this.meteoHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
@@ -144,6 +144,7 @@ export default class AirportStateService {
       this.logger.log(`Airport-state getActualData, aznb`);
 
       const firstToiFromFirstStep = toi[0]?.[0];
+      this.logger.log(`getActualDataAllHistory, toi.length: ${toi.length}, toi[last].length: ${toi[toi.length - 1]?.length}`);
       const startTime = dayjs(firstToiFromFirstStep?.time).toDate().getTime();
       const endTime = toi.length > 0 ? dayjs(toi[toi.length - 1]?.[0]?.time).toDate().getTime() : NaN;
       this.logger.log(`allSteps: ${toi.length}, startTime ${startTime}, endTime ${endTime}, currentStep: ${firstToiFromFirstStep?.step}`)
