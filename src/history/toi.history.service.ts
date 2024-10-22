@@ -7,6 +7,8 @@ import { TimelineRecordDto } from "src/user-history/timeline.record.dto";
 import HistoryService from "./history.service";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
 import { DEFAULT_PART_SIZE } from "src/user-history/sql";
+import { HistoryArrayOfLists, ToiHistoryArrayOfLists } from "./types";
+import { mapValues } from 'lodash';
 
 @Injectable()
 class ToiHistoryService extends HistoryService<ToiHistory> {
@@ -25,6 +27,17 @@ class ToiHistoryService extends HistoryService<ToiHistory> {
   getNextId(status: TimelineRecordDto): number {
     const nextValue = status.currentToiId + DEFAULT_PART_SIZE;
     return nextValue >= status.endToiId ? status.endToiId : nextValue;
+  }
+
+  public async getHistoryAllRecords(tableNumber: number, startStep?: number, finishStep?: number): Promise<HistoryArrayOfLists> {
+    const result = await super.getHistoryAllRecords(tableNumber, startStep, finishStep) as ToiHistoryArrayOfLists;
+    return mapValues(result, (historyItem) => {
+      return historyItem.map(toiItem => {
+        return {
+        ...toiItem,
+        formular: toiItem.formular?.[0],
+      }})
+    });
   }
 
   async updateStateIfRequiredAndGetNextState(login: string, nextId: number, status: TimelineRecordDto): Promise<NextCurrentTypeForResponse> {

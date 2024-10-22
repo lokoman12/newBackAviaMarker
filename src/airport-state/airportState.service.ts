@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import ToiService, { ActualClientToi } from 'src/toi/toi.service';
-import { AirportState, AirportStateAllHistory, AirportStatePack, emptyAirportState, emptyAirportStateHistory } from './types';
+import { AirportState, AirportStateAllHistory, emptyAirportState, emptyAirportStateHistory } from './types';
 import OmnicomService from 'src/omnicom/omnicom.service';
 import StandService from 'src/stand-aodb/stand.service';
 import AznbService from 'src/aznb/aznb.service';
@@ -19,13 +19,14 @@ import { RecordStatusService } from 'src/user-history/record.status.service';
 import OmnicomHistoryService from 'src/history/omnicom.history.service';
 import StandsHistoryService from 'src/history/stands.history.service';
 import AznbHistoryService from 'src/history/aznb.history.service';
-import { HistoryArrayOfLists, HistoryResponsePackType, HistoryResponseType } from 'src/history/types';
+import { HistoryArrayOfLists, HistoryResponseType } from 'src/history/types';
 import Scout from 'src/db/models/scout.model';
 import Meteo from 'src/db/models/meteo.model';
 import Stands from 'src/db/models/stands.model';
 import Aznb from 'src/db/models/aznb.model';
 import MeteoHistoryService from 'src/history/meteo.history.service';
 import dayjs from "../utils/dayjs";
+import { keys } from 'lodash';
 
 @Injectable()
 export default class AirportStateService {
@@ -133,7 +134,7 @@ export default class AirportStateService {
       this.logger.log(`Airport-state getActualData, tableNumber: ${tableNumber}, startStep: ${startStep}, finishStep: ${finishStep}`);
 
       toi = await this.toiHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
-      this.logger.log(`Airport-state getActualData, toi, ${toi.length}`);
+      this.logger.log(`Airport-state getActualData, toi, ${keys(toi).length}`);
       omnicom = await this.omnicomHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
       this.logger.log(`Airport-state getActualData, omnicom`);
       meteo = await this.meteoHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
@@ -144,10 +145,10 @@ export default class AirportStateService {
       this.logger.log(`Airport-state getActualData, aznb`);
 
       const firstToiFromFirstStep = toi[0]?.[0];
-      this.logger.log(`getActualDataAllHistory, toi.length: ${toi.length}, toi[last].length: ${toi[toi.length - 1]?.length}`);
+      this.logger.log(`getActualDataAllHistory, toi.length: ${keys(toi).length}, toi[last].length: ${toi[keys(toi).length - 1]?.length}`);
       const startTime = dayjs(firstToiFromFirstStep?.time).toDate().getTime();
-      const endTime = toi.length > 0 ? dayjs(toi[toi.length - 1]?.[0]?.time).toDate().getTime() : NaN;
-      this.logger.log(`allSteps: ${toi.length}, startTime ${startTime}, endTime ${endTime}, currentStep: ${firstToiFromFirstStep?.step}`)
+      const endTime = keys(toi).length > 0 ? dayjs(toi[keys(toi).length - 1]?.[0]?.time).toDate().getTime() : NaN;
+      this.logger.log(`allSteps: ${keys(toi).length}, startTime ${startTime}, endTime ${endTime}, currentStep: ${firstToiFromFirstStep?.step}`)
       const airportStateAllHistory = {
         ...emptyAirportStateHistory,
         metaInfo: {
@@ -156,7 +157,7 @@ export default class AirportStateService {
           endTime,
           currentStep: firstToiFromFirstStep?.step,
           tableNumber,
-          allSteps: toi.length,
+          allSteps: keys(toi).length,
         },
         toi,
         omnicom,

@@ -4,8 +4,8 @@ import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes, Sequelize } from "sequelize";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "src/user-history/user.bad.status.exception";
 import { isNormalNumber } from "src/utils/number";
-import { HistoryArrayOfLists, HistoryList, HistoryResponsePackType, HistoryResponseType, HistoryTableType, getModelTableName } from "./types";
-import { DEFAULT_PART_SIZE, getCurrentTimeByStepSql, getHistorySql, getHistorySqlAllRecords, getHistorySqlByPack, getHistorySqlBySteps } from "src/user-history/sql";
+import { HistoryArrayOfLists, HistoryList, HistoryResponseType, getModelTableName } from "./types";
+import { getCurrentTimeByStepSql, getHistorySql, getHistorySqlAllRecords, getHistorySqlBySteps } from "src/user-history/sql";
 import { HistoryModel } from './types';
 import { ModelType } from "./types";
 import { InjectConnection } from "@nestjs/sequelize";
@@ -14,6 +14,7 @@ import { NextCurrentTypeForResponse } from "src/user-history/types";
 import { EMPTY_STRING } from "src/auth/consts";
 import { chain, groupBy } from "lodash";
 import dayjs from "dayjs";
+import ToiHistory from "src/db/models/toiHistory.model";
 
 abstract class HistoryService<T extends HistoryModel<T>> {
   protected readonly logger = new Logger(HistoryService.name);
@@ -95,40 +96,14 @@ abstract class HistoryService<T extends HistoryModel<T>> {
     };
   }
 
-  async getCurrentHistoryPack(
-    login: string
-  ): Promise<HistoryResponsePackType> {
-    // Текущее состояние воспроизведения записи пользователя
-    const status = await this.recordStatusService.getRecordStatus(login);
-    this.assertCurrentRecordStatus(login, status);
-    // Новый текущий шаг
-    let nextId = this.getNextId(status);
-    // Записи из истории для текущего или нового шага
-    const records = await this.getHistoryRecordsPack(nextId, status);
-    // Состояние для следующего шага
-    const nextState = await this.updateStateIfRequiredAndGetNextState(login, nextId, status);
-
-    return {
-      rows: records as HistoryArrayOfLists,
-      state: { ...nextState, },
-    };
-  }
-
   async getCurrentAllHistory(
     tableNumber: number,
     startStep: number,
     finishStep: number
   ): Promise<HistoryArrayOfLists> {
-    // Текущее состояние воспроизведения записи пользователя
-    // const status = await this.recordStatusService.getRecordStatus(login);
-    // this.assertCurrentRecordStatus(login, status);
-    // Новый текущий шаг
-    // let nextId = this.getNextId(status);
     // Записи из истории для текущего или нового шага
     const records = await this.getHistoryAllRecords(tableNumber, startStep, finishStep);
     // Состояние для следующего шага
-    // const nextState = await this.updateStateIfRequiredAndGetNextState(login, nextId, status);
-
     return records as HistoryArrayOfLists;
   }
 
@@ -174,45 +149,12 @@ abstract class HistoryService<T extends HistoryModel<T>> {
     return records as HistoryList;
   }
 
-  public async getHistoryRecordsPack(nextId: number, status: TimelineRecordDto): Promise<HistoryArrayOfLists> {
-    // Получим имя таблицы истории для залогиненного пользователя
-    const baseTableName = getModelTableName(this.historyModel);
-    // this.logger.log(`baseTableName: ${baseTableName}`);
-    const tableName = SettingsService.getRecordTableNameByIndex(baseTableName, status.tableNumber);
-    // this.logger.log(`nextId: ${nextId}`);
-
-    if (!isNormalNumber(nextId)) {
-      const message = `Ошибка при получении информации по текущей пачке шагов таблицы ${tableName}. Id шага ${nextId}`;
-      this.logger.error(message);
-      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.invalidCurrentHistoryStep, message);
-    }
-
-    const historySql = getHistorySqlByPack(tableName, nextId, DEFAULT_PART_SIZE);
-
-    // Получим значения для первого и последнего шагов сформированной для пользователя истории
-    const rawRecords = await this.sequelize.query(
-      historySql,
-      { raw: true, type: QueryTypes.SELECT, }
-    );
-
-    return chain(rawRecords)
-      .groupBy((it: any) => it.step)
-      .map((value) => value)
-      .value() as HistoryArrayOfLists;
-  }
-
   public async getHistoryAllRecords(tableNumber: number, startStep?: number, finishStep?: number): Promise<HistoryArrayOfLists> {
     // Получим имя таблицы истории для залогиненного пользователя
     const baseTableName = getModelTableName(this.historyModel);
     // this.logger.log(`baseTableName: ${baseTableName}`);
     const tableName = SettingsService.getRecordTableNameByIndex(baseTableName, tableNumber);
     // this.logger.log(`nextId: ${nextId}`);
-
-    // if (!isNormalNumber(nextId)) {
-    // const message = `Ошибка при получении информации по текущей пачке шагов таблицы ${tableName}. Id шага ${nextId}`;
-    // this.logger.error(message);
-    // throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.invalidCurrentHistoryStep, message);
-    // }
 
     let historySql: any;
     if (isNormalNumber(startStep) && isNormalNumber(finishStep)) {
@@ -231,7 +173,6 @@ abstract class HistoryService<T extends HistoryModel<T>> {
     return (
       chain(rawRecords)
         .groupBy((it: any) => it.step)
-        .map((value) => value)
         .value() || []
     ) as HistoryArrayOfLists;
   }

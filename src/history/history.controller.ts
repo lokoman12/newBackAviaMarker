@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import User from 'src/db/models/user';
 import ToiHistoryService from './toi.history.service';
-import { HistoryArrayOfLists, HistoryResponsePackType, HistoryResponseType } from './types';
+import { HistoryResponseType } from './types';
 import { InjectConnection } from '@nestjs/sequelize';
 import { QueryTypes, Sequelize } from 'sequelize';
 import { RecordStatusService } from 'src/user-history/record.status.service';
@@ -65,25 +65,16 @@ export class HistoryController {
     return result;
   }
 
-  @Get("/test-omnicom-history-pack")
-  async getOmnicomHistoryByPack(
-    @Query('username') username: string,
+
+  @Get("/test-toi-history-by-steps")
+  async getAllHistoryBySteps(
+    @Query('tablenumber') tablenumber: number,
+    @Query('startStep') startStep: number,
+    @Query('finishStep') finishStep: number,
     @Req() req: Request
-  ): Promise<HistoryResponsePackType> {
-    const status = await this.recordStatusService.getRecordStatus(username);
+  ): Promise<any> {
     // this.logger.log(`Username from token: ${username}`);
-    const result = await this.omnicomHistoryService.getCurrentHistoryPack(username);
-    return result;
-  }
-  
-  @Get("/test-toi-history-pack")
-  async getToiHistoryByPack(
-    @Query('username') username: string,
-    @Req() req: Request
-  ): Promise<HistoryResponsePackType> {
-    const status = await this.recordStatusService.getRecordStatus(username);
-    // this.logger.log(`Username from token: ${username}`);
-    const result = await this.toiHistoryService.getCurrentHistoryPack(username);
+    const result = await this.toiHistoryService.getCurrentAllHistory(tablenumber, startStep, finishStep);
     return result;
   }
 
@@ -98,4 +89,5 @@ export class HistoryController {
     const result = await this.toiHistoryService.getCurrentTimeByStep(nextId, status.tableNumber);
     return result;
   }
+
 }

@@ -8,7 +8,7 @@ import Taxiway from "src/db/models/taxiway.model";
 import VppStatus from "src/db/models/vppStatus.model";
 import ZoneAM from "src/db/models/zone.model";
 import { HistoryArrayOfLists } from "src/history/types";
-import { GeneralResponsePackType, GeneralResponseType } from "src/toi/toi.service";
+import { GeneralResponseType } from "src/toi/toi.service";
 
 export type AirportState = {
   toi: GeneralResponseType;
@@ -16,23 +16,6 @@ export type AirportState = {
   meteo: GeneralResponseType;
   stands: GeneralResponseType;
   aznb: GeneralResponseType,
-  podhod: Array<Podhod>;
-  position: Array<PositionAM>;
-  fpln: Array<AODB>;
-  strip: Array<Strips>;
-  vppStatus: Array<VppStatus>;
-  standsGeo: Array<StandsGeo>;
-  alarms: Array<AlaramAM>;
-  taxiway: Array<Taxiway>;
-  zones: Array<ZoneAM>;
-};
-
-export type AirportStatePack = {
-  toi: GeneralResponsePackType;
-  omnicom: GeneralResponsePackType;
-  meteo: GeneralResponsePackType;
-  stands: GeneralResponsePackType;
-  aznb: GeneralResponsePackType,
   podhod: Array<Podhod>;
   position: Array<PositionAM>;
   fpln: Array<AODB>;

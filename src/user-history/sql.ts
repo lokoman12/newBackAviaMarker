@@ -13,9 +13,6 @@ export const getCurrentTimeByStepSql = (tableName: string, nextId: number) =>
 export const getHistorySql = (tableName: string, nextId: number) =>
   `SELECT * FROM ${tableName} WHERE step = ${nextId}`;
 
-export const getHistorySqlByPack = (tableName: string, nextId: number, partSize: number = DEFAULT_PART_SIZE) =>
-  `SELECT * FROM ${tableName} WHERE step BETWEEN ${nextId} AND ${nextId + partSize - 1} order by step`;
-
 export const getHistorySqlBySteps = (tableName: string, startStep: number, finishStep: number) =>
 `SELECT * FROM ${tableName} WHERE step BETWEEN ${startStep} AND ${finishStep} order by step`;
 

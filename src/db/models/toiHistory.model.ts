@@ -18,6 +18,17 @@ export interface IToiHistory extends IHistoryClientType {
   formular: Array<FormularType>;
 };
 
+export interface IToiHistoryForResponse extends IHistoryClientType {
+  coordinates: LatLngType;
+  Name?: string;
+  curs: number;
+  alt: number;
+  faza: number;
+  Number: number;
+  type: number;
+  formular: FormularType;
+};
+
 export type LatLngType = {
   lat: number;
   lon: number;

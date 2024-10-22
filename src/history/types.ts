@@ -3,21 +3,23 @@ import AznbHistory from "src/db/models/aznbHistory.model";
 import MeteoHistory from "src/db/models/meteoHistory.model";
 import OmnicomHistory from "src/db/models/scoutHistory.model";
 import StandsHistory from "src/db/models/standsHistory.model";
-import ToiHistory from "src/db/models/toiHistory.model";
+import ToiHistory, { IToiHistoryForResponse } from "src/db/models/toiHistory.model";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
 import { isNull } from "src/utils/common";
 
 export type HistoryList = Array<ToiHistory | OmnicomHistory | OmnicomHistory | MeteoHistory | StandsHistory | AznbHistory>;
 
-export type HistoryArrayOfLists = Array<Array<ToiHistory> | Array<OmnicomHistory> | Array<MeteoHistory> | Array<StandsHistory> | Array<AznbHistory>>;
+export type HistoryArrayOfLists = {
+  [key in number]: Array<ToiHistory> | Array<IToiHistoryForResponse> | Array<OmnicomHistory> | Array<MeteoHistory> | Array<StandsHistory> | Array<AznbHistory>
+};
+
+export type ToiHistoryArrayOfLists = {
+  [key in number]: Array<ToiHistory> | Array<IToiHistoryForResponse>
+};
+
 
 export type HistoryResponseType = {
   rows: HistoryList;
-  state: NextCurrentTypeForResponse;
-};
-
-export type HistoryResponsePackType = {
-  rows: HistoryArrayOfLists;
   state: NextCurrentTypeForResponse;
 };
 
