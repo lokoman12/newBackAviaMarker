@@ -11,8 +11,8 @@ import {
   , BelongsToMany
   , AutoIncrement
 } from 'sequelize-typescript';
-import Group, { IGroup } from './group';
-import UserGroup from './usergroup';
+// import Group, { IGroup } from './group';
+// import UserGroup from './usergroup';
 
 export interface IUser {
   id: number;
@@ -20,8 +20,22 @@ export interface IUser {
   password: string;
   wrongAttempts: number;
   lastSeen: Date;
-  roles?: IGroup[];
   refreshToken?: string;
+
+  firstname?: string;
+  lastname?: string;
+  middlename?: string;
+  phone?: string;
+  email?: string;
+  position?: string;
+  department?: string;
+
+  groups: string;
+}
+
+export interface IGroup {
+  name: string;
+  users?: IUser[];
 }
 
 @Table({ tableName: 'auth' })
@@ -50,8 +64,41 @@ export default class User extends Model implements IUser {
   @Column({ type: DataType.DATE, field: 'last_seen' })
   lastSeen: Date;
 
-  @BelongsToMany(() => Group, () => UserGroup)
-  roles?: Group[];
+  // @BelongsToMany(() => Group, () => UserGroup)
+  // roles?: Group[];
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  firstname?: string;
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  lastname?: string;
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  middlename?: string;
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  phone?: string;
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  email?: string;
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  position?: string;
+
+  @AllowNull(true)
+  @Column({ type: DataType.STRING, })
+  department?: string;
+
+  @AllowNull(false)
+  @Column({ type: DataType.STRING, })
+  groups: string;
+
 };
 
 

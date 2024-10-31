@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import Group from 'src/db/models/group';
 import Settings from 'src/db/models/settings';
 import { ApiConfigModule } from 'src/config/config.module';
 import { UsersService } from './user.service';
@@ -12,7 +11,7 @@ import { GroupController } from './group.controller';
 
 @Module({
   providers: [UsersService, GroupService,],
-  imports: [ApiConfigModule, SequelizeModule.forFeature([User, Group, Settings]),],
+  imports: [ApiConfigModule, SequelizeModule.forFeature([User, Settings]),],
   controllers: [UserController, GroupController,],
   exports: [UsersService, GroupService,],
 })

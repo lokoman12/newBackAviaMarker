@@ -1,8 +1,14 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import Group, { IGroup } from 'src/db/models/group';
 import User, { IUser } from 'src/db/models/user';
-import { CreateGroupDto, CreateUserDto, UpdateGroupDto, UpdateUserDto } from './user.dto';
+import { chain } from 'lodash';
+
+type GroupType = {
+  name: string;
+  persons: Array<IUser>;
+}
+
+type GroupsType = Array<GroupType>
 
 @Injectable()
 export class GroupService {
@@ -10,60 +16,95 @@ export class GroupService {
 
   constructor(
     @InjectModel(User) private readonly usersModel: typeof User,
-    @InjectModel(Group) private readonly groupModel: typeof Group
   ) {
     this.logger.log('Init controller');
   }
 
-  async createGroup(groupDto: CreateGroupDto): Promise<IGroup> {
-    const group = await this.groupModel.create(
-      { ...groupDto, }
-    );
-    return group;
-  }
-
-  async findAllGroups(): Promise<Array<IGroup>> {
+  async findAllGroups(): Promise<GroupsType> {
     this.logger.log('find all groups: ');
-    return this.groupModel.findAll({ raw: true, });
-  }
-
-  async findGroupById(id: number): Promise<IGroup | null> {
-    return this.groupModel.findOne({ raw: true, where: { id, }, });
-  }
-
-  async findUsersInGroup(groupId: number): Promise<Array<IUser>> {
-    const users = await this.usersModel.findAll({
+    const users: Array<IUser> = await this.usersModel.findAll({
       raw: true,
-      include: [
-        {
-          model: Group,
-          attributes: ['id',],
-          through: { attributes: [], },
-          where: { id: groupId, }
-        },
-      ],
+    });
+    const foundGroups = chain(users)
+      .flatMap(user => user.groups.split(','))
+      .uniq()
+      .value();
+
+    const groups: GroupsType = [];
+    foundGroups.forEach(group => {
+      const groupUsers = users.filter(user => user.groups?.includes(group));
+      groups.push({ name: group, persons: groupUsers });
+    })
+    return groups;
+  }
+
+  async findGroupByName(groupName: string): Promise<boolean> {
+    const users: Array<IUser> = await this.usersModel.findAll({
+      raw: true,
+    });
+    const foundGroups = chain(users)
+      .flatMap(user => user.groups.split(','))
+      .uniq()
+      .filter(it => it === groupName)
+      .value();
+    return foundGroups.length > 0;
+  }
+
+  private async getUsersByGroup(groupname: string): Promise<Array<IUser>> {
+    let users = await this.usersModel.findAll({
+      raw: true,
+    });
+    users = users.filter(it => {
+      const array = it.groups.split(',');
+      return array.includes(groupname);
     });
     return users;
   }
 
-  async updateGroup(
-    id: number,
-    updateGroupDto: UpdateGroupDto
-  ): Promise<IGroup> {
-    const group = await this.groupModel.findOne({
-      where: { id, },
-    });
-    if (!group) {
-      throw new BadRequestException(`Can not update group with id: ${id}!`);
-    }
-    await group.update(updateGroupDto);
-    await group.reload();
-    return group.get();
+  async findUsersInGroup(groupname: string): Promise<Array<IUser>> {
+    return await this.getUsersByGroup(groupname);
   }
 
-  async removeGroup(id: number): Promise<void> {
-    await this.groupModel.destroy(
-      { where: { id, }, }
-    )
+  async updateGroupname(currentGroupname: string, newGroupname: string): Promise<void> {
+    const promises: Array<Promise<any>> = [];
+
+    const groupUsers = await this.getUsersByGroup(currentGroupname);
+    groupUsers.forEach(user => {
+      const groups = user.groups
+      .split(',')
+      .map(it => it != currentGroupname ? it : newGroupname)
+      .join(',');
+       const promise = this.usersModel.update(
+        { groups, },
+        { where: {
+          id: user.id,
+        }}
+      );
+      promises.push(promise);
+    });
+
+    await Promise.all(promises);
   }
+
+  async removeGroup(groupname: string): Promise<void> {
+    const promises: Array<Promise<any>> = [];
+
+    const groupUsers = await this.getUsersByGroup(groupname);
+    groupUsers.forEach(user => {
+      const groups = user.groups
+      .split(',')
+      .filter(it => it != groupname)
+      .join(',');
+       const promise = this.usersModel.update(
+        { groups, },
+        { where: {
+          id: user.id,
+        }}
+      );
+      promises.push(promise);
+    });
+
+    await Promise.all(promises);
+  }
+
 }

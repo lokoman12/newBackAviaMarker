@@ -34,9 +34,10 @@ class ToiHistoryService extends HistoryService<ToiHistory> {
     return mapValues(result, (historyItem) => {
       return historyItem.map(toiItem => {
         return {
-        ...toiItem,
-        formular: toiItem.formular?.[0],
-      }})
+          ...toiItem,
+          formular: toiItem.formular?.[0],
+        }
+      })
     });
   }
 

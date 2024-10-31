@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { AuthDto, CreateUserDto } from 'src/user/user.dto';
 import { JwtTokenType, SignInDataType } from './types';
+import { AUTH_LABEL } from 'src/main';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,8 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService
   ) {
-    this.logger.log('Init AuthService, access: ' + this.configService.getJwtAccessSecret() + ", refresh" + this.configService.getJwtRefreshSecret());
+    const message = `Init AuthService, access: ${this.configService.getJwtAccessSecret()}, refresh: ${this.configService.getJwtRefreshSecret()}`;
+    this.logger.log({ message, });
   }
 
   private async updateRefreshToken(userId: number, refreshToken: string) {
@@ -58,6 +60,8 @@ export class AuthService {
   async signUp(dto: CreateUserDto): Promise<any> {
     const isUserExists = await this.usersService.findUserByLogin(dto.username);
     if (isUserExists) {
+      const message = `User ${dto.username} already exists`;
+      this.logger.warn({ message, label: AUTH_LABEL, });
       throw new BadRequestException(`User ${dto.username} already exists`);
     }
 
@@ -71,11 +75,15 @@ export class AuthService {
   async signIn(data: AuthDto): Promise<SignInDataType> {
     const user = await this.usersService.findUserByLogin(data.username);
     if (!user) {
-      throw new BadRequestException(`User ${data.username} does not exist!`);
+      const message = `User ${data.username} does not exist!`;
+      this.logger.warn({ message, label: AUTH_LABEL, });
+      throw new BadRequestException(message);
     }
 
     if (data.password !== user.password) {
-      throw new BadRequestException(`Password for user ${data.username} is incorrect!`);
+      const message = `Password for user ${data.username} is incorrect!`;
+      this.logger.warn({ message, label: AUTH_LABEL, });
+      throw new BadRequestException(message);
     }
 
     const tokens = await this.getTokens(user.id, user.username);
@@ -94,10 +102,14 @@ export class AuthService {
   async refreshTokens(userId: number, refreshToken: string) {
     const user = await this.usersService.findUserById(userId);
     if (!user || !user.refreshToken) {
-      throw new ForbiddenException('Access Denied');
+      const message = `Access Denied, userId: ${userId}!`;
+      this.logger.warn({ message, label: AUTH_LABEL, });
+      throw new ForbiddenException(message);
     }
     if (!refreshToken) {
-      throw new ForbiddenException('Access Denied');
+      const message = `Access Denied, userId: ${userId}!`;
+      this.logger.warn({ message, label: AUTH_LABEL, });
+      throw new ForbiddenException(message);
     }
     const tokens = await this.getTokens(user.id, user.username);
     await this.updateRefreshToken(user.id, tokens.refreshToken);

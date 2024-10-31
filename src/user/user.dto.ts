@@ -1,6 +1,5 @@
-import { PartialType, OmitType, PickType, IntersectionType } from '@nestjs/mapped-types';
-import { IGroup } from 'src/db/models/group';
-import { IUser } from 'src/db/models/user';
+import { PartialType, PickType, IntersectionType } from '@nestjs/mapped-types';
+import { IUser, IGroup } from 'src/db/models/user';
 
 export class UserDto implements IUser {
   id: number;
@@ -9,12 +8,20 @@ export class UserDto implements IUser {
   wrongAttempts: number;
   lastSeen: Date;
   refreshToken?: string;
+
+  firstname?: string;
+  lastname?: string;
+  middlename?: string;
+  phone?: string;
+  email?: string;
+  position?: string;
+  department?: string;
+
+  groups: string;
 }
 
-export class GroupDto implements IGroup {
-  id: number;
+export class GroupDto {
   name: string;
-  comment: string;
 }
 
 export class UpdateUserRoles {
@@ -27,6 +34,6 @@ export class AuthDto extends PickType(UserDto, ['username', 'password'] as const
 
 export class UpdateUserDto extends IntersectionType(PartialType(UserDto), UpdateUserRoles) { }
 
-export class CreateGroupDto extends PickType(GroupDto, ['name', 'comment'] as const) { }
+export class CreateGroupDto extends GroupDto { }
 
-export class UpdateGroupDto extends PartialType(OmitType(GroupDto, ['id'] as const)) { }
+export class UpdateGroupDto extends PartialType(GroupDto) { }

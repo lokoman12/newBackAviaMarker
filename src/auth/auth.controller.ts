@@ -25,6 +25,7 @@ import { GetCurrentUser } from './decorators/get-current-user.decorator';
 import { LoginTypeResponse } from './types';
 import User from 'src/db/models/user';
 import { RecordStatusService } from 'src/user-history/record.status.service';
+import { AUTH_LABEL } from 'src/main';
 
 @Controller('/auth')
 export class AuthController {
@@ -38,6 +39,7 @@ export class AuthController {
 
   @Post('signup')
   signin(@Body() data: CreateUserDto) {
+    this.logger.log({ message: `Sign up, user: ${data.username}`, label: AUTH_LABEL, });
     return this.authService.signUp(data);
   }
 
@@ -47,9 +49,10 @@ export class AuthController {
   async loginGet(
     @Query('username') username: string,
     @Query('password') password: string
+    , @Req() req: Request
     , @Res({ passthrough: true }) response: Response
   ) {
-    this.logger.warn('Login, user: ' + username);
+    this.logger.log({ message: `Login via GET params, user: ${username}`, label: AUTH_LABEL, });
     const { accessToken } = await this.authService.signIn({ username, password });
     // При логине сбрасываем статус воспроизведения истории, если был включен
     await this.recordStatusService.resetRecordStatus(username);
@@ -67,8 +70,9 @@ export class AuthController {
   ) {
     // this.log.log('LoginController, cookies: ' + req.cookies.test);
     const { username } = data;
-    this.logger.warn('Login, user: ' + username);
+    this.logger.log({ message: `Login via POST body, user: ${username}`, label: AUTH_LABEL, });
     const signInData = await this.authService.signIn(data);
+    
     // При логине сбрасываем статус воспроизведения истории, если был включен
     await this.recordStatusService.resetRecordStatus(username);
     return {
@@ -86,9 +90,13 @@ export class AuthController {
   @Get('profile')
   getProfile(@Req() req: Request) {
     const { username } = req.user as User;
+    this.logger.log({ message: `Get profile of user: ${username}, id: ${req.user?.['sub']}`, label: AUTH_LABEL, });
+
     var user = this.userService.findUserByLogin(username);
     if (!user) {
-      throw new BadRequestException(`Can not find user by login ${username}`);
+      const message = `Can not find user by login ${username}`;
+      this.logger.warn({ message, label: AUTH_LABEL, });
+      throw new BadRequestException(message);
     }
     return req.user;
   }
@@ -96,6 +104,8 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get('logout')
   async logoff(@Req() req) {
+    const { username } = req.user as User;
+    this.logger.log({ message: `Logoff user ${username}, id: ${req.user?.['sub']}`, label: AUTH_LABEL, });
     this.authService.logout(req.user['sub']);
   }
 
@@ -106,7 +116,7 @@ export class AuthController {
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string
   ) {
-    this.logger.log('Refreshm, userId: ' + userId);
+    this.logger.log({ message: `Refresh token, userId: ${userId}`, label: AUTH_LABEL, });
     return this.authService.refreshTokens(userId, refreshToken);
   }
 }

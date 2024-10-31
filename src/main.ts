@@ -12,10 +12,12 @@ import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 declare const module: any;
 
+export const AUTH_LABEL = 'auth';
+
 const myLogFormat = winston.format.printf(({ level, message, timestamp }) =>
   `${timestamp} ${level?.toUpperCase()} ${message}`);
 
-var fileTransport = new DailyRotateFile({
+var commonFileTransport = new DailyRotateFile({
   level: 'info',
   dirname: path.join(__dirname, '../../logs'),
   filename: 'aviamarker-info-%DATE%.log',
@@ -24,6 +26,23 @@ var fileTransport = new DailyRotateFile({
   maxSize: '20m',
   maxFiles: '60d',
   format: winston.format.combine(
+    winston.format.timestamp(),
+    myLogFormat,
+  )
+});
+
+var authFileTransport = new DailyRotateFile({
+  level: 'info',
+  dirname: path.join(__dirname, '../../logs'),
+  filename: 'aviamarker-auth-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '60d',
+  format: winston.format.combine(
+    winston.format((info) => {
+      return info.label === AUTH_LABEL ? info : false;
+    })(),
     winston.format.timestamp(),
     myLogFormat,
   )
@@ -45,7 +64,8 @@ async function bootstrap() {
             }),
           )
         }),
-        fileTransport,
+        commonFileTransport,
+        authFileTransport,
       ],
     }),
   });
