@@ -7,6 +7,7 @@ import * as turf from '@turf/turf';
 import { ApiQuery } from '@nestjs/swagger';
 import { GeoType } from 'src/photo/types';
 import Photo from 'src/db/models/photo.model';
+import { EMPTY_STRING } from 'src/consts/common';
 
 @Controller('/savePolygon')
 export class SavePolygonController {
@@ -73,12 +74,12 @@ export class SavePolygonController {
       this.logger.log(`Calculated area: ${area} square meters`);
 
       const data = {
-        name: name || "",
+        name: name || EMPTY_STRING,
         time: date,
         square: area,
         coordinates,
         mode,
-        description: description || "",
+        description: description || EMPTY_STRING,
         project
       };
       const createdPolygon = await this.polygonModel.create(data);

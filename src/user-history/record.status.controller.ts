@@ -23,6 +23,7 @@ import { SettingsService } from 'src/settings/settings.service';
 import { ALREADY_EXISTS_HISTORY_RECORD_TABLE, AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, NO_FREE_HISTORY_RECORD_TABLE, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 import { ExternalScheduler } from 'src/scheduler/external.scheduler';
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
+import { EMPTY_OBJECT, EMPTY_STRING } from 'src/consts/common';
 
 @Controller('/record-status')
 export class RecordStatusController {
@@ -41,7 +42,7 @@ export class RecordStatusController {
   async getTestResponse(
     @Req() req: Request
   ) {
-    throw new HistoryBadStateException("", HistoryErrorCodeEnum.emptyHistoryResult, 'Какая-то ошибка для проверки ручки');
+    throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.emptyHistoryResult, 'Какая-то ошибка для проверки ручки');
   }
 
   // @UseGuards(AccessTokenGuard)
@@ -102,7 +103,7 @@ export class RecordStatusController {
     const result = await this.recordStatusService.getRecordStatus(username);
     return result !== null ? {
       historyGenerateStages: result.historyGenerateStages,
-    } : {};
+    } : EMPTY_OBJECT;
   }
 
   @UseGuards(AccessTokenGuard)

@@ -6,6 +6,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import * as fs from 'fs';
 import axios from 'axios';
+import { EMPTY_OBJECT } from 'src/consts/common';
 
 @Controller('/sendPoint')
 export class SendPointController {
@@ -40,7 +41,7 @@ export class SendPointController {
       });
 
       this.logger.log('Sent');
-      return {};
+      return EMPTY_OBJECT;
     } catch (error) {
       this.logger.error('Ошибка при отправки точки:', error);
       throw error;

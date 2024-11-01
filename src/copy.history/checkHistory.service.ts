@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
 import { ApiConfigService } from 'src/config/api.config.service';
 import dayjs from '../utils/dayjs';
 import { ExternalScheduler } from 'src/scheduler/external.scheduler';
-import { DATE_TIME_FORMAT } from 'src/auth/consts';
+import { DATE_TIME_FORMAT } from "src/consts/time";
 import MeteoHistory from 'src/db/models/meteoHistory.model';
 import StandsHistory from 'src/db/models/standsHistory.model';
 import OmnicomHistory from 'src/db/models/scoutHistory.model';

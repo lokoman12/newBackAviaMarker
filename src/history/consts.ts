@@ -1,5 +1,3 @@
-export const SQL_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%i:%s';
-
 export const ALREADY_EXISTS_HISTORY_RECORD_TABLE = -2;
 
 export const NO_FREE_HISTORY_RECORD_TABLE = -1;

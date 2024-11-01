@@ -5,6 +5,7 @@ import { ApiConfigService } from 'src/config/api.config.service';
 import { AuthDto, CreateUserDto } from 'src/user/user.dto';
 import { JwtTokenType, SignInDataType } from './types';
 import { AUTH_LABEL } from 'src/main';
+import { hasDirectorRole, hasDispatcherRole, hasEngineerRole } from './utils';
 
 @Injectable()
 export class AuthService {
@@ -92,6 +93,11 @@ export class AuthService {
     return {
       userId: user.id,
       accessToken: tokens.accessToken,
+      permissions: {
+        isEngineer: hasEngineerRole(user.groups),
+        isDispatcher: hasDispatcherRole(user.groups),
+        isDirector: hasDirectorRole(user.groups),
+      }
     };
   }
 

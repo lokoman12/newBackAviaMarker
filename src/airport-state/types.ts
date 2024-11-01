@@ -1,3 +1,4 @@
+import { EMPTY_ARRAY } from "src/consts/common";
 import AlaramAM from "src/db/models/alarm.model";
 import AODB from "src/db/models/fpln.model";
 import Podhod from "src/db/models/podhod.model";
@@ -47,20 +48,20 @@ export type AirportStateAllHistory = {
 };
 
 export const emptyAirportState = {
-  toi: [],
-  omnicom: [],
-  meteo: [],
-  stands: [],
-  aznb: [],
-  podhod: [],
-  position: [],
-  fpln: [],
-  strip: [],
-  vppStatus: [],
-  standsGeo: [],
-  alarms: [],
-  taxiway: [],
-  zones: []
+  toi: EMPTY_ARRAY,
+  omnicom: EMPTY_ARRAY,
+  meteo: EMPTY_ARRAY,
+  stands: EMPTY_ARRAY,
+  aznb: EMPTY_ARRAY,
+  podhod: EMPTY_ARRAY,
+  position: EMPTY_ARRAY,
+  fpln: EMPTY_ARRAY,
+  strip: EMPTY_ARRAY,
+  vppStatus: EMPTY_ARRAY,
+  standsGeo: EMPTY_ARRAY,
+  alarms: EMPTY_ARRAY,
+  taxiway: EMPTY_ARRAY,
+  zones: EMPTY_ARRAY
 };
 
 export const emptyAirportStateHistory: AirportStateAllHistory = {
@@ -73,9 +74,9 @@ export const emptyAirportStateHistory: AirportStateAllHistory = {
     velocity: 1,
     tableNumber: -1,
   },
-  toi: [],
-  omnicom: [],
-  meteo: [],
-  stands: [],
-  aznb: [],
+  toi: EMPTY_ARRAY,
+  omnicom: EMPTY_ARRAY,
+  meteo: EMPTY_ARRAY,
+  stands: EMPTY_ARRAY,
+  aznb: EMPTY_ARRAY,
 };

@@ -9,7 +9,8 @@ import { InjectConnection, InjectModel } from "@nestjs/sequelize";
 import { SettingsService } from "src/settings/settings.service";
 import { ApiConfigService } from "src/config/api.config.service";
 import { difference, head, isNumber, mapKeys, mapValues, chain, entries, fromPairs, } from "lodash";
-import { DATE_TIME_FORMAT, EMPTY_STRING } from "src/auth/consts";
+import { EMPTY_OBJECT, EMPTY_STRING } from "src/consts/common";
+import { DATE_TIME_FORMAT } from "src/consts/time";
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
 import OmnicomHistory from "src/db/models/scoutHistory.model";
@@ -412,7 +413,7 @@ class HistoryUserService {
         await this.recordStatusService.setRecordStatus(new TimelineRecordDto({
           login, startTime, endTime, currentTime: startTime,
           velocity, tableNumber: nextFreeTableNumber,
-          historyGenerateStages: {},
+          historyGenerateStages: EMPTY_OBJECT,
         }));
 
         await this.prepareAllUserHistoryTables(login, nextFreeTableNumber, startTime, endTime);

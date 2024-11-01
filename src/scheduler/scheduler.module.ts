@@ -2,11 +2,12 @@ import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ApiConfigModule } from 'src/config/config.module';
 import { ExternalScheduler } from './external.scheduler';
 import { ToadScheduler } from 'toad-scheduler';
+import { EMPTY_ARRAY } from 'src/consts/common';
 
 @Module({
   providers: [ExternalScheduler, ToadScheduler,],
   imports: [ApiConfigModule,],
-  controllers: [],
+  controllers: EMPTY_ARRAY,
   exports: [ExternalScheduler, ToadScheduler,],
 })
 export class SchedulerModule implements NestModule {

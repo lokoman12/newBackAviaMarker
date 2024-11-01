@@ -65,7 +65,6 @@ export class UserController {
   }
   
   @Public()
-  @Post('create')
   @ApiOperation({ summary: 'Create user via POST' })
   @ApiResponse({
     status: 201,
@@ -78,7 +77,6 @@ export class UserController {
   }
 
   @Public()
-  @Delete(':id')
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiResponse({ status: 200, description: 'User deleted successfully.' })
   @ApiResponse({ status: 400, description: 'Failed to delete user.' })

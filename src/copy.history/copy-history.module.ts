@@ -20,12 +20,13 @@ import { AznbModule } from 'src/aznb/aznb.module';
 import AznbHistory from 'src/db/models/aznbHistory.model';
 import AznbCopyToHistoryScheduler from './aznb.copy.history.scheduler';
 import { SchedulerModule } from 'src/scheduler/scheduler.module';
+import { EMPTY_ARRAY } from 'src/consts/common';
 
 @Module({
   providers: [ToiCopyToHistoryScheduler, OmnicomCopyToHistoryScheduler, MeteoCopyToHistoryScheduler, StandsCopyToHistoryScheduler, AznbCopyToHistoryScheduler, ToadScheduler, CheckHistoryService],
   imports: [ApiConfigModule, HistoryModule, ToiModule, OmnicomModule, MeteoModule, StandsModule, AznbModule, SchedulerModule, SequelizeModule.forFeature([ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory])],
-  controllers: [],
-  exports: [],
+  controllers: EMPTY_ARRAY,
+  exports: EMPTY_ARRAY,
 })
 export class CopyHistoryModule implements NestModule {
   private readonly logger = new Logger(CopyHistoryModule.name);

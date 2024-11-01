@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import User, { IUser } from 'src/db/models/user';
 import { chain } from 'lodash';
+import { EMPTY_ARRAY } from 'src/consts/common';
 
 type GroupType = {
   name: string;
@@ -30,7 +31,7 @@ export class GroupService {
       .uniq()
       .value();
 
-    const groups: GroupsType = [];
+    const groups: GroupsType = EMPTY_ARRAY;
     foundGroups.forEach(group => {
       const groupUsers = users.filter(user => user.groups?.includes(group));
       groups.push({ name: group, persons: groupUsers });
@@ -66,7 +67,7 @@ export class GroupService {
   }
 
   async updateGroupname(currentGroupname: string, newGroupname: string): Promise<void> {
-    const promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<any>> = EMPTY_ARRAY;
 
     const groupUsers = await this.getUsersByGroup(currentGroupname);
     groupUsers.forEach(user => {
@@ -87,7 +88,7 @@ export class GroupService {
   }
 
   async removeGroup(groupname: string): Promise<void> {
-    const promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<any>> = EMPTY_ARRAY;
 
     const groupUsers = await this.getUsersByGroup(groupname);
     groupUsers.forEach(user => {

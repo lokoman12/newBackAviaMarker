@@ -1,12 +1,13 @@
 import { Logger } from "@nestjs/common";
 import dayjs from "../utils/dayjs";
-import { DATE_TIME_FORMAT } from "src/auth/consts";
+import { DATE_TIME_FORMAT } from "src/consts/time";
 import { HistoryGenerateStagesEnumKeys, HistoryGenerateStagesType, NextCurrentTypeForDb, TimelineRecordAllParametersType, TimelineRecordCommonParametersType, isTimelineRecordAllParametersType, isTimelineRecordCommonParametersType, isTimelineRecordFromUserHistoryInfoParametersType } from "./types";
 import { TimelineRecordFromUserHistoryInfoParametersType } from "./types";
 import { TimelineRecordFromCopyDtoType } from "./types";
 import { isObject } from 'lodash';
 import { UserHistoryInfoType } from "./types";
 import { HistoryErrorCodeEnum } from "./user.bad.status.exception";
+import { EMPTY_OBJECT } from "src/consts/common";
 
 export class TimelineRecordDto {
   private readonly logger = new Logger(TimelineRecordDto.name);
@@ -205,7 +206,7 @@ export class TimelineRecordDto {
         endMeteoId,
         endStandsId,
         endAznbId,
-        historyGenerateStages: isObject(historyGenerateStages) ? historyGenerateStages : {},
+        historyGenerateStages: isObject(historyGenerateStages) ? historyGenerateStages : EMPTY_OBJECT,
       });
     } catch (e) {
       logger.error(`Строку ${valueString} невозможно преобразовать в тип TimelineRecordDto`, e);

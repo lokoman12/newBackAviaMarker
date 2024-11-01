@@ -11,7 +11,7 @@ import { ModelType } from "./types";
 import { InjectConnection } from "@nestjs/sequelize";
 import { TimelineRecordDto } from "src/user-history/timeline.record.dto";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
-import { EMPTY_STRING } from "src/auth/consts";
+import { EMPTY_ARRAY, EMPTY_STRING } from "src/consts/common";
 import { chain, groupBy } from "lodash";
 import dayjs from "dayjs";
 import ToiHistory from "src/db/models/toiHistory.model";
@@ -173,7 +173,7 @@ abstract class HistoryService<T extends HistoryModel<T>> {
     return (
       chain(rawRecords)
         .groupBy((it: any) => it.step)
-        .value() || []
+        .value() || EMPTY_ARRAY
     ) as HistoryArrayOfLists;
   }
 }

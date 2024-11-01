@@ -1,12 +1,13 @@
 export type PermissionsType = {
-    isUser: boolean,
+    isEngineer: boolean,
     isDispatcher: boolean,
-    isAdmin: boolean;
+    isDirector: boolean;
 };
 
 export type SignInDataType = {
     userId: number;
     accessToken: string;
+    permissions?: PermissionsType;
 };
 
 export type LoginTypeResponse = {

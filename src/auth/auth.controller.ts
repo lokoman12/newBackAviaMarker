@@ -78,11 +78,6 @@ export class AuthController {
     return {
       ...signInData,
       username,
-      permissions: {
-        isUser: true,
-        isDispatcher: true,
-        isAdmin: true,
-      }
     };
   }
 

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger, PipeTransform } from "@nestjs/common";
 import dayjs from '../utils/dayjs';
-import { DATE_TIME_FORMAT } from "src/auth/consts";
+import { DATE_TIME_FORMAT } from "src/consts/time";
 
 @Injectable()
 export class ParseDatePipe implements PipeTransform<string | Date | undefined | null> {

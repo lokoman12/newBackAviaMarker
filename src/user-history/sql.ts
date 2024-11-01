@@ -1,4 +1,4 @@
-import { DATE_TIME_FORMAT } from "src/auth/consts";
+import { DATE_TIME_FORMAT } from "src/consts/time";
 import { OnlyTablenameParamSqlType, InsertHistorySqlType, CurrentHistoryInfoSql } from "./types";
 import dayjs from '../utils/dayjs';
 

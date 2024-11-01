@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { LOCK, Op, Transaction } from 'sequelize';
-import { ALL_USERS_SETTING_VALUE, EMPTY_OBJECT } from 'src/auth/consts';
+import { ALL_USERS_SETTING_VALUE } from 'src/auth/consts';
+import { EMPTY_ARRAY, EMPTY_OBJECT } from "src/consts/common";
 import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
 import { AZNB_HISTORY_TABLE_NAME, HISTORY_TEMPLATE_TOKEN, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
@@ -78,11 +79,11 @@ export class SettingsService {
       where: { name, },
       attributes: ['name', 'username', 'value',],
     });
-    return result || [];
+    return result || EMPTY_ARRAY;
   }
 
   async getUserSettingValueByName(name: string, username: string, defaultValue?: string, tx?: Transaction): Promise<string | null> {
-    const lock = tx ? { lock: LOCK.UPDATE, } : {};
+    const lock = tx ? { lock: LOCK.UPDATE, } : EMPTY_OBJECT;
     const result = await this.settingsModel.findOne({
       where: {
         name, username,

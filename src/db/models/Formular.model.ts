@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
-import { curs } from 'src/utils/Curs';
+import { curs } from 'src/utils/curs';
 
 export interface IFormular {
   id: number;
