@@ -145,11 +145,11 @@ export default class AirportStateService {
       aznb = await this.aznbHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
       this.logger.log(`Airport-state getActualData, aznb`);
 
-      const firstToiFromFirstStep = toi[0]?.[0];
+      const firstToiFromFirstStep = toi?.[1]?.[0];
       this.logger.log(`getActualDataAllHistory, toi.length: ${keys(toi).length}, toi[last].length: ${toi[keys(toi).length - 1]?.length}`);
       const startTime = dayjs(firstToiFromFirstStep?.time).toDate().getTime();
       const endTime = keys(toi).length > 0 ? dayjs(toi[keys(toi).length - 1]?.[0]?.time).toDate().getTime() : NaN;
-      this.logger.log(`allSteps: ${keys(toi).length}, startTime ${startTime}, endTime ${endTime}, currentStep: ${firstToiFromFirstStep?.step}`)
+      this.logger.log(`allSteps: ${keys(toi).length}, startTime ${new Date(startTime)}, endTime ${new Date(endTime)}`)
       const airportStateAllHistory = {
         ...emptyAirportStateHistory,
         metaInfo: {

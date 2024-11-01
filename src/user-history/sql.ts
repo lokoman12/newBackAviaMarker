@@ -14,10 +14,10 @@ export const getHistorySql = (tableName: string, nextId: number) =>
   `SELECT * FROM ${tableName} WHERE step = ${nextId}`;
 
 export const getHistorySqlBySteps = (tableName: string, startStep: number, finishStep: number) =>
-`SELECT * FROM ${tableName} WHERE step BETWEEN ${startStep} AND ${finishStep} order by step`;
+`SELECT * FROM ${tableName} WHERE step BETWEEN ${startStep} AND ${finishStep} order by step, time`;
 
 export const getHistorySqlAllRecords = (tableName: string) =>
-`SELECT * FROM ${tableName} order by step`;
+`SELECT * FROM ${tableName} order by step, time`;
 
 export const getHistoryInfoSql: OnlyTablenameParamSqlType = (tablename: string) =>
   `SELECT COUNT(*) AS allRecs, MIN(step) AS startId, MAX(step) AS endId FROM ${tablename}`;
