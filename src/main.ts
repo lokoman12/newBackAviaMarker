@@ -4,7 +4,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
-// Расширим dayjs
 import { WinstonModule, utilities } from 'nest-winston';
 import * as path from 'path';
 import * as winston from 'winston';

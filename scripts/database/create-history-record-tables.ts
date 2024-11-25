@@ -8,7 +8,6 @@ import * as path from 'path';
 import { isString, isArray } from 'lodash';
 import { AZNB_HISTORY_TABLE_NAME, HISTORY_TEMPLATE_TOKEN, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from "src/history/consts";
 import { SettingsService } from "src/settings/settings.service";
-import { EMPTY_ARRAY } from "src/consts/common";
 
 const logger = new Logger('Script create-history-record-tables');
 logger.log('Запуск скрипта создания таблиц, хранящих запись истории TOI для ретрансляции');
@@ -271,7 +270,7 @@ const createRelativeAznbHistorySql = (tableName: string) =>
 const deleteHistoryRecordTables = async (tableNames: Array<string> | string, getSql: (tableName: string) => string) => {
   logger.log('Удалим таблицы истории перед созданием');
 
-  let promises: Array<Promise<any>> = EMPTY_ARRAY;
+  let promises: Array<Promise<any>> = [];
 
   // Имя таблицы или список имён таблиц
   if (isString(tableNames)) {
@@ -316,7 +315,7 @@ const prepareMainAndRelativesHistoryTables = async (
 const createHistoryRecordTables = async (tableNames: Array<string> | string, getSql: (tableName: string) => string) => {
   logger.log('Пробуем создать таблицы записи истории');
 
-  let promises: Array<Promise<any>> = EMPTY_ARRAY;
+  let promises: Array<Promise<any>> = [];
 
   // Имя таблицы или список имён таблиц
   if (isString(tableNames)) {

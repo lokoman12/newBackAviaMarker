@@ -23,7 +23,7 @@ const logger = winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.ms(),
-        utilities.format.nestLike('Seqielize', {
+        utilities.format.nestLike('Sequelize', {
           colors: true,
           prettyPrint: true,
           processId: true,

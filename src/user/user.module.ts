@@ -8,7 +8,6 @@ import { UserController } from './user.controller';
 import { GroupService } from './group.service';
 import { GroupController } from './group.controller';
 
-
 @Module({
   providers: [UsersService, GroupService,],
   imports: [ApiConfigModule, SequelizeModule.forFeature([User, Settings]),],

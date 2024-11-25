@@ -8,7 +8,6 @@ import * as fs from 'fs';
 import Point from 'src/db/models/point.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { QueryTypes } from 'sequelize';
-import { EMPTY_OBJECT } from 'src/consts/common';
 
 interface ABC {
   x?: number;
@@ -60,7 +59,7 @@ export class ReceivePointController {
       x
     );
     try {
-      return EMPTY_OBJECT;
+      return {};
     } catch (error) {
       this.logger.error('Ошибка при создании точки:', error);
       throw error;

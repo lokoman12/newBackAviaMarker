@@ -9,7 +9,6 @@ import { InjectConnection, InjectModel } from "@nestjs/sequelize";
 import { SettingsService } from "src/settings/settings.service";
 import { ApiConfigService } from "src/config/api.config.service";
 import { difference, head, isNumber, mapKeys, mapValues, chain, entries, fromPairs, } from "lodash";
-import { EMPTY_OBJECT, EMPTY_STRING } from "src/consts/common";
 import { DATE_TIME_FORMAT } from "src/consts/time";
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from "./user.bad.status.exception";
@@ -161,7 +160,7 @@ class HistoryUserService {
     } catch (e) {
       const message = `Ошибка при очистке таблицы ${recordTableName}`;
       this.logger.error(message, e);
-      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlClearTableCanNotPerfomed, message);
+      throw new HistoryBadStateException("", HistoryErrorCodeEnum.sqlClearTableCanNotPerfomed, message);
     }
 
     const insertSql = insertHistorySql(baseTableName, recordTableName, timeStart, timeEnd);
@@ -173,7 +172,7 @@ class HistoryUserService {
     } catch (e) {
       const message = `Ошибка при вставке истории в таблицу ${recordTableName}`
       this.logger.error(message, e);
-      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlInsertTableCanNotPerfomed, message);
+      throw new HistoryBadStateException("", HistoryErrorCodeEnum.sqlInsertTableCanNotPerfomed, message);
     }
 
     try {
@@ -182,7 +181,7 @@ class HistoryUserService {
     } catch (e) {
       const message = `Ошибка при сохранении шага истории ${recordTableName} в базу`;
       this.logger.error(message, e);
-      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.canNotSaveHistoryStage, message);
+      throw new HistoryBadStateException("", HistoryErrorCodeEnum.canNotSaveHistoryStage, message);
     }
   }
 
@@ -285,7 +284,7 @@ class HistoryUserService {
     } catch (e) {
       const message = `Ошибка при получении информации по вставленным таблицу истории ${tableName} данным`;
       this.logger.error(message, e);
-      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlSelectTableCanNotPerfomed, message);
+      throw new HistoryBadStateException("", HistoryErrorCodeEnum.sqlSelectTableCanNotPerfomed, message);
     }
   }
 
@@ -397,7 +396,7 @@ class HistoryUserService {
     } catch (e) {
       const message = `Ошибка при получении информации из таблице ${tableName}`;
       this.logger.error(message, e);
-      throw new HistoryBadStateException(EMPTY_STRING, HistoryErrorCodeEnum.sqlSelectTableCanNotPerfomed, message);
+      throw new HistoryBadStateException("", HistoryErrorCodeEnum.sqlSelectTableCanNotPerfomed, message);
     }
   }
 
@@ -413,7 +412,7 @@ class HistoryUserService {
         await this.recordStatusService.setRecordStatus(new TimelineRecordDto({
           login, startTime, endTime, currentTime: startTime,
           velocity, tableNumber: nextFreeTableNumber,
-          historyGenerateStages: EMPTY_OBJECT,
+          historyGenerateStages: {},
         }));
 
         await this.prepareAllUserHistoryTables(login, nextFreeTableNumber, startTime, endTime);

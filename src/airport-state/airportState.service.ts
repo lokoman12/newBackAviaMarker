@@ -27,7 +27,6 @@ import Aznb from 'src/db/models/aznb.model';
 import MeteoHistoryService from 'src/history/meteo.history.service';
 import dayjs from "../utils/dayjs";
 import { keys } from 'lodash';
-import { EMPTY_ARRAY } from 'src/consts/common';
 
 @Injectable()
 export default class AirportStateService {
@@ -71,11 +70,11 @@ export default class AirportStateService {
 
       // this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
       if (isForHistory) {
-        toi = EMPTY_ARRAY;
-        omnicom = EMPTY_ARRAY;
-        meteo = EMPTY_ARRAY;
-        stands = EMPTY_ARRAY;
-        aznb = EMPTY_ARRAY;
+        toi = [];
+        omnicom = [];
+        meteo = [];
+        stands = [];
+        aznb = [];
       } else {
         toi = await this.toiService.getActualClientData();
         omnicom = await this.omnicomService.getActualData();

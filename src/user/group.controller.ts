@@ -59,10 +59,11 @@ export class GroupController {
   @ApiOperation({ summary: 'Delete group by name from all users' })
   @ApiResponse({ status: 200, description: 'Group deleted successfully.' })
   @ApiResponse({ status: 400, description: 'Failed to delete group' })
-  @Delete('/:name')
-  async removeUserById(@Param('name') name: string) {
-    const user = await this.groupService.removeGroup(name);
-    return user;
+  @Delete('/:groupname')
+  async removeUserById(@Param('groupname') groupname: string) {
+    this.logger.log(`Remove group ${groupname}`);
+    const result = await this.groupService.removeGroup(groupname);
+    return result;
   }
 
 

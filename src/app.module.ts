@@ -40,14 +40,13 @@ import { AznbModule } from './aznb/aznb.module';
 import { AirportStateModule } from './airport-state/airportState.module';
 import { CopyHistoryModule } from './copy.history/copy-history.module';
 import { HealthStatusModule } from './keepalive/keepalive.module';
-import { EMPTY_ARRAY } from './consts/common';
 
 type NestModuleType = Type<NestModule>;
 function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
   if (process.env.activeAirport === 'ULLI') {
     return [module];
   }
-  return EMPTY_ARRAY;
+  return [];
 }
 
 @Module({
@@ -95,6 +94,6 @@ function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
     ...getUlliModuleOnly(KafkaModule),
   ],
   providers: [ApiConfigService],
-  controllers: EMPTY_ARRAY,
+  controllers: [],
 })
 export class AppModule { }

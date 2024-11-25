@@ -7,7 +7,6 @@ import { TimelineRecordFromCopyDtoType } from "./types";
 import { isObject } from 'lodash';
 import { UserHistoryInfoType } from "./types";
 import { HistoryErrorCodeEnum } from "./user.bad.status.exception";
-import { EMPTY_OBJECT } from "src/consts/common";
 
 export class TimelineRecordDto {
   private readonly logger = new Logger(TimelineRecordDto.name);
@@ -206,7 +205,7 @@ export class TimelineRecordDto {
         endMeteoId,
         endStandsId,
         endAznbId,
-        historyGenerateStages: isObject(historyGenerateStages) ? historyGenerateStages : EMPTY_OBJECT,
+        historyGenerateStages: isObject(historyGenerateStages) ? historyGenerateStages : {},
       });
     } catch (e) {
       logger.error(`Строку ${valueString} невозможно преобразовать в тип TimelineRecordDto`, e);

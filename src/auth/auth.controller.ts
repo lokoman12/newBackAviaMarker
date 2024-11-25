@@ -44,6 +44,13 @@ export class AuthController {
   }
 
   @Public()
+  @Post('/test')
+  @HttpCode(HttpStatus.OK)
+  async test() {
+    return 'OK';
+  }
+
+  @Public()
   @Post('login-get')
   @HttpCode(HttpStatus.OK)
   async loginGet(
@@ -68,7 +75,7 @@ export class AuthController {
     , @Req() req: Request
     , @Res({ passthrough: true }) response: Response<LoginTypeResponse>
   ) {
-    // this.log.log('LoginController, cookies: ' + req.cookies.test);
+    this.logger.log('LoginController');
     const { username } = data;
     this.logger.log({ message: `Login via POST body, user: ${username}`, label: AUTH_LABEL, });
     const signInData = await this.authService.signIn(data);
