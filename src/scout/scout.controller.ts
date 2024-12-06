@@ -1,10 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import Scout from 'src/db/models/scout.model';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { SCOUT } from '@prisma/client';
+import ScoutService from './scout.service';
 
 
 @Controller('/scout')
@@ -12,7 +11,8 @@ export class ScoutController {
   private readonly logger = new Logger(ScoutController.name);
 
   constructor(
-    @InjectModel(Scout) private readonly ScoutModel: typeof Scout,
+    private prismaService: PrismaService,
+    private scoutService: ScoutService
   ) {
     this.logger.log('Init controller');
   }
@@ -20,9 +20,9 @@ export class ScoutController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllScout(): Promise<Scout[]> {
+  async getAllScout(): Promise<Array<SCOUT>> {
     try {
-      const scout = await this.ScoutModel.findAll();
+      const scout = await this.scoutService.getActualData();
       return scout;
     } catch (error) {
       console.error('Error retrieving scout:', error);

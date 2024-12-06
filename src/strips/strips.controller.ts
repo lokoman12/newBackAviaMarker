@@ -1,10 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
-import Strips from 'src/db/models/strips.model';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import StripsService from './strips.service';
+import { strips } from '@prisma/client';
 
 
 @Controller('/strips')
@@ -19,7 +17,7 @@ export class StripsController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllStrips(): Promise<Array<Strips>> {
+  async getAllStrips(): Promise<Array<strips>> {
       return this.stripsService.getActualData();
   }
 }

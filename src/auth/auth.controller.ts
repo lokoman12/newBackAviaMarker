@@ -51,23 +51,6 @@ export class AuthController {
   }
 
   @Public()
-  @Post('login-get')
-  @HttpCode(HttpStatus.OK)
-  async loginGet(
-    @Query('username') username: string,
-    @Query('password') password: string
-    , @Req() req: Request
-    , @Res({ passthrough: true }) response: Response
-  ) {
-    this.logger.log({ message: `Login via GET params, user: ${username}`, label: AUTH_LABEL, });
-    const { accessToken } = await this.authService.signIn({ username, password });
-    // При логине сбрасываем статус воспроизведения истории, если был включен
-    await this.recordStatusService.resetRecordStatus(username);
-
-    return { accessToken };
-  }
-
-  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(

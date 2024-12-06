@@ -40,6 +40,7 @@ import { AznbModule } from './aznb/aznb.module';
 import { AirportStateModule } from './airport-state/airportState.module';
 import { CopyHistoryModule } from './copy.history/copy-history.module';
 import { HealthStatusModule } from './keepalive/keepalive.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 type NestModuleType = Type<NestModule>;
 function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
@@ -53,6 +54,7 @@ function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
   imports: [
     ConfigModule.forRoot(), // Подключаем ConfigModule для работы с env
     ApiConfigModule,
+    PrismaModule,
     DatabaseModule,
     UsersModule,
     AuthModule,

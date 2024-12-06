@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import Scout from 'src/db/models/scout.model';
 import { ScoutController } from './scout.controller';
+import ScoutService from './scout.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([Scout])],
+  imports: [PrismaModule],
+  providers: [ScoutService],
   controllers: [ScoutController],
-  exports: [SequelizeModule],
+  exports: [ScoutService],
 })
 export class ScoutModule {}

@@ -37,7 +37,7 @@ export default class ToiCopyToHistoryScheduler {
   public async copyToHistory() {
     const time = new Date();
     this.logger.log(`Копирование третички в иcторию ${time}`);
-    const rowsForHistory = await this.toiService.getActualClientData();
+    const rowsForHistory = await this.toiService.getActualData();
 
     this.logger.log(`Копируем в историю toi: ${rowsForHistory.length} строк`);
 

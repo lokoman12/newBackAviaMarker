@@ -1,22 +1,22 @@
+
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import Strips from 'src/db/models/strips.model';
-import Taxiway from 'src/db/models/taxiway.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { taxiway } from '@prisma/client';
 
 @Injectable()
 export default class TaxiwayService {
   private readonly logger = new Logger(TaxiwayService.name);
 
   constructor(
-    @InjectModel(Taxiway) private readonly taxiwayModel: typeof Taxiway,
+    private prismaService: PrismaService,
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<Array<Taxiway>> {
+  async getActualData(): Promise<Array<taxiway>> {
     try {
-      const taxiway = await this.taxiwayModel.findAll({raw: true});
+      const taxiway = await this.prismaService.taxiway.findMany();
       return taxiway;
     } catch (error) {
       console.error('Error retrieving taxiway:', error);

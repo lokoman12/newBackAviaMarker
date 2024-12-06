@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import Taxiway from 'src/db/models/taxiway.model';
 import { TaxiwayController } from './taxiway.controller';
 import TaxiwayService from './taxiway.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([Taxiway])],
+  imports: [PrismaModule,],
   providers: [TaxiwayService,],
   controllers: [TaxiwayController,],
-  exports: [TaxiwayService, SequelizeModule,],
+  exports: [TaxiwayService,],
 })
 export class TaxiwayModule { }

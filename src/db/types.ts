@@ -9,6 +9,11 @@ export type DbConnectionPropertiesType = {
   database: string;
   define: {
     timestamps: boolean,
+    charset?: string,
+    collate?: string,
+  },
+  dialectOptions?: {
+    charset: string,
   },
   logging?: any,
 }

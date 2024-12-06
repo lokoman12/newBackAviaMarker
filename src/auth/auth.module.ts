@@ -10,11 +10,13 @@ import { ApiConfigService } from 'src/config/api.config.service';
 import { RefreshTokenStrategy } from './strategies/refresh.token.strategy';
 import { HistoryModule } from 'src/history/history.module';
 import { UserHistoryModule } from 'src/user-history/user.history.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
     ApiConfigModule,
     PassportModule,
+    PrismaModule,
     UsersModule,
     UserHistoryModule,
     HistoryModule,

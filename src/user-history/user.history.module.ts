@@ -19,11 +19,12 @@ import { AznbModule } from 'src/aznb/aznb.module';
 import AznbHistory from 'src/db/models/aznbHistory.model';
 import { SchedulerModule } from 'src/scheduler/scheduler.module';
 import Settings from 'src/db/models/settings';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   providers: [HistoryUserService, RecordStatusService, ToiService],
   imports: [
-    ApiConfigModule, SettingsModule, MeteoModule, OmnicomModule, StandsModule, AznbModule, SchedulerModule,
+    ApiConfigModule, PrismaModule, SettingsModule, MeteoModule, OmnicomModule, StandsModule, AznbModule, SchedulerModule,
     SequelizeModule.forFeature([Toi, Formular, ToiHistory, OmnicomHistory, MeteoHistory, StandsHistory, AznbHistory, Settings]),
   ],
   controllers: [RecordStatusController,],

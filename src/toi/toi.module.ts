@@ -1,17 +1,14 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { ToiController } from './toi.controller';
-import Toi from 'src/db/models/toi.model';
-import Formular from 'src/db/models/Formular.model';
 import { ApiConfigModule } from 'src/config/config.module';
 import ToiService from './toi.service';
-
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [ApiConfigModule, SequelizeModule.forFeature([Toi, Formular])],
+  imports: [ApiConfigModule, PrismaModule,],
   providers: [ToiService],
   controllers: [ToiController],
-  exports: [SequelizeModule, ToiService],
+  exports: [ToiService],
 })
 export class ToiModule implements NestModule {
   private readonly logger = new Logger(ToiModule.name);

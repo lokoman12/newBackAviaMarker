@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import Strips from 'src/db/models/strips.model';
 import { StripsController } from './strips.controller';
 import StripsService from './strips.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([Strips])],
+  imports: [PrismaModule,],
   providers: [StripsService],
   controllers: [StripsController],
-  exports: [StripsService, SequelizeModule],
+  exports: [StripsService],
 })
 export class StripsModule {}

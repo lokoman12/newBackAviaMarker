@@ -76,7 +76,7 @@ export default class AirportStateService {
         stands = [];
         aznb = [];
       } else {
-        toi = await this.toiService.getActualClientData();
+        toi = await this.toiService.getActualData();
         omnicom = await this.omnicomService.getActualData();
         meteo = await this.meteoService.getActualData();
         stands = await this.standsService.getActualData();

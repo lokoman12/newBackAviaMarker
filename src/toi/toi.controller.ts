@@ -5,8 +5,12 @@ import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Request } from 'express';
 import ToiService from './toi.service';
-import { ExtractJwt } from 'passport-jwt';
-import { decode } from 'jsonwebtoken';
+
+export const saveStringifyBigInt = (data: any) => JSON.parse(
+  JSON.stringify(data, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value,
+  ),
+);
 
 @Controller('/toi')
 export class ToiController {
@@ -14,7 +18,6 @@ export class ToiController {
 
   constructor(
     private toiService: ToiService
-    // , private jwtService: JwtService
   ) {
     this.logger.log('Init controller');
   }
@@ -30,15 +33,14 @@ export class ToiController {
     // if (jwtToken?.length > 0) {
     //   this.log.log(`----> getAllToi: ${jwtToken}, ${JSON.stringify(value)}`);
     // }
-    const formattedToi = this.toiService.getActualClientData();
-    return formattedToi;
+    const formattedToi = await this.toiService.getActualData();
+    return saveStringifyBigInt(formattedToi);
   }
 
   @Public()
   @Get('test')
-  async getToiForTest(@Req() req: Request): Promise<Array<any>> {
-    const formattedToi = this.toiService.getActualClientData();
+  async getToiForTest(@Req() _: Request): Promise<Array<any>> {
+    const formattedToi = await this.toiService.getActualData();
     return formattedToi;
-    // return [];
   }
 }

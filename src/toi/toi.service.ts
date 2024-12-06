@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import { flatOffsetMeterToLonLatArray, flatOffsetMeterToLonLatObject } from 'src/utils/XYtoLanLon';
-import Toi, { IToi } from 'src/db/models/toi.model';
-import Formular, { IFormular } from 'src/db/models/Formular.model';
+import { flatOffsetMeterToLonLatObject } from 'src/utils/XYtoLanLon';
 import { ApiConfigService } from 'src/config/api.config.service';
-import { BelongsTo, Op, Sequelize } from 'sequelize';
-import { pick, omit } from 'lodash';
-import { nonNull } from 'src/utils/common';
 import { HistoryResponseType } from 'src/history/types';
 import Scout from 'src/db/models/scout.model';
 import Meteo from 'src/db/models/meteo.model';
 import Stands from 'src/db/models/stands.model';
 import Aznb from 'src/db/models/aznb.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { formular, toi } from '@prisma/client';
+import { saveStringifyBigInt } from './toi.controller';
+import { omit } from 'lodash';
 
 export interface ActualToi {
-  toi: IToi;
-  formular: IFormular;
+  toi: toi;
+  formular: formular;
 }
 
-export type ActualClientToi = Partial<IToi> & {
-  formular: Array<IFormular>
+export type ActualClientToi = Partial<toi> & {
+  formular: Array<formular>
 }
 
 export type GeneralActualType = Array<ActualClientToi> | Array<Scout> | Array<Meteo> | Array<Stands> | Array<Aznb>;
@@ -33,117 +31,39 @@ export default class ToiService {
 
   constructor(
     private configService: ApiConfigService,
-    @InjectModel(Toi) private readonly toiModel: typeof Toi,
-    @InjectModel(Formular) private readonly formularModel: typeof Formular,
+    private prismaService: PrismaService,
   ) {
     this.logger.log('Init controller');
   }
 
-  async getActualData(): Promise<Array<ActualToi>> {
-    try {
-      const toi = await this.toiModel.findAll({
-        raw: true,
-        where: {
-          Number: {
-            [Op.not]: 0,
-          },
-          id_Sintez: {
-            [Op.not]: -1
-          }
-        }
-      });
+  // В призме нет динамических ассоциаций. В отличие от стквалайза. Между toi и formular нет связи в базе. Потому выполняем запрос через join и выбираем колонки вручную. Чтобы не делать массив промисов, но выбирать все строки для связки toi-formular за раз
+  async getActualData(): Promise<Array<any>> {
+    const activeAirportPosition = this.configService.getActiveAirportPosition();
 
-      const formattedToi = await Promise.all(
-        toi.map(async (item) => {
-          const formular = await this.formularModel.findOne({
-            raw: true,
-            where: {
-              id: item.id_Sintez,
-            },
-          });
+    const toiColumns = ['toiId', 'toiName', 'toiFaza', 'toiNumber', 'toiType','toiX', 'toiY','toiH', 'toiCurs',];
 
-          return {
-            toi: { ...item },
-            formular: { ...formular },
-          };
-        })
-      );
+    this.prismaService.formular.findMany
+    const actualToi = (await this.prismaService.$queryRaw`
+    SELECT toi.id as toiId, toi.Name as toiName, toi.faza as toiFaza, toi.Number as toiNumber, toi.Type as toiType, toi.X as toiX, toi.Y as toiY, toi.H as toiH, toi.CRS as toiCurs, formular.*
+    FROM toi JOIN formular ON formular.id = toi.id_Sintez`) as Array<any>;
 
-      return formattedToi.filter(it => nonNull(it.formular.Source_ID));
-    } catch (error) {
-      this.logger.error('Error retrieving points:', error);
-      throw error;
-    }
-  }
-
-  async getActualClientDataOld(): Promise<Array<ActualClientToi>> {
-    // this.logger.log(`Toi getActualData, start`);
-    const attualToi = await this.getActualData();
-    return attualToi.map(toiItem => {
-      const [lat, lon] = flatOffsetMeterToLonLatArray(
-        this.configService.getActiveAirportPosition(),
-        toiItem.toi.Y,
-        toiItem.toi.X
-      );
+    const result = actualToi.map(it => {
       return {
-        ...pick(toiItem.toi, ['id', 'Name', 'faza', 'Number',]),
-        coordinates: {
-          lat, lon,
-        },
-        curs: toiItem.toi.CRS,
-        alt: toiItem.toi.H,
-        type: toiItem.toi.Type,
-        formular: [toiItem.formular],
+        id: it.toiId,
+        Name: it.toiName,
+        faza: it.toiFaza,
+        Number: it.toiNumber,
+        curs: it.toiCurs,
+        alt: it.toiH,
+        type: it.toiType,
+        coordinates: flatOffsetMeterToLonLatObject(
+          activeAirportPosition, it.toiY, it.toiX
+        ),
+        formular: {...omit(it, toiColumns)},
       };
     });
+
+    // Призма неявно может преобразовывать обычные целые в BigInt. NestJS даст ошибку при неявной сериализации этого типа в контроллерах. JSON.stringify не умеет сериализовывать BigInt
+    return saveStringifyBigInt(result);
   }
-
-  async getActualClientData(): Promise<Array<any>> {
-    // this.logger.log(`Toi getActualData, start`);
-
-    const activeAirportPosition = this.configService.getActiveAirportPosition();
-    try {
-      const toi = (await this.toiModel.findAll({
-        raw: false,
-        where: {
-          Number: {
-            [Op.not]: 0,
-          },
-          id_Sintez: {
-            [Op.not]: -1
-          }
-        },
-        attributes: {
-          exclude: ['id_Sintez',],
-        },
-        include: [{
-          model: Formular,
-          required: true,
-          association: new BelongsTo(Toi, Formular, {
-            targetKey: 'id',
-            foreignKey: 'id_Sintez',
-            constraints: false,
-          })
-        }],
-      }))
-        .map(it => {
-          const toiItem = it.dataValues;
-          return {
-            ...pick(toiItem, ['id', 'Name', 'faza', 'Number',]),
-            curs: toiItem.CRS,
-            alt: toiItem.H,
-            type: toiItem.Type,
-            coordinates: flatOffsetMeterToLonLatObject(
-              activeAirportPosition, it.Y, it.X
-            ),
-            formular: toiItem.Formular,
-          }
-        });
-      return toi;
-    } catch (error) {
-      this.logger.error('Error retrieving points:', error);
-      throw error;
-    }
-  }
-
 }
