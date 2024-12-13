@@ -1,10 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
+// import { AccessTokenGuard } from '../auth/guards/access.token.guard';
+// import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import AznbService from './aznb.service';
-import Aznb from 'src/db/models/aznb.model';
+import { azn_b } from '@prisma/client';
 
 
 @Controller('/aznb')
@@ -20,7 +20,7 @@ export class AznbController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAznb(): Promise<Array<Aznb>> {
+  async getAllAznb(): Promise<Array<azn_b>> {
     return this.aznbService.getActualData();
   }
 }

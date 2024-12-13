@@ -9,7 +9,6 @@ import {
   HttpStatus,
   HttpCode,
   Res,
-  Query,
   BadRequestException
 } from '@nestjs/common';
 import { AccessTokenGuard } from './guards/access.token.guard';
@@ -23,9 +22,9 @@ import { RefreshTokenGuard } from './guards/refresh.token.guard';
 import { GetCurrentUserId } from './decorators/get-current-user-id.decorator';
 import { GetCurrentUser } from './decorators/get-current-user.decorator';
 import { LoginTypeResponse } from './types';
-import User from 'src/db/models/user';
 import { RecordStatusService } from 'src/user-history/record.status.service';
 import { AUTH_LABEL } from 'src/main';
+import { auth } from '@prisma/client';
 
 @Controller('/auth')
 export class AuthController {
@@ -51,7 +50,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('login')
+  @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() data: AuthDto
@@ -72,9 +71,9 @@ export class AuthController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('profile')
+  @Get('/profile')
   getProfile(@Req() req: Request) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log({ message: `Get profile of user: ${username}, id: ${req.user?.['sub']}`, label: AUTH_LABEL, });
 
     var user = this.userService.findUserByLogin(username);
@@ -89,7 +88,7 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get('logout')
   async logoff(@Req() req) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log({ message: `Logoff user ${username}, id: ${req.user?.['sub']}`, label: AUTH_LABEL, });
     this.authService.logout(req.user['sub']);
   }

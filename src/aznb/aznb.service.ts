@@ -1,37 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import Aznb from 'src/db/models/aznb.model';
-import { Op } from 'sequelize';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { azn_b } from '@prisma/client';
 
 @Injectable()
 export default class AznbService {
   private readonly logger = new Logger(AznbService.name);
 
   constructor(
-    @InjectModel(Aznb) private readonly aznbModel: typeof Aznb,
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<Array<Aznb>> {
+  async getActualData(): Promise<Array<azn_b>> {
     try {
-      const aznb = await this.aznbModel.findAll({
-        raw: true,
+      const aznb = await this.prismaService.azn_b.findMany({
         where: {
-          trs_adress: {
-            [Op.and]: {
-              [Op.not]: null,
-              [Op.ne]: 0,
+          trs_adress: { not: 0, },
+          AND: [
+            {
+              Id_Tr: { not: null, },
             },
-          },
-          Id_Tr: {
-            [Op.and]: {
-              [Op.not]: null,
-              [Op.ne]: '',
-            },
-          },
-        },
+            {
+              Id_Tr: { not: '', },
+            }
+
+          ]
+        }
       });
       return aznb;
     } catch (error) {

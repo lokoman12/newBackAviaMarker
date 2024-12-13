@@ -9,13 +9,16 @@ export default class Photo extends Model {
   })
   id: number;
 
-  @PrimaryKey
   @Column({
     type: DataType.SMALLINT,
   })
   type: number;
 
   mode: string;
+  @Column({
+    type: DataType.STRING,
+  })
+
   @Column({
     type: DataType.TEXT,
   })

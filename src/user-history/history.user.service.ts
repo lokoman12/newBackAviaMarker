@@ -197,7 +197,7 @@ class HistoryUserService {
     try {
       // Открываем транзакцию и лочим запись из таблицы Settings, так как пишем в таблицу асинхронно
       await this.sequelize.transaction({ isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED }, async tx => {
-        // Перед заптсью нового значения, читаем строку с сеттингами и блокируем её на запись, чтобы не было lost updates
+        // Перед записью нового значения, читаем строку с сеттингами и блокируем её на запись, чтобы не было lost updates
         const recordSetting = await this.settingsModel.findOne({
           where: {
             name: RECORD_SETTING_PROPERTY_NAME, username: login,
@@ -222,7 +222,7 @@ class HistoryUserService {
           await recordSetting.update({
             value: value.asJsonString(),
           }, { transaction: tx, });
-       }
+        }
       });
     } catch (err) {
       this.logger.log(`Сохранить новый статус для истории ${stage} не получилось, ошибка: ${err}`);
@@ -362,8 +362,8 @@ class HistoryUserService {
         } catch (e) {
           const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
           // await this.saveStageByHistoryNameWithTx(login, historyTableName, HistoryErrorCodeEnum.canNotSaveHistoryStage).catch(e => {
-            // const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
-            // this.logger.error(message, e);
+          // const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
+          // this.logger.error(message, e);
           // });
         }
       })).then(() => {
@@ -409,33 +409,34 @@ class HistoryUserService {
       const nextFreeTableNumber = tablenumber;
       // const nextFreeTableNumber = await this.getNextFreeTableNumber();
       // if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
-        await this.recordStatusService.setRecordStatus(new TimelineRecordDto({
+      await this.recordStatusService.setRecordStatus(
+        new TimelineRecordDto({
           login, startTime, endTime, currentTime: startTime,
           velocity, tableNumber: nextFreeTableNumber,
           historyGenerateStages: {},
         }));
 
-        await this.prepareAllUserHistoryTables(login, nextFreeTableNumber, startTime, endTime);
+      await this.prepareAllUserHistoryTables(login, nextFreeTableNumber, startTime, endTime);
 
-        // try {
-        // Получим информацию из сгенерированных таблиц о первом и последнем шагах
-        await this.getUserAllHistoriesInfo(login, nextFreeTableNumber, startTime, endTime);
-        // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
-        // const recordDto = await this.recordStatusService.getRecordStatus(login);
-        // await this.recordStatusService.setRecordStatus(recordDto.setHistoriesInfo(userAllHistoriesInfo));
-        // return recordDto;
-        // } catch (e) {
-        // if (e instanceof HistoryBadStateException) {
-        // throw e;
-        // } else {
-        // let message = `Ошибка при попытке сформировать таблицу истории с номером ${nextFreeTableNumber} для пользователя ${login}`;
-        // this.logger.error(message);
-        // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
-        // await this.recordStatusService.resetUserHistoryStatusOnException(login);
-        // throw new HistoryBadStateException(login, HistoryErrorCodeEnum.unknownHistoryError, 'Неизвестная ошибка');
-        // }
-        // }
-      }
+      // try {
+      // Получим информацию из сгенерированных таблиц о первом и последнем шагах
+      await this.getUserAllHistoriesInfo(login, nextFreeTableNumber, startTime, endTime);
+      // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
+      // const recordDto = await this.recordStatusService.getRecordStatus(login);
+      // await this.recordStatusService.setRecordStatus(recordDto.setHistoriesInfo(userAllHistoriesInfo));
+      // return recordDto;
+      // } catch (e) {
+      // if (e instanceof HistoryBadStateException) {
+      // throw e;
+      // } else {
+      // let message = `Ошибка при попытке сформировать таблицу истории с номером ${nextFreeTableNumber} для пользователя ${login}`;
+      // this.logger.error(message);
+      // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
+      // await this.recordStatusService.resetUserHistoryStatusOnException(login);
+      // throw new HistoryBadStateException(login, HistoryErrorCodeEnum.unknownHistoryError, 'Неизвестная ошибка');
+      // }
+      // }
+    }
     // } else {
     //   const message = `Пользователь ${login} находится в статусе воспроизведения истории`;
     //   this.logger.error(message);

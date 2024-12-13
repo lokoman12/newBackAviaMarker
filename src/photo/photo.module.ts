@@ -2,9 +2,11 @@ import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import Photo from 'src/db/models/photo.model';
 import { GetPhotoController } from './getPhoto.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
+// Нет для шарика
 @Module({
-  imports: [SequelizeModule.forFeature([Photo])],
+  imports: [PrismaModule, SequelizeModule.forFeature([Photo])],
   controllers: [GetPhotoController],
   exports: [SequelizeModule],
 })

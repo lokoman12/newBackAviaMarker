@@ -1,3 +1,4 @@
+import { auth } from '@prisma/client';
 import {
   Table
   , Column
@@ -8,38 +9,16 @@ import {
   , NotEmpty
   , PrimaryKey
   , AllowNull
-  , BelongsToMany
   , AutoIncrement
 } from 'sequelize-typescript';
-// import Group, { IGroup } from './group';
-// import UserGroup from './usergroup';
-
-export interface IUser {
-  id: number;
-  username: string;
-  password: string;
-  wrongAttempts: number;
-  lastSeen: Date;
-  refreshToken?: string;
-
-  firstname?: string;
-  lastname?: string;
-  middlename?: string;
-  phone?: string;
-  email?: string;
-  position?: string;
-  department?: string;
-
-  groups: string;
-}
 
 export interface IGroup {
   name: string;
-  users?: IUser[];
+  users?: Array<auth>;
 }
 
 @Table({ tableName: 'auth' })
-export default class User extends Model implements IUser {
+export default class User extends Model {
   @NotEmpty
   @AutoIncrement
   @PrimaryKey

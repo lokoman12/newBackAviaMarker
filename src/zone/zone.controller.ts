@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
 import ZoneAM from 'src/db/models/zone.model';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
+// import { AccessTokenGuard } from '../auth/guards/access.token.guard';
+// import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 
 
@@ -26,6 +26,22 @@ export class ZoneController {
       return zones;
     } catch (error) {
       this.logger.error('Error retrieving zones:', error);
+      throw error;
+    }
+  }
+
+  @Public()
+  // @UseGuards(AccessTokenGuard)
+  @Delete(':id')
+  async deleteZone(@Param('id') id: number): Promise<void> {
+    try {
+      const zoneToDelete = await this.zoneModel.findByPk(id);
+      if (!zoneToDelete) {
+        throw new Error('Zone not found');
+      }
+      await zoneToDelete.destroy();
+    } catch (error) {
+      this.logger.error('Error deleting zone:', error);
       throw error;
     }
   }

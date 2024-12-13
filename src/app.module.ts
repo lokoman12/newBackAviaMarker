@@ -5,8 +5,6 @@ import { AlarmModule } from './alarm/alarm.module';
 import { SaveAlaramModule } from './save-alarm/alarm.module';
 import { SavePositionModule } from './save-position/position.module';
 import { ZoneModule } from './zone/zone.module';
-import { SaveZoneModule } from './save-zone/zone.module';
-import { DeleteZoneModule } from './delete-zone/zone.module';
 import { PositionModule } from './position/position.module';
 import { MeteoModule } from './meteo/meteo.module';
 import { ApiConfigModule } from './config/config.module';
@@ -85,8 +83,6 @@ function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
     ...getUlliModuleOnly(PositionModule),
     ...getUlliModuleOnly(SaveAlaramModule),
     ...getUlliModuleOnly(ZoneModule),
-    ...getUlliModuleOnly(SaveZoneModule),
-    ...getUlliModuleOnly(DeleteZoneModule),
     ...getUlliModuleOnly(FplnModule),
     ...getUlliModuleOnly(LineModule),
     ...getUlliModuleOnly(PointModule),

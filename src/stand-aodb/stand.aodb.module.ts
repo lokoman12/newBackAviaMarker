@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import Stands from 'src/db/models/stands.model';
 import { StandController } from './stand.controller';
 import StandService from './stand.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([Stands])],
+  imports: [PrismaModule,],
   providers: [StandService],
   controllers: [StandController],
-  exports: [SequelizeModule, StandService],
+  exports: [StandService],
 })
-export class StandsModule {}
+export class StandsModule { }

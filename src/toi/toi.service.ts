@@ -3,12 +3,8 @@ import { Logger } from '@nestjs/common';
 import { flatOffsetMeterToLonLatObject } from 'src/utils/XYtoLanLon';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { HistoryResponseType } from 'src/history/types';
-import Scout from 'src/db/models/scout.model';
-import Meteo from 'src/db/models/meteo.model';
-import Stands from 'src/db/models/stands.model';
-import Aznb from 'src/db/models/aznb.model';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { formular, toi } from '@prisma/client';
+import { azn_b, formular, meteo, SCOUT, stands_aodb, toi } from '@prisma/client';
 import { saveStringifyBigInt } from './toi.controller';
 import { omit } from 'lodash';
 
@@ -21,7 +17,7 @@ export type ActualClientToi = Partial<toi> & {
   formular: Array<formular>
 }
 
-export type GeneralActualType = Array<ActualClientToi> | Array<Scout> | Array<Meteo> | Array<Stands> | Array<Aznb>;
+export type GeneralActualType = Array<ActualClientToi> | Array<SCOUT> | Array<meteo> | Array<stands_aodb> | Array<azn_b>;
 
 export type GeneralResponseType = GeneralActualType | HistoryResponseType;
 
@@ -37,7 +33,7 @@ export default class ToiService {
   }
 
   // В призме нет динамических ассоциаций. В отличие от стквалайза. Между toi и formular нет связи в базе. Потому выполняем запрос через join и выбираем колонки вручную. Чтобы не делать массив промисов, но выбирать все строки для связки toi-formular за раз
-  async getActualData(): Promise<Array<any>> {
+  async getActualData(): Promise<Array<ActualClientToi>> {
     const activeAirportPosition = this.configService.getActiveAirportPosition();
 
     const toiColumns = ['toiId', 'toiName', 'toiFaza', 'toiNumber', 'toiType','toiX', 'toiY','toiH', 'toiCurs',];

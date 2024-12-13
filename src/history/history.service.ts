@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { SettingsService } from "src/settings/settings.service";
 import { RecordStatusService, } from "../user-history/record.status.service";
 import { QueryTypes, Sequelize } from "sequelize";
@@ -8,16 +8,16 @@ import { HistoryArrayOfLists, HistoryList, HistoryResponseType, getModelTableNam
 import { getCurrentTimeByStepSql, getHistorySql, getHistorySqlAllRecords, getHistorySqlBySteps } from "src/user-history/sql";
 import { HistoryModel } from './types';
 import { ModelType } from "./types";
-import { InjectConnection } from "@nestjs/sequelize";
 import { TimelineRecordDto } from "src/user-history/timeline.record.dto";
 import { NextCurrentTypeForResponse } from "src/user-history/types";
-import { chain, groupBy } from "lodash";
-import dayjs from "dayjs";
-import ToiHistory from "src/db/models/toiHistory.model";
+import { chain } from "lodash";
+import { PrismaService } from "src/prisma/prisma.service";
 
 abstract class HistoryService<T extends HistoryModel<T>> {
   protected readonly logger = new Logger(HistoryService.name);
 
+  @Inject()
+  private prismaService: PrismaService;
   @Inject()
   protected readonly recordStatusService: RecordStatusService;
 

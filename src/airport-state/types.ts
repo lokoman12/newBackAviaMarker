@@ -1,10 +1,7 @@
-import { strips, taxiway } from "@prisma/client";
+import { parks_web, podhod, strips, taxiway, vpp } from "@prisma/client";
 import AlaramAM from "src/db/models/alarm.model";
 import AODB from "src/db/models/fpln.model";
-import Podhod from "src/db/models/podhod.model";
 import PositionAM from "src/db/models/position.model";
-import StandsGeo from "src/db/models/standsGeo.model";
-import VppStatus from "src/db/models/vppStatus.model";
 import ZoneAM from "src/db/models/zone.model";
 import { HistoryArrayOfLists } from "src/history/types";
 import { GeneralResponseType } from "src/toi/toi.service";
@@ -15,12 +12,12 @@ export type AirportState = {
   meteo: GeneralResponseType;
   stands: GeneralResponseType;
   aznb: GeneralResponseType,
-  podhod: Array<Podhod>;
+  podhod: Array<podhod>;
   position: Array<PositionAM>;
   fpln: Array<AODB>;
   strip: Array<strips>;
-  vppStatus: Array<VppStatus>;
-  standsGeo: Array<StandsGeo>;
+  vppStatus: Array<vpp>;
+  standsGeo: Array<parks_web>;
   alarms: Array<AlaramAM>;
   taxiway: Array<taxiway>;
   zones: Array<ZoneAM>;

@@ -3,12 +3,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import PositionAM from 'src/db/models/position.model';
 import { PositionController } from './position.controller';
 import PositionService from './position.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
-
-
-
+// Нет для шарика
 @Module({
-  imports: [SequelizeModule.forFeature([PositionAM])],
+  imports: [PrismaModule, SequelizeModule.forFeature([PositionAM])],
   providers: [PositionService],
   controllers: [PositionController],
   exports: [PositionService, SequelizeModule],

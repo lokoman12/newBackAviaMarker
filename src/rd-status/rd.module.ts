@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import VppStatus from 'src/db/models/vppStatus.model';
-import { RdChangeStatusController } from './rd.status.change.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { RdStatusController } from './rd.status.controller';
-import RdStatus from 'src/db/models/rdStatus';
+import { RdStatusService } from './rd.status.service';
 
 @Module({
-  imports: [SequelizeModule.forFeature([RdStatus])],
-  controllers: [RdStatusController, RdChangeStatusController],
-  exports: [SequelizeModule],
+  imports: [PrismaModule,],
+  controllers: [RdStatusController,],
+  providers: [RdStatusService,],
+  exports: [],
 })
-export class RdStatusModule {}
+export class RdStatusModule { }

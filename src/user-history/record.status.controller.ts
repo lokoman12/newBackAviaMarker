@@ -13,16 +13,16 @@ import { Request } from 'express';
 import { ParseDatePipe } from 'src/pipes/parseDatePipe';
 import { RecordStatusService } from './record.status.service';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
-import User from 'src/db/models/user';
 import HistoryUserService from './history.user.service';
 import { TimelineDto } from './types';
 import dayjs from "../utils/dayjs";
 import { HistoryErrorCodeEnum, HistoryBadStateException } from './user.bad.status.exception';
-import { omit, pick } from 'lodash';
+import { omit } from 'lodash';
 import { SettingsService } from 'src/settings/settings.service';
 import { ALREADY_EXISTS_HISTORY_RECORD_TABLE, AZNB_HISTORY_TABLE_NAME, METEO_HISTORY_TABLE_NAME, NO_FREE_HISTORY_RECORD_TABLE, OMNICOM_HISTORY_TABLE_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 import { ExternalScheduler } from 'src/scheduler/external.scheduler';
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
+import { auth } from '@prisma/client';
 
 @Controller('/record-status')
 export class RecordStatusController {
@@ -96,7 +96,7 @@ export class RecordStatusController {
   async getHistoryStages(
     @Req() req: Request
   ) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log(`/get-history-stages, username from token: ${username}`);
 
     const result = await this.recordStatusService.getRecordStatus(username);
@@ -111,7 +111,7 @@ export class RecordStatusController {
     // @Query("username") username?: string,
     @Req() req: Request
   ) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log(`/get, username from token: ${username}`);
 
     const result = await this.recordStatusService.getRecordStatus(username);
@@ -249,7 +249,7 @@ export class RecordStatusController {
     @Query("stepsCount") stepsCount: number,
     @Req() req: Request
   ) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log(`GET /move-current, username from token: ${username}, stepsCount: ${stepsCount}`);
     // this.logger.log(`GET /move-current, username from token: ${username}, stepsCount: ${stepsCount}`);
 
@@ -318,7 +318,7 @@ export class RecordStatusController {
     @Body() timelineDto: TimelineDto,
     @Req() req: Request
   ) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log(`POST /set-current, username from token: ${username}, body: ${JSON.stringify(timelineDto)}`);
 
     let currentTimeDayjs = dayjs.utc(timelineDto.currentTime);
@@ -344,7 +344,7 @@ export class RecordStatusController {
   async resetRecordStatus(
     @Req() req: Request
   ) {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     this.logger.log(`/reset, username from token: ${username}`);
     await this.recordStatusService.resetRecordStatus(username);
 

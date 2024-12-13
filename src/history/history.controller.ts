@@ -8,13 +8,13 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
-import User from 'src/db/models/user';
 import ToiHistoryService from './toi.history.service';
 import { HistoryResponseType } from './types';
 import { InjectConnection } from '@nestjs/sequelize';
 import { QueryTypes, Sequelize } from 'sequelize';
 import { RecordStatusService } from 'src/user-history/record.status.service';
 import OmnicomHistoryService from './omnicom.history.service';
+import { auth } from '@prisma/client';
 
 @Controller('/history')
 export class HistoryController {
@@ -48,7 +48,7 @@ export class HistoryController {
   async getAllToi(
     @Req() req: Request
   ): Promise<HistoryResponseType> {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     // this.logger.log(`Username from token: ${username}`);
     const result = await this.toiHistoryService.getCurrentHistory(username);
     return result;
@@ -59,7 +59,7 @@ export class HistoryController {
   async getAllOmnicom(
     @Req() req: Request
   ): Promise<HistoryResponseType> {
-    const { username } = req.user as User;
+    const { username } = req.user as auth;
     // this.logger.log(`Username from token: ${username}`);
     const result = await this.toiHistoryService.getCurrentHistory(username);
     return result;

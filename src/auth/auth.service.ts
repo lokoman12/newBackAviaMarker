@@ -12,9 +12,9 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private configService: ApiConfigService,
-    private usersService: UsersService,
-    private jwtService: JwtService
+    private readonly configService: ApiConfigService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService
   ) {
     const message = `Init AuthService, access: ${this.configService.getJwtAccessSecret()}, refresh: ${this.configService.getJwtRefreshSecret()}`;
     this.logger.log({ message, });

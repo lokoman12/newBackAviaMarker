@@ -1,10 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
-import VppStatus from 'src/db/models/vppStatus.model';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
+// import { AccessTokenGuard } from '../auth/guards/access.token.guard';
+// import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import VppService from './vpp.service';
+import { vpp } from '@prisma/client';
 
 
 @Controller('/vpp')
@@ -20,7 +20,7 @@ export class VppStatusController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllVppStatus(): Promise<Array<VppStatus>> {
+  async getAllVppStatus(): Promise<Array<vpp>> {
     return this.vppService.getActualData();
   }
 }

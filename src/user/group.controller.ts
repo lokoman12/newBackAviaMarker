@@ -2,11 +2,9 @@ import {
   Controller,
   Get,
   Logger,
-  Post,
   Body,
   Param,
   Delete,
-  Put,
   Patch
 } from '@nestjs/common';
 import { UsersService } from './user.service';

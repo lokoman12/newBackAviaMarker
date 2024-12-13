@@ -1,7 +1,6 @@
 import { PartialType, PickType, IntersectionType } from '@nestjs/mapped-types';
-import { IUser, IGroup } from 'src/db/models/user';
 
-export class UserDto implements IUser {
+export class UserDto {
   id: number;
   username: string;
   password: string;

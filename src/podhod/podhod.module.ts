@@ -1,15 +1,15 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import Podhod from 'src/db/models/podhod.model';
 import { PodhodController } from './podhod.controller';
 import PodhodService from './podhod.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
+// Нет для шарика
 @Module({
-  imports: [SequelizeModule.forFeature([Podhod]),],
+  imports: [PrismaModule,],
   providers: [PodhodService,],
   controllers: [PodhodController,],
-  exports: [PodhodService, SequelizeModule,],
+  exports: [PodhodService,],
 })
 export class PodhodModule implements NestModule {
   private readonly logger = new Logger(PodhodModule.name);

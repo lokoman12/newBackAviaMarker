@@ -1,12 +1,11 @@
 import { BadRequestException, Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { Request } from 'express';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
+// import { AccessTokenGuard } from '../auth/guards/access.token.guard';
+// import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import AirportStateService from './airportState.service';
 import { AirportState, AirportStateAllHistory } from './types';
-import User from 'src/db/models/user';
 import { isNull } from 'src/utils/common';
 import { isNormalNumber } from 'src/utils/number';
 

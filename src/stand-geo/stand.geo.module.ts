@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import StandsGeo from 'src/db/models/standsGeo.model';
 import { StandGeoController } from './stand.geo.controller';
-import { AddStandGeoController } from './AddStandGeo.controller ';
 import StandGeoService from './stand.geo.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([StandsGeo]),],
+  imports: [PrismaModule,],
   providers: [StandGeoService,],
-  controllers: [StandGeoController, AddStandGeoController,],
-  exports: [StandGeoService, SequelizeModule,],
+  controllers: [StandGeoController,],
+  exports: [StandGeoService,],
 })
 export class StandGeoModule { }

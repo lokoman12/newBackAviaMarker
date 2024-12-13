@@ -458,6 +458,7 @@ model auth {
   position       String?     @db.VarChar(100)
   department     String?     @db.VarChar(100)
   groups         String?     @db.VarChar(255)
+  refreshToken   String?     @db.VarChar(1024)
   user_role      user_role[]
 }
 
@@ -1433,14 +1434,12 @@ model perrons {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model podhod {
-  id       Int    @db.TinyInt
+  id       Int    @unique(map: "podhod_unique") @default(autoincrement()) @db.TinyInt
   Name     String @db.VarChar(20)
   id_f     Int?
   Dal      Int?
   time_sec Int?
   cvet     Int?   @db.TinyInt
-
-  @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -1543,13 +1542,6 @@ model retd {
   Disp           Int       @default(0) @db.TinyInt
   Time           Float     @default(0)
   fp_arr_airport String    @default("") @db.VarChar(25)
-}
-
-model role {
-  id        Int         @id @default(autoincrement()) @db.UnsignedInt
-  name      String      @unique(map: "name") @db.VarChar(255)
-  comment   String?     @db.VarChar(255)
-  user_role user_role[]
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -2354,17 +2346,6 @@ model userFrameSettings {
   @@ignore
 }
 
-model user_role {
-  userId  Int  @db.UnsignedInt
-  groupId Int  @db.UnsignedInt
-  auth    auth @relation(fields: [userId], references: [id], onDelete: Cascade, map: "user_role_ibfk_1")
-  role    role @relation(fields: [groupId], references: [id], onDelete: Cascade, map: "user_role_ibfk_2")
-
-  @@id([userId, groupId])
-  @@unique([userId, groupId], map: "user_role_userId_groupId_unique")
-  @@index([groupId], map: "groupId")
-}
-
 model vpp {
   id            Int    @db.TinyInt
   vpp_name      String @default("") @db.VarChar(100)
@@ -2392,4 +2373,121 @@ model vpp {
   airport       String @db.VarChar(60)
 
   @@unique([id, airport])
+  @@index([vpp_name], map: "vpp_vpp_name_IDX")
+}
+
+model AODB {
+  idSeq              Int     @id @default(autoincrement()) @db.UnsignedInt
+  Registration       String? @db.VarChar(100)
+  LinkFlight         Int?    @db.UnsignedInt
+  TypePln            Int?    @db.UnsignedTinyInt
+  Iatatype           String? @db.VarChar(100)
+  icaotype           String? @db.VarChar(100)
+  internalcode       String? @db.VarChar(100)
+  Airline            String? @db.VarChar(100)
+  Callsign           String? @db.VarChar(100)
+  CountryType        String? @db.VarChar(100)
+  CurrentStand       String? @db.VarChar(100)
+  DestinationAirport String? @db.VarChar(100)
+  DisplayCode        String? @db.VarChar(100)
+  FlightNumber       String? @db.VarChar(100)
+  FlightStatus       String? @db.VarChar(100)
+  OriginAirport      String? @db.VarChar(100)
+  PreviousAirport    String? @db.VarChar(100)
+  Eta                String? @db.VarChar(100)
+  Etd                String? @db.VarChar(100)
+  Sta                String? @db.VarChar(100)
+  Std                String? @db.VarChar(100)
+  OnBlock            String? @db.VarChar(100)
+  NextAirport        String? @db.VarChar(100)
+  Runway             String? @db.VarChar(100)
+  ServiceTypeCode    String? @db.VarChar(100)
+  Stand              String? @db.VarChar(100)
+  StandBeginActual   String? @db.VarChar(100)
+  StandEndActual     String? @db.VarChar(100)
+  StandBeginPlan     String? @db.VarChar(100)
+  StandEndPlan       String? @db.VarChar(100)
+  Terminal           String? @db.VarChar(100)
+  TimeStamp          String? @db.VarChar(100)
+  GeneralLocation    String? @db.VarChar(100)
+  t_obn              Float?
+}
+
+model Photo {
+  id    Int     @id @default(autoincrement()) @db.UnsignedInt
+  type  Int?    @db.UnsignedSmallInt
+  mode  String? @db.VarChar(100)
+  photo String? @db.Text
+}
+
+model Point {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  name        String?   @db.VarChar(100)
+  time        DateTime?
+  lat         Float?    @db.Float
+  lon         Float?    @db.Float
+  radius      Int?      @db.UnsignedInt
+  description String?   @db.VarChar(100)
+  project     String?   @db.VarChar(100)
+  mode        String?   @db.VarChar(100)
+}
+
+model Polygon {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  name        String?   @db.VarChar(100)
+  time        DateTime?
+  square      String?   @db.VarChar(100)
+  coordinates String?   @db.VarChar(100)
+  description String?   @db.VarChar(100)
+  project     String?   @db.VarChar(100)
+  mode        String?   @db.VarChar(100)
+}
+
+model alarmAM {
+  id            Int      @id @default(autoincrement()) @db.UnsignedInt
+  lat           Float    @db.Float
+  lon           Float    @db.Float
+  speed         Float    @db.Float
+  time          DateTime
+  typeViolation String   @db.VarChar(255)
+  name          String   @db.VarChar(50)
+}
+
+model line {
+  id                   Int       @id @default(autoincrement()) @db.UnsignedInt
+  name                 String?   @db.VarChar(50)
+  time                 DateTime?
+  coordinates__string_ String?   @map("coordinates: string;") @db.VarChar(50)
+  distance             Int?      @db.UnsignedInt
+  description          String?   @db.VarChar(100)
+  project              String?   @db.VarChar(50)
+  mode                 String?   @db.VarChar(50)
+}
+
+model positionAM {
+  id     Int    @id @default(autoincrement()) @db.UnsignedInt
+  lat    Float  @db.Float
+  lon    Float  @db.Float
+  name   String @db.VarChar(100)
+  speed  Float  @db.Float
+  time   String @db.VarChar(100)
+  status String @db.VarChar(100)
+}
+
+model role {
+  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  name      String      @unique(map: "name") @db.VarChar(255)
+  comment   String?     @db.VarChar(255)
+  user_role user_role[]
+}
+
+model user_role {
+  userId  Int  @db.UnsignedInt
+  groupId Int  @db.UnsignedInt
+  auth    auth @relation(fields: [userId], references: [id], onDelete: Cascade, map: "user_role_ibfk_1")
+  role    role @relation(fields: [groupId], references: [id], onDelete: Cascade, map: "user_role_ibfk_2")
+
+  @@id([userId, groupId])
+  @@unique([userId, groupId], map: "user_role_userId_groupId_unique")
+  @@index([groupId], map: "groupId")
 }

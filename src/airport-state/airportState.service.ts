@@ -20,13 +20,10 @@ import OmnicomHistoryService from 'src/history/omnicom.history.service';
 import StandsHistoryService from 'src/history/stands.history.service';
 import AznbHistoryService from 'src/history/aznb.history.service';
 import { HistoryArrayOfLists, HistoryResponseType } from 'src/history/types';
-import Scout from 'src/db/models/scout.model';
-import Meteo from 'src/db/models/meteo.model';
-import Stands from 'src/db/models/stands.model';
-import Aznb from 'src/db/models/aznb.model';
 import MeteoHistoryService from 'src/history/meteo.history.service';
 import dayjs from "../utils/dayjs";
 import { keys } from 'lodash';
+import { azn_b, meteo, SCOUT, stands_aodb } from '@prisma/client';
 
 @Injectable()
 export default class AirportStateService {
@@ -59,10 +56,10 @@ export default class AirportStateService {
   async getActualData(username: string, isForHistory?: boolean): Promise<AirportState> {
     // Если включено воспроизведение истории, заполняем данными из исторических таблиц, вместо актуальных значений
     let toi: Array<ActualClientToi> | HistoryResponseType;
-    let omnicom: Array<Scout> | HistoryResponseType;
-    let meteo: Array<Meteo> | HistoryResponseType;
-    let stands: Array<Stands> | HistoryResponseType;
-    let aznb: Array<Aznb> | HistoryResponseType;
+    let omnicom: Array<SCOUT> | HistoryResponseType;
+    let meteo: Array<meteo> | HistoryResponseType;
+    let stands: Array<stands_aodb> | HistoryResponseType;
+    let aznb: Array<azn_b> | HistoryResponseType;
 
     try {
       // this.logger.log(`Airport-state getActualData, start, login: ${username}`);

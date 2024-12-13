@@ -1,16 +1,15 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import Scout from 'src/db/models/scout.model';
 import { OmnicomController } from './omnicom.controller';
 import { ApiConfigModule } from 'src/config/config.module';
 import OmnicomService from './omnicom.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [ApiConfigModule, SequelizeModule.forFeature([Scout])],
+  imports: [ApiConfigModule, PrismaModule,],
   providers: [OmnicomService,],
   controllers: [OmnicomController],
-  exports: [SequelizeModule, OmnicomService],
+  exports: [OmnicomService],
 })
 export class OmnicomModule implements NestModule {
   private readonly logger = new Logger(OmnicomModule.name);

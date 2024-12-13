@@ -3,12 +3,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import AlaramAM from 'src/db/models/alarm.model';
 import { AlarmController } from './alarm.controller';
 import AlarmService from './alarm.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
-
-
-
+// Нет для шарика
 @Module({
-  imports: [SequelizeModule.forFeature([AlaramAM])],
+  imports: [SequelizeModule.forFeature([AlaramAM]), PrismaModule,],
   providers: [AlarmService,],
   controllers: [AlarmController],
   exports: [AlarmService, SequelizeModule],

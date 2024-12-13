@@ -1,22 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import StandsGeo from 'src/db/models/standsGeo.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { parks_web, Prisma } from '@prisma/client';
+import { saveStringifyBigInt } from 'src/toi/toi.controller';
 
 @Injectable()
 export default class StandGeoService {
   private readonly logger = new Logger(StandGeoService.name);
 
   constructor(
-    @InjectModel(StandsGeo) private readonly standsGeoModel: typeof StandsGeo,
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<Array<StandsGeo>> {
+  async addActualData(body: Prisma.parks_webCreateInput): Promise<parks_web> {
     try {
-      const standGeo = await this.standsGeoModel.findAll({raw: true});
-      return standGeo;
+      const newStandGeo = await this.prismaService.parks_web.create({
+        data: {
+          name: body.name,
+          lat: body.lat,
+          lon: body.lon,
+          geojson: body.geojson,
+        },
+      });
+
+      return newStandGeo;
+    } catch (error) {
+      console.error('Error creating stands geo:', error);
+      throw error;
+    }
+  }
+
+  async getActualData(): Promise<Array<parks_web>> {
+    try {
+      const standGeo = await this.prismaService.parks_web.findMany();
+      return saveStringifyBigInt(standGeo);
     } catch (error) {
       console.error('Error retrieving stands geo:', error);
       throw error;

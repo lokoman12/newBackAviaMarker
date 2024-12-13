@@ -1,45 +1,39 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import User, { IUser } from 'src/db/models/user';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
-import { Op } from 'sequelize';
-import { omit } from 'lodash';
-import { nonNull } from 'src/utils/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { auth } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(
-    @InjectModel(User) private readonly usersModel: typeof User,
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.log('Init controller');
   }
 
-  async createUser(userDto: CreateUserDto): Promise<IUser> {
+  async createUser(userDto: CreateUserDto): Promise<auth> {
     this.logger.log('Create user: ' + userDto.username);
-    const user = await this.usersModel.create(
-      { ...userDto, }
-    );
+    const user = await this.prismaService.auth.create({
+      data: { ...userDto, }
+    });
     return user;
   }
 
-  async findAllUsers(): Promise<Array<IUser>> {
+  async findAllUsers(): Promise<Array<auth>> {
     this.logger.log('find all users: ');
-    return this.usersModel.findAll({
-      nest: true,
-      raw: false,
-    });
+    return this.prismaService.auth.findMany();
   }
 
-  async findUserByLogin(username: string): Promise<IUser | null> {
+  async findUserByLogin(username: string): Promise<auth | null> {
     this.logger.log('findUser: ', username);
-    return this.usersModel.findOne({ raw: true, where: { username, }, });
+    return this.prismaService.auth.findFirst({ where: { username, }, });
   }
 
-  async findUserById(id: number): Promise<IUser | null> {
-    const user = await this.usersModel.findOne({
-      nest: true,
+  async findUserById(id: number): Promise<auth | null> {
+    const user = await this.prismaService.auth.findFirst({
       where: { id, },
     });
 
@@ -47,18 +41,17 @@ export class UsersService {
   }
 
   async findGroupsOfUser(userId: number): Promise<string> {
-    const user = await this.usersModel.findOne({
-      raw: true,
+    const user = await this.prismaService.auth.findFirst({
       where: { id: userId, },
     });
-    return user.getDataValue('groups');
+    return user?.groups || '';
   }
 
   async updateUser(
     id: number,
     updateUserDto: UpdateUserDto
-  ): Promise<IUser> {
-    let user = await this.usersModel.findOne({
+  ): Promise<auth> {
+    let user = await this.prismaService.auth.findFirst({
       where: { id, },
     });
     if (!user) {
@@ -66,12 +59,17 @@ export class UsersService {
     }
     this.logger.log('Found user: ' + JSON.stringify(user));
 
-    user = await user.update({ ...updateUserDto, });
+    await this.prismaService.auth.update({
+      where: {
+        id: user.id,
+      },
+      data: { ...updateUserDto, },
+    });
     return user;
   }
 
   async removeUser(id: number): Promise<void> {
-    await this.usersModel.destroy(
+    await this.prismaService.auth.delete(
       { where: { id, }, }
     )
   }

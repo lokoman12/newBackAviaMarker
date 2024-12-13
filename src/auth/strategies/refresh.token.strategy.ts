@@ -1,7 +1,6 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { ApiConfigService } from 'src/config/api.config.service';
 import { UsersService } from 'src/user/user.service';
 import { ExtractJwt } from 'passport-jwt';

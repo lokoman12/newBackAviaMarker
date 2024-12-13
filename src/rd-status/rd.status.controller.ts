@@ -1,32 +1,42 @@
-import { Controller, Get } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
-import VppStatus from 'src/db/models/vppStatus.model';
-import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-import { UseGuards } from '@nestjs/common';
+// import { AccessTokenGuard } from '../auth/guards/access.token.guard';
+// import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
-import RdStatus from 'src/db/models/rdStatus';
+import { rdd } from '@prisma/client';
+import { RdStatusService } from './rd.status.service';
 
 
 @Controller('/rdStatus')
 export class RdStatusController {
   private readonly logger = new Logger(RdStatusController.name);
 
-  constructor(@InjectModel(RdStatus) private readonly rdStatusModel: typeof RdStatus) {
+  constructor(
+    private readonly rdStatusService: RdStatusService
+  ) {
     this.logger.log('Init controller');
   }
 
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllRdStatus(): Promise<any[]> {
+  async getAllRdStatus(): Promise<Array<rdd>> {
     try {
-      const rdStatus = await this.rdStatusModel.findAll();
-
+      const rdStatus = await this.rdStatusService.getActualData();
       return rdStatus;
     } catch (error) {
       console.error('Error retrieving rd:', error);
       throw error;
     }
+  }
+
+  @Public()
+  // @UseGuards(AccessTokenGuard)
+  @Post()
+  async updateRdStatus(
+    @Query('name') name: string,
+    @Query('status') status: string,
+  ): Promise<rdd> {
+    return this.rdStatusService.updateRdStatus(name, status);
   }
 }

@@ -1,6 +1,6 @@
 import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
-import { KafkaService } from './service.kafka';
+import { KafkaService } from './kafka.service';
 import { ApiConfigService } from 'src/config/api.config.service';
 
 

@@ -1,42 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import Stands from 'src/db/models/stands.model';
-import { Op } from 'sequelize';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { stands_aodb } from '@prisma/client';
+import { saveStringifyBigInt } from 'src/toi/toi.controller';
 
 @Injectable()
 export default class StandService {
   private readonly logger = new Logger(StandService.name);
 
   constructor(
-    @InjectModel(Stands) private readonly standsModel: typeof Stands,
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<Array<Stands>> {
+  async getActualData(): Promise<Array<stands_aodb>> {
     try {
-      const stands = await this.standsModel.findAll({
-        raw: true,
+      const stands = await this.prismaService.stands_aodb.findMany({
         where: {
-          [Op.or]: {
-            calls_arr: {
-              [Op.and]: {
-                [Op.not]: null,
-                [Op.ne]: '',
-              },
+          OR: [
+            {
+              AND: [
+                { calls_arr: {not: null,}},
+                { calls_arr: {not: '',}},
+              ],
             },
-            calls_dep: {
-              [Op.and]: {
-                [Op.not]: null,
-                [Op.ne]: '',
-              },
+            {
+              AND: [
+                { calls_dep: {not: null,}},
+                { calls_dep: {not: '',}},
+              ],
             },
-          },
+          ],
         }
       });
 
-      return stands;
+      return saveStringifyBigInt(stands);
     } catch (error) {
       console.error('Error retrieving stands:', error);
       throw error;

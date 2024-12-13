@@ -1,8 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { QueryTypes, Sequelize } from 'sequelize';
-import { InjectConnection } from '@nestjs/sequelize';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 enum HealthStatusEnum {
   ALL_OK = 'all_ok',
@@ -18,8 +17,8 @@ type ServerHealthType = {
 export class HealthStatusController {
   private readonly logger = new Logger(HealthStatusController.name);
   constructor(
-    @InjectConnection()
-    private readonly sequelize: Sequelize) {
+    private readonly prismaService: PrismaService
+  ) {
     this.logger.log('Init controller');
   }
 
@@ -29,10 +28,9 @@ export class HealthStatusController {
     let status: HealthStatusEnum = HealthStatusEnum.ALL_OK;
 
     try {
-      const result = await this.sequelize.query(
-        `select id from toi limit 1`,
-        { raw: true, type: QueryTypes.SELECT, }
-      )
+      await this.prismaService.$executeRaw`
+        select id from toi limit 1
+      `;
     } catch (e) {
       status = HealthStatusEnum.DATABASE_PROBLEM;
     }

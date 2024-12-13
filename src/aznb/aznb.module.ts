@@ -1,16 +1,15 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { AznbController } from './aznb.controller';
 import { ApiConfigModule } from 'src/config/config.module';
 import AznbService from './aznb.service';
-import Aznb from 'src/db/models/aznb.model';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports: [ApiConfigModule, SequelizeModule.forFeature([Aznb])],
+  imports: [ApiConfigModule, PrismaModule,],
   providers: [AznbService,],
   controllers: [AznbController],
-  exports: [SequelizeModule, AznbService],
+  exports: [AznbService],
 })
 export class AznbModule implements NestModule {
   private readonly logger = new Logger(AznbModule.name);

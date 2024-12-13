@@ -6,9 +6,11 @@ import { SavePointController } from './savePoint.controller';
 import { SendPointController } from './sendPoint.controller';
 import { ReceivePointController } from './receivePoint.controller';
 import Photo from 'src/db/models/photo.model';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
+// Нет для шарика
 @Module({
-  imports: [SequelizeModule.forFeature([Point, Photo])],
+  imports: [PrismaModule, SequelizeModule.forFeature([Point, Photo])],
   controllers: [PointController, SavePointController, SendPointController, ReceivePointController],
   exports: [SequelizeModule],
 })

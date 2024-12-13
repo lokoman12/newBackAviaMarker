@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import Scout from 'src/db/models/scout.model';
-import Podhod from 'src/db/models/podhod.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { podhod } from '@prisma/client';
 
 @Injectable()
 export default class PodhodService {
   private readonly logger = new Logger(PodhodService.name);
 
   constructor(
-    @InjectModel(Podhod) private readonly podhodModel: typeof Podhod,
+    private prismaService: PrismaService
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<Array<Podhod>> {
+  async getActualData(): Promise<Array<podhod>> {
     try {
-      const podhod = await this.podhodModel.findAll({raw: true});
+      const podhod = await this.prismaService.podhod.findMany();
       return podhod;
     } catch (error) {
       console.error('Error retrieving podhod:', error);

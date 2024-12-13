@@ -6,6 +6,8 @@ import Settings from 'src/db/models/settings';
 import { CreateSettingsDto, UpdateSettingsDto } from './types';
 import { AZNB_HISTORY_TABLE_NAME, HISTORY_TEMPLATE_TOKEN, METEO_HISTORY_TABLE_NAME, OMNICOM_HISTORY_TABLE_NAME, RECORD_SETTING_PROPERTY_NAME, STANDS_HISTORY_TABLE_NAME, TOI_HISTORY_TABLE_NAME } from 'src/history/consts';
 import { isNull, nonNull } from 'src/utils/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { setting } from '@prisma/client';
 
 @Injectable()
 export class SettingsService {
@@ -29,54 +31,53 @@ export class SettingsService {
   }
 
   constructor(
+    private readonly prismaService: PrismaService,
     @InjectModel(Settings) private readonly settingsModel: typeof Settings
   ) {
     this.logger.log('Init controller');
   }
 
-  async getSetting(id: number): Promise<Settings | null> {
-    return await this.settingsModel.findOne(
-      {
-        where: { id, },
-      }
-    );
+  async getSetting(id: number): Promise<setting | null> {
+    return await this.prismaService.setting.findFirst({
+      where: { id, },
+    });
   }
 
-  async getAllSettings(): Promise<Array<Settings>> {
-    return await this.settingsModel.findAll({});
+  async getAllSettings(): Promise<Array<setting>> {
+    return await this.prismaService.setting.findMany();
   }
 
   async getAllUserSettings(login: string): Promise<Array<any>> {
-    const resultByLogin = await this.settingsModel.findAll({
+    const resultByLogin = await this.prismaService.setting.findMany({
       where: {
         username: {
-          [Op.in]: [login, ALL_USERS_SETTING_VALUE,],
+          in: [login, ALL_USERS_SETTING_VALUE,],
         },
       },
-      attributes: ['name', 'value',],
+      select: { name: true, value: true, },
     });
 
     return resultByLogin;
   }
 
   async getRecordSettingByUser(login: string): Promise<any> {
-    const resultByLogin = await this.settingsModel.findOne({
+    const resultByLogin = await this.prismaService.setting.findFirst({
       where: {
         username: {
-          [Op.in]: [login,],
+          in: [login,],
         },
         name: RECORD_SETTING_PROPERTY_NAME,
       },
-      attributes: ['id', 'name', 'value',],
+      select: { id: true, name: true, value: true, },
     });
 
     return resultByLogin;
   }
 
   async getAllSettingsByName(name: string): Promise<Array<any>> {
-    const result = await this.settingsModel.findAll({
+    const result = await this.prismaService.setting.findMany({
       where: { name, },
-      attributes: ['name', 'username', 'value',],
+      select: { name: true, username: true, value: true, },
     });
     return result || [];
   }

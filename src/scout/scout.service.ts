@@ -2,14 +2,14 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SCOUT, taxiway } from '@prisma/client';
+import { SCOUT } from '@prisma/client';
 
 @Injectable()
 export default class ScoutService {
   private readonly logger = new Logger(ScoutService.name);
 
   constructor(
-    private prismaService: PrismaService,
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.log('Init service');
   }

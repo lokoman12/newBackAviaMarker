@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import VppStatus from 'src/db/models/vppStatus.model';
 import { VppStatusController } from './vpp.status.controller';
 import { VppChangeStatusController } from './vpp.status.change.controller';
 import VppService from './vpp.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { ApiConfigModule } from 'src/config/config.module';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([VppStatus]),],
+  imports: [ApiConfigModule, PrismaModule,],
   providers: [VppService,],
   controllers: [VppStatusController, VppChangeStatusController,],
-  exports: [VppService, SequelizeModule,],
+  exports: [VppService,],
 })
 export class VppStatusModule { }

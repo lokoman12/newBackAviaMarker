@@ -5,13 +5,11 @@ import {
   Body,
   Param,
   Delete,
-  Put,
   Post,
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from 'src/user/user.dto';
-import { GroupService } from './group.service';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -21,8 +19,7 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
 
   constructor(
-    private userService: UsersService,
-    private groupService: GroupService,
+    private userService: UsersService
   ) {}
 
   @Public()

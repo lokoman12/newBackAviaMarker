@@ -89,6 +89,22 @@ export class ApiConfigService {
     return activeAirport === Airports.ULLI;
   }
 
+  isActiveAirportUuee(): boolean {
+    const activeAirport = this.configService.get<string>('activeAirport');
+    return activeAirport === Airports.UUEE;
+  }
+
+  getActiveAirport(): Airports {
+    if (this.isActiveAirportUlli) {
+      return Airports.ULLI;
+    } else if (this.isActiveAirportUuee) {
+        return Airports.UUEE;
+    } else {
+      const code = this.configService.get<string>('activeAirport');
+      throw new Error(`Unknown airport code: ${code}`);
+    }
+  }
+
   getActiveAirportPosition(): Position {
     const activeAirport = this.configService.get<string>('activeAirport');
     switch (activeAirport) {
