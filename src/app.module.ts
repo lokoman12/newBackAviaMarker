@@ -89,7 +89,7 @@ function getUlliModuleOnly(module: NestModuleType): Array<NestModuleType> | [] {
     ...getUlliModuleOnly(PolygonsModule),
     ...getUlliModuleOnly(PhotoModule),
     ...getUlliModuleOnly(PositionHistoryModule),
-    ...getUlliModuleOnly(KafkaModule),
+    // ...getUlliModuleOnly(KafkaModule),
   ],
   providers: [ApiConfigService],
   controllers: [],

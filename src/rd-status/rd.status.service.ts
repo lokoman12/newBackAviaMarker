@@ -24,25 +24,25 @@ export class RdStatusService {
     }
   }
 
-  async updateRdStatus(name: string, status: string): Promise<rdd> {
+  async updateRdStatus(name: string, status: string): Promise<void> {
     try {
       if (status === 'close') {
-        const rdStatusUpdate = await this.prismaService.rdd.update({
+        await this.prismaService.rdd.updateMany({
           data: {
             close_rd: 1,
           },
           where: { name_rd: name },
         });
-        return rdStatusUpdate;
+        return;
       }
       if (status === 'open') {
-        const rdStatusUpdate = await this.prismaService.rdd.update({
+        await this.prismaService.rdd.updateMany({
           data: {
             close_rd: 0,
           },
           where: { name_rd: name },
         });
-        return rdStatusUpdate;
+        return;
       }
     } catch (error) {
       this.logger.error('Error updating rdStatusUpdate:', error);

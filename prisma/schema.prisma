@@ -1414,7 +1414,7 @@ model parks {
 }
 
 model parks_web {
-  id      Int    @id
+  id      Int    @id @default(autoincrement())
   name    String
   lat     Float
   lon     Float
@@ -1501,19 +1501,6 @@ model radar_conf {
   H       Int    @db.UnsignedMediumInt
 
   @@index([id], map: "id")
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model rdd {
-  id       Int    @db.UnsignedTinyInt
-  id_vpp   Int    @db.UnsignedTinyInt
-  id_rd    Int    @db.UnsignedTinyInt
-  name_rd  String @db.VarChar(60)
-  close_rd Int    @db.UnsignedInt
-  airport  String @db.VarChar(60)
-
-  @@index([airport], map: "airport")
   @@ignore
 }
 
@@ -2490,4 +2477,15 @@ model user_role {
   @@id([userId, groupId])
   @@unique([userId, groupId], map: "user_role_userId_groupId_unique")
   @@index([groupId], map: "groupId")
+}
+
+model rdd {
+  id       Int    @id @default(autoincrement()) @db.UnsignedInt
+  id_vpp   Int    @db.UnsignedTinyInt
+  id_rd    Int    @db.UnsignedTinyInt
+  name_rd  String @db.VarChar(60)
+  close_rd Int    @db.UnsignedInt
+  airport  String @db.VarChar(60)
+
+  @@index([airport], map: "airport")
 }

@@ -1,16 +1,16 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import AlaramAM from 'src/db/models/alarm.model';
 import { AccessTokenGuard } from 'src/auth/guards/access.token.guard';
 import { Public } from 'src/auth/decorators/public.decorator';
+import { alarmAM } from '@prisma/client';
+import AlarmService from './alarm.service';
 
 @Controller('/alarm')
 export class AlarmController {
   private readonly logger = new Logger(AlarmController.name);
 
   constructor(
-    @InjectModel(AlaramAM) private readonly alarmModel: typeof AlaramAM,
+    private readonly alarmService:  AlarmService
   ) {
     this.logger.log('Init controller');
   }
@@ -18,14 +18,13 @@ export class AlarmController {
   @Public()
   // @UseGuards(AccessTokenGuard)
   @Get()
-  async getAllAlram(): Promise<Array<AlaramAM>> {
+  async getAllAlram(): Promise<Array<alarmAM>> {
     try {
-      const alarms = await this.alarmModel.findAll();
+     const alarms = await this.alarmService.getActualData();
       return alarms;
     } catch (error) {
-      // this.logger.error('Error retrieving alarms:', error);
-      // throw error;
-      return [];
+      this.logger.error('Error retrieving alarms:', error);
+      throw error;
     }
   }
 }

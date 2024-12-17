@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Logger } from '@nestjs/common';
-import AlaramAM from 'src/db/models/alarm.model';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { alarmAM } from '@prisma/client';
 
 @Injectable()
 export default class AlarmService {
@@ -10,19 +9,17 @@ export default class AlarmService {
 
   constructor(
     private readonly prismaService: PrismaService,
-    @InjectModel(AlaramAM) private readonly alarmModel: typeof AlaramAM,
   ) {
     this.logger.log('Init service');
   }
 
-  async getActualData(): Promise<Array<AlaramAM>> {
+  async getActualData(): Promise<Array<alarmAM>> {
     try {
-      const alarms = await this.alarmModel.findAll({raw: true});
+      const alarms = await this.prismaService.alarmAM.findMany();
       return alarms;
     } catch (error) {
       this.logger.error('Error retrieving alarms:', error);
-      // throw error;
-      return [];
+      throw error;
     }
   }
 

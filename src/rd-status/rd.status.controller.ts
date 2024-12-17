@@ -36,7 +36,7 @@ export class RdStatusController {
   async updateRdStatus(
     @Query('name') name: string,
     @Query('status') status: string,
-  ): Promise<rdd> {
+  ): Promise<void> {
     return this.rdStatusService.updateRdStatus(name, status);
   }
 }

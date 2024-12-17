@@ -5,12 +5,11 @@ import { AlarmController } from './alarm.controller';
 import AlarmService from './alarm.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
-// Нет для шарика
 @Module({
-  imports: [SequelizeModule.forFeature([AlaramAM]), PrismaModule,],
+  imports: [PrismaModule,],
   providers: [AlarmService,],
   controllers: [AlarmController],
-  exports: [AlarmService, SequelizeModule],
+  exports: [AlarmService,],
 })
 export class AlarmModule implements NestModule {
   private readonly logger = new Logger(AlarmModule.name);
