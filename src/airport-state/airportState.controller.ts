@@ -1,8 +1,6 @@
-import { BadRequestException, Controller, Get, Query, Req, Res } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query, Req, } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { Request } from 'express';
-// import { AccessTokenGuard } from '../auth/guards/access.token.guard';
-// import { UseGuards } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import AirportStateService from './airportState.service';
 import { AirportState, AirportStateAllHistory } from './types';
@@ -28,8 +26,6 @@ export class AirportStateController {
     @Query('username') username: string,
     @Query('isForHistory') isForHistory?: boolean
   ): Promise<AirportState> {
-    // let username = (req.user as User)?.username;
-    // this.logger.log(`username: ${username}`);
     if (isNull(username)) {
       throw new BadRequestException(`Get parameter username is required!`);
     }
@@ -40,27 +36,18 @@ export class AirportStateController {
   // @UseGuards(AccessTokenGuard)
   @Get("/pack-by-steps-between")
   async getAirportInfoAllHistory(
-    // @Res() response,
-    // @Query('username') username: string,
     @Query('tableNumber') tableNumber: number,
     @Query('startStep') startStep?: number,
     @Query('finishStep') finishStep?: number
-    // , @Req() req: Request
   ): Promise<AirportStateAllHistory> {
-    // response.setTimeout(300000);
+
     const startTime = Date.now();
-    // let username = (req.user as User)?.username;
-    // this.logger.log(`username: ${username}`);
-    // if (isNull(username)) {
-    // throw new BadRequestException(`Get parameter username is required!`);
-    // }
     this.logger.log(`start request`);
     if (!isNormalNumber(tableNumber)) {
       throw new BadRequestException(`Parameter with name tableNumber is required and should be normal number, the value is ${tableNumber}!`);
     }
     const result = await this.airportStateService.getActualDataAllHistory(tableNumber, startStep, finishStep);
     this.logger.log(`time spent: ${(Date.now() - startTime) / 1000}`);
-    // this.logger.log(JSON.stringify(result));
     return result;
   }
 }

@@ -341,30 +341,8 @@ class HistoryUserService {
               this.logger.error(message, e);
             });
           }
-
-          // const stage = convertStringToHistoryGenerateStagesEnumKey(historyTableName);
-          // userAllInfo[`${stage}Record`] = info;
-          // userInfo = {
-          //   [`end${capitalizeFirstLetter(stage)}Id`]: info.endId,
-          // };
-          // if (historyTableName === HistoryGenerateStagesEnum.toi) {
-          //   userInfo = {
-          //     ...userInfo,
-          //     [`start${capitalizeFirstLetter(stage)}Id`]: info.startId,
-          //     [`current${capitalizeFirstLetter(stage)}Id`]: info.startId,
-          //   }
-          // }
-          // this.logger.log(`${stage}, userInfo: ${JSON.stringify(userInfo)}`);
-          // await this.saveUserInfoByHistoryNameWithTx(login, historyTableName, userInfo).catch(e => {
-          //   const message = `Ошибка сохранения статистики по шагу истории в базу для таблицы ${historyTableName}`;
-          //   this.logger.error(message, e);
-          // });
         } catch (e) {
           const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
-          // await this.saveStageByHistoryNameWithTx(login, historyTableName, HistoryErrorCodeEnum.canNotSaveHistoryStage).catch(e => {
-          // const message = `Ошибка при сохранении шага истории в базу для таблицы ${historyTableName}`;
-          // this.logger.error(message, e);
-          // });
         }
       })).then(() => {
         this.logger.log(`userAllInfo: ${JSON.stringify(userAllInfo)}`);
@@ -407,8 +385,6 @@ class HistoryUserService {
     if (!inRecordStatus) {
       // Ищём свободный номер таблицы
       const nextFreeTableNumber = tablenumber;
-      // const nextFreeTableNumber = await this.getNextFreeTableNumber();
-      // if (nextFreeTableNumber > NO_FREE_HISTORY_RECORD_TABLE) {
       await this.recordStatusService.setRecordStatus(
         new TimelineRecordDto({
           login, startTime, endTime, currentTime: startTime,
@@ -418,35 +394,9 @@ class HistoryUserService {
 
       await this.prepareAllUserHistoryTables(login, nextFreeTableNumber, startTime, endTime);
 
-      // try {
-      // Получим информацию из сгенерированных таблиц о первом и последнем шагах
       await this.getUserAllHistoriesInfo(login, nextFreeTableNumber, startTime, endTime);
-      // Сохраним сеттинги для пользователя, который пытается включить запись: время начала и завершения, текущий шаг и т.д.
-      // const recordDto = await this.recordStatusService.getRecordStatus(login);
-      // await this.recordStatusService.setRecordStatus(recordDto.setHistoriesInfo(userAllHistoriesInfo));
-      // return recordDto;
-      // } catch (e) {
-      // if (e instanceof HistoryBadStateException) {
-      // throw e;
-      // } else {
-      // let message = `Ошибка при попытке сформировать таблицу истории с номером ${nextFreeTableNumber} для пользователя ${login}`;
-      // this.logger.error(message);
-      // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
-      // await this.recordStatusService.resetUserHistoryStatusOnException(login);
-      // throw new HistoryBadStateException(login, HistoryErrorCodeEnum.unknownHistoryError, 'Неизвестная ошибка');
-      // }
-      // }
     }
-    // } else {
-    //   const message = `Пользователь ${login} находится в статусе воспроизведения истории`;
-    //   this.logger.error(message);
-    //   // Todo, NGolosin - пусть решает пользователь. На фронте есть специальная кнопка сброса состояния воспроизведения
-    //   // await this.recordStatusService.resetUserHistoryStatusOnException(login);
-    //   throw new HistoryBadStateException(login, HistoryErrorCodeEnum.userIsAlreadyInRecordStatus, message);
-    // }
   }
 }
 
 export default HistoryUserService;
-
-

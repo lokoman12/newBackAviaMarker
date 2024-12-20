@@ -62,10 +62,6 @@ export default class AirportStateService {
     let aznb: Array<azn_b> | HistoryResponseType;
 
     try {
-      // this.logger.log(`Airport-state getActualData, start, login: ${username}`);
-      // const isRecording = await this.recordStatusService.isInRecordStatus(username);
-
-      // this.logger.log(`Airport-state getActualData, login: ${username}, isRecording: ${isRecording}`);
       if (isForHistory) {
         toi = [];
         omnicom = [];
@@ -125,9 +121,6 @@ export default class AirportStateService {
     let aznb: HistoryArrayOfLists;
 
     try {
-      // this.logger.log(`Airport-state getActualData, start, login: ${username}`);
-      // const isRecording = await this.recordStatusService.isInRecordStatus(username);
-
       this.logger.log(`Airport-state getActualData, tableNumber: ${tableNumber}, startStep: ${startStep}, finishStep: ${finishStep}`);
 
       toi = await this.toiHistoryService.getCurrentAllHistory(tableNumber, startStep, finishStep);
