@@ -97,13 +97,14 @@ class HistoryUserService {
     // Свободные
     const freeTableNumbers = difference(allTableNumbers, usedTableNumbers)
       .sort((x, y) => x - y);
-
     let nextFreeTableNumber;
     if (freeTableNumbers.length > 0) {
       nextFreeTableNumber = head(freeTableNumbers);
     } else {
       nextFreeTableNumber = NO_FREE_HISTORY_RECORD_TABLE;
     }
+
+    // this.logger.log(`usedTableNumbers: ${usedTableNumbers}, allTableNumbers: ${allTableNumbers}, freeTableNumbers: ${freeTableNumbers}, nextFreeTableNumber: ${nextFreeTableNumber}`);
 
     return nextFreeTableNumber
   }
@@ -279,6 +280,7 @@ class HistoryUserService {
 
     try {
       // await this.this.sequelize.query(infoSql);
+      // this.logger.log(`${infoSql}`);
       const [records] = await this.sequelize.query(infoSql) as Array<TimelineStartRecordResponse>;
       return records?.[0];
     } catch (e) {
@@ -328,7 +330,7 @@ class HistoryUserService {
           // this.logger.log(`${stage}, userInfo: ${JSON.stringify(userInfo)}`);
 
           if (info.allRecs === 0) {
-            const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки истории вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
+            const message = `По заданным датам начала ${startTime} и конца ${endTime} выборки из таблицы истории ${historyTableName} вернулось нуль строк. Не смысла переходить в режим воспроизведения записи`;
             this.logger.error(message);
 
             await this.saveStageByHistoryNameWithTx(login, historyTableName, HistoryErrorCodeEnum.emptyHistoryResult, userInfo).catch(e => {

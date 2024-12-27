@@ -79,6 +79,7 @@ export class SettingsService {
       where: { name, },
       select: { name: true, username: true, value: true, },
     });
+    // this.logger.log(`name: ${name}, result: ${result.map(it => it.value)}`);
     return result || [];
   }
 
