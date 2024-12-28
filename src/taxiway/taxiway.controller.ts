@@ -11,7 +11,7 @@ export class TaxiwayController {
   constructor(
     private readonly taxiwayService: TaxiwayService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

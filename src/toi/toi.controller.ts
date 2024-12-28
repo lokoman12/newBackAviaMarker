@@ -19,7 +19,7 @@ export class ToiController {
   constructor(
     private toiService: ToiService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

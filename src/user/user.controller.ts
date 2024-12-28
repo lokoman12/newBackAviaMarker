@@ -43,8 +43,8 @@ export class UserController {
   @Public()
   @Get('/:userId/groups')
   async getGroupsOfUser(@Param('userId') userId: number) {
-    const groups = await this.userService.findGroupsOfUser(userId);
-    return groups;
+    const roles = await this.userService.findRolesOfUser(userId);
+    return roles;
   }
 
   @Public()

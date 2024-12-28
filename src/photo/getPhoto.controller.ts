@@ -17,7 +17,7 @@ export class GetPhotoController {
 
   constructor(
     @InjectModel(Photo) private readonly photoModel: typeof Photo) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @ApiQuery({

@@ -16,7 +16,7 @@ export class SavePolygonController {
     @InjectModel(Polygon) private readonly polygonModel: typeof Polygon,
     @InjectModel(Photo) private readonly photoModel: typeof Photo
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
   @ApiQuery({
     name: 'name',

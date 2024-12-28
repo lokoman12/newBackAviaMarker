@@ -19,7 +19,7 @@ export class SaveZoneController {
   constructor(
     @InjectModel(ZoneAM) private readonly zoneModel: typeof ZoneAM,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

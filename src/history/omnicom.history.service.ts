@@ -14,7 +14,7 @@ class OmnicomHistoryService extends HistoryService<OmnicomHistory> {
     @InjectModel(OmnicomHistory) protected readonly historyModel: typeof OmnicomHistory
   ) {
     super(sequelize, historyModel);
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
 }

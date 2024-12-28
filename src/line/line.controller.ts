@@ -19,7 +19,7 @@ export class LineController {
     @InjectModel(Line) private readonly lineModel: typeof Line,
     @InjectModel(Photo) private readonly photoModel: typeof Photo
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

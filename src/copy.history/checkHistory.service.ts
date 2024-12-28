@@ -29,13 +29,13 @@ export class CheckHistoryService {
     @InjectModel(AznbHistory)
     private readonly aznbHistoryModel: typeof AznbHistory,
   ) {
-    this.logger.log(`Init controller`);
+    // this.logger.log(`Init controller`);
     this.externalScheduler.addJob(
       'cleanTableHistory',
       this.configService.getToiCheckToHistoryCronMask(),
       this.handleDailyCheck.bind(this),
     );
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
   async handleDailyCheck() {

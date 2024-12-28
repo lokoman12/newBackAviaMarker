@@ -12,7 +12,7 @@ export default class FplnService {
     private readonly prismaService: PrismaService,
     @InjectModel(AODB) private readonly flightPlanModel: typeof AODB,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<AODB>> {

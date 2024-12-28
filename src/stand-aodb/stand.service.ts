@@ -11,7 +11,7 @@ export default class StandService {
   constructor(
     private readonly prismaService: PrismaService,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<stands_aodb>> {

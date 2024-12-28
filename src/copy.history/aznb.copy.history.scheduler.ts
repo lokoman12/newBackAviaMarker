@@ -18,7 +18,7 @@ export default class AznbCopyToHistoryScheduler {
     private aznbService: AznbService,
     @InjectModel(AznbHistory) private readonly aznbHistoryModel: typeof AznbHistory
   ) {
-    this.logger.log('Init controller --------------------------->');
+    // this.logger.log('Init controller');
     if (configService.isCopyHistoryEnabled()) {
       this.logger.warn(`Включение копирования азнб в историю aznbCopyToHistoryCronMask:${this.configService.getAznbCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
@@ -29,7 +29,7 @@ export default class AznbCopyToHistoryScheduler {
     } else {
       this.logger.warn('Копирование первички отключено в настройках');
     }
-    this.logger.log('Сервис инициализирован! ==================')
+    // this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async copyToHistory() {

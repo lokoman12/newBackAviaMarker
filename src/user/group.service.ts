@@ -4,75 +4,75 @@ import { chain } from 'lodash';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { auth } from '@prisma/client';
 
-type GroupType = {
+type RoleType = {
   name: string;
   persons: Array<auth>;
 }
 
-type GroupsType = Array<GroupType>
+type RolesType = Array<RoleType>
 
 @Injectable()
-export class GroupService {
-  private readonly logger = new Logger(GroupService.name);
+export class RoleService {
+  private readonly logger = new Logger(RoleService.name);
 
   constructor(
     private readonly prismaService: PrismaService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
-  async findAllGroups(): Promise<GroupsType> {
-    this.logger.log('find all groups');
+  async findAllRoles(): Promise<RolesType> {
+    this.logger.log('find all roles');
     const users: Array<auth> = await this.prismaService.auth.findMany();
     this.logger.log(`${users.length} users found`);
 
-    const foundGroups = chain(users)
-      .flatMap(user => user.groups.split(','))
+    const foundRoles = chain(users)
+      .flatMap(user => user.roles.split(','))
       .uniqBy(it => it.toLowerCase())
       .value();
 
-    const groups: GroupsType = [];
-    foundGroups.forEach(group => {
-      const groupUsers = users.filter(user => user.groups?.includes(group));
-      groups.push({ name: group, persons: groupUsers });
+    const roles: RolesType = [];
+    foundRoles.forEach(role => {
+      const roleUsers = users.filter(user => user.roles?.includes(role));
+      roles.push({ name: role, persons: roleUsers });
     })
-    return groups;
+    return roles;
   }
 
-  async findGroupByName(groupName: string): Promise<boolean> {
+  async findRoleByName(roleName: string): Promise<boolean> {
     const users: Array<auth> = await this.prismaService.auth.findMany();
-    const foundGroups = chain(users)
-      .flatMap(user => user.groups.split(','))
+    const foundRoles = chain(users)
+      .flatMap(user => user.roles.split(','))
       .uniq()
-      .filter(it => it === groupName)
+      .filter(it => it === roleName)
       .value();
-    return foundGroups.length > 0;
+    return foundRoles.length > 0;
   }
 
-  private async getUsersByGroup(groupname: string): Promise<Array<auth>> {
+  private async getUsersByRole(rolename: string): Promise<Array<auth>> {
     let users = await this.prismaService.auth.findMany();
     users = users.filter(it => {
-      const array = it.groups.split(',');
-      return array.includes(groupname);
+      const array = it.roles.split(',');
+      return array.includes(rolename);
     });
     return users;
   }
 
-  async findUsersInGroup(groupname: string): Promise<Array<auth>> {
-    return await this.getUsersByGroup(groupname);
+  async findUsersInRole(rolename: string): Promise<Array<auth>> {
+    return await this.getUsersByRole(rolename);
   }
 
-  async updateGroupname(currentGroupname: string, newGroupname: string): Promise<void> {
+  async updateRolename(currentRolename: string, newRolename: string): Promise<void> {
     const promises: Array<Promise<any>> = [];
 
-    const groupUsers = await this.getUsersByGroup(currentGroupname);
-    groupUsers.forEach(user => {
-      const groups = user.groups
+    const roleUsers = await this.getUsersByRole(currentRolename);
+    roleUsers.forEach(user => {
+      const roles = user.roles
         .split(',')
-        .map(it => it != currentGroupname ? it : newGroupname)
+        .map(it => it != currentRolename ? it : newRolename)
         .join(',');
       const promise = this.prismaService.auth.update({
-        data: { groups, },
+        data: { roles, },
         where: {
           id: user.id,
         }
@@ -83,17 +83,17 @@ export class GroupService {
     await Promise.all(promises);
   }
 
-  async removeGroup(groupname: string): Promise<void> {
+  async removeRole(rolename: string): Promise<void> {
     const promises: Array<Promise<any>> = [];
 
-    const groupUsers = await this.getUsersByGroup(groupname);
-    groupUsers.forEach(user => {
-      const groups = user.groups
+    const roleUsers = await this.getUsersByRole(rolename);
+    roleUsers.forEach(user => {
+      const roles = user.roles
         .split(',')
-        .filter(it => it != groupname)
+        .filter(it => it != rolename)
         .join(',');
       const promise = this.prismaService.auth.update({
-        data: { groups, },
+        data: { roles: roles, },
         where: {
           id: user.id,
         }

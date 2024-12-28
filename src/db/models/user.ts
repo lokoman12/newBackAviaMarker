@@ -76,7 +76,7 @@ export default class User extends Model {
 
   @AllowNull(false)
   @Column({ type: DataType.STRING, })
-  groups: string;
+  roles: string;
 
 };
 

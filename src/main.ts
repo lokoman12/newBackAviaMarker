@@ -1,13 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, LoggerService, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import { WinstonModule, utilities } from 'nest-winston';
 import * as path from 'path';
 import * as winston from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
+import { PrismaService } from './prisma/prisma.service';
+import { ENGINEER_GROUP, ENGINEER_LOGIN, ENGINEER_PASSWORD } from './user/const';
 
 declare const module: any;
 
@@ -47,27 +49,52 @@ var authFileTransport = new DailyRotateFile({
   )
 });
 
-async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger({
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.ms(),
-            utilities.format.nestLike('AviaMarker', {
-              colors: true,
-              prettyPrint: true,
-              processId: true,
-              appName: true,
-            }),
-          )
-        }),
-        commonFileTransport,
-        authFileTransport,
-      ],
-    }),
+async function prepareDefaultUsers(prismaService: PrismaService, logger: LoggerService) {
+  let engineer = await prismaService.auth.findUnique({
+    where: {
+      username: ENGINEER_LOGIN,
+    },
   });
+  if (!engineer) {
+    logger.log('Create user: ' + ENGINEER_LOGIN);
+    engineer = await prismaService.auth.create({
+      data: {
+        username: ENGINEER_LOGIN,
+        password: ENGINEER_PASSWORD,
+        roles:   ENGINEER_GROUP,
+        position: 'system user',
+      },
+    });
+  }
+}
+
+
+async function bootstrap() {
+  const logger = WinstonModule.createLogger({
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.ms(),
+          utilities.format.nestLike('AviaMarker', {
+            colors: true,
+            prettyPrint: true,
+            processId: true,
+            appName: true,
+          }),
+        )
+      }),
+      commonFileTransport,
+      authFileTransport,
+    ],
+  });
+  const app = await NestFactory.create(AppModule, {
+    logger,
+  });
+
+  const prismaService = app.get(PrismaService);
+  await prepareDefaultUsers(prismaService, logger);
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, stopAtFirstError: true, skipUndefinedProperties: true, skipNullProperties: true,
@@ -94,4 +121,5 @@ async function bootstrap() {
     module.hot.dispose(() => app.close());
   }
 }
+
 bootstrap();

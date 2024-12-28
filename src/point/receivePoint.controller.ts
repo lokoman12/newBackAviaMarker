@@ -23,7 +23,7 @@ export class ReceivePointController {
   constructor(
     @InjectModel(Point) private readonly pointModel: typeof Point
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Post()

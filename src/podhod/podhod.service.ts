@@ -10,7 +10,7 @@ export default class PodhodService {
   constructor(
     private prismaService: PrismaService
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<podhod>> {

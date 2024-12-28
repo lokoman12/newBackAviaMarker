@@ -15,7 +15,7 @@ export class SavePointController {
   constructor(
     @InjectModel(Point) private readonly pointModel: typeof Point,
     @InjectModel(Photo) private readonly photoModel: typeof Photo) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @ApiQuery({

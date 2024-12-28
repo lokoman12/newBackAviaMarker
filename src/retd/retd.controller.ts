@@ -12,7 +12,7 @@ export class RetdController {
   private readonly logger = new Logger(RetdController.name);
 
   constructor(@InjectModel(Retd) private readonly retdModel: typeof Retd) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

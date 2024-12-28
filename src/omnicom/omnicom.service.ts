@@ -12,7 +12,7 @@ export default class OmnicomService {
   constructor(
     private prismaService: PrismaService,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<SCOUT>> {

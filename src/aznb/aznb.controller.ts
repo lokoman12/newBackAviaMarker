@@ -14,7 +14,7 @@ export class AznbController {
   constructor(
     private readonly aznbService: AznbService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

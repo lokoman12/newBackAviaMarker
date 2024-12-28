@@ -13,7 +13,7 @@ export class StandGeoController {
   constructor(
     private readonly standsGeoService: StandGeoService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

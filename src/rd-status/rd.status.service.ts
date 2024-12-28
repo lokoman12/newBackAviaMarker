@@ -10,7 +10,7 @@ export class RdStatusService {
   constructor(
     private readonly prismaService: PrismaService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   async getActualData(): Promise<Array<rdd>> {

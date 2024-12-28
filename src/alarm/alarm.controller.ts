@@ -12,7 +12,7 @@ export class AlarmController {
   constructor(
     private readonly alarmService:  AlarmService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

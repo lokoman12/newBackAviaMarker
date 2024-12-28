@@ -8,7 +8,7 @@ export class ExternalScheduler {
   constructor(
     private readonly scheduler: ToadScheduler
   ) { 
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
   addJob(taskId: string, cronExpression: string, callback: () => Promise<void>) {

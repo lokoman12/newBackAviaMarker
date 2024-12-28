@@ -25,7 +25,7 @@ abstract class HistoryService<T extends HistoryModel<T>> {
     protected readonly sequelize: Sequelize,
     protected historyModel: ModelType<T>,
   ) {
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
   async getHistoryFromStartTillEnd(

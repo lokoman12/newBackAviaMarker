@@ -12,7 +12,7 @@ export class VppChangeStatusController {
   constructor(
     private readonly vppService: VppService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

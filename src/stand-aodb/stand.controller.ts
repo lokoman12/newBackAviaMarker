@@ -14,7 +14,7 @@ export class StandController {
   constructor(
     private readonly standService: StandService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

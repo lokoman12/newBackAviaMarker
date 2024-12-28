@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { GroupService } from './group.service';
+import { RoleService } from './group.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UpdateGroupDto } from './user.dto';
 
@@ -19,27 +19,27 @@ export class GroupController {
 
   constructor(
     private userService: UsersService,
-    private groupService: GroupService
+    private roleService: RoleService
   ) { }
 
   @Public()
   @Get('/')
   async getAllGroups() {
-    const groups = await this.groupService.findAllGroups();
-    return groups;
+    const roles = await this.roleService.findAllRoles();
+    return roles;
   }
 
   @Public()
   @Get('/:group')
   async checkGroupByName(@Param('group') group: string) {
-    return await this.groupService.findGroupByName(group);
+    return await this.roleService.findRoleByName(group);
   }
 
 
   @Public()
   @Get('/:groupId/users')
   async getUsersInGroup(@Param('groupId') groupId: string) { 
-    const users = await this.groupService.findUsersInGroup(groupId);
+    const users = await this.roleService.findUsersInRole(groupId);
     return users;
   }
 
@@ -49,7 +49,7 @@ export class GroupController {
   @ApiResponse({ status: 200, description: 'Group renamed successfully.' })
   @ApiResponse({ status: 400, description: 'Failed to rename group' })
   async updateGroupByName(@Param('name') currentGroupname: string, @Body() dto: UpdateGroupDto) {
-    const user = await this.groupService.updateGroupname(currentGroupname, dto.name);
+    const user = await this.roleService.updateRolename(currentGroupname, dto.name);
     return user;
   }
 
@@ -60,7 +60,7 @@ export class GroupController {
   @Delete('/:groupname')
   async removeUserById(@Param('groupname') groupname: string) {
     this.logger.log(`Remove group ${groupname}`);
-    const result = await this.groupService.removeGroup(groupname);
+    const result = await this.roleService.removeRole(groupname);
     return result;
   }
 

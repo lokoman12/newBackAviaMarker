@@ -14,7 +14,7 @@ export class FplnController {
   constructor(
     private readonly flightPlanService: FplnService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

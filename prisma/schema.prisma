@@ -32,18 +32,22 @@ model auth {
   id             Int         @id @default(autoincrement()) @db.UnsignedInt
   username       String      @unique(map: "username") @db.VarChar(255)
   password       String      @db.VarChar(255)
-  wrong_attempts Int         @default(0) @db.TinyInt
-  last_seen      DateTime?   @db.DateTime(0)
+  groups         String?     @db.VarChar(255)
+  roles          String?     @db.VarChar(255)
   firstname      String?     @db.VarChar(100)
   lastname       String?     @db.VarChar(100)
   middlename     String?     @db.VarChar(100)
-  phone          String?     @db.VarChar(20)
-  email          String?     @db.VarChar(50)
   position       String?     @db.VarChar(100)
   department     String?     @db.VarChar(100)
-  groups         String?     @db.VarChar(255)
+  email_internal String?     @db.VarChar(50)
+  email_external String?     @db.VarChar(50)
+  phone_work     String?     @db.VarChar(20)
+  phone_personal String?     @db.VarChar(20)
   refreshToken   String?     @db.VarChar(1024)
-  user_role      user_role[]
+  wrong_attempts Int         @default(0) @db.TinyInt
+  last_seen      DateTime?   @db.DateTime(0)
+  created_at     DateTime?   @db.DateTime(0)
+  updated_at     DateTime?   @db.DateTime(0)
 }
 
 model azn_b {
@@ -628,4 +632,61 @@ model rdd {
   airport  String @db.VarChar(60)
 
   @@index([airport], map: "airport")
+}
+
+model podhod {
+  id       Int    @unique(map: "podhod_unique") @default(autoincrement()) @db.TinyInt
+  Name     String @db.VarChar(20)
+  id_f     Int?
+  Dal      Int?
+  time_sec Int?
+  cvet     Int?   @db.TinyInt
+}
+
+model formular {
+  id              Int     @id @db.SmallInt
+  Source_ID       Int     @default(0) @db.SmallInt
+  Type_of_Msg     Int     @default(0) @db.UnsignedTinyInt
+  TrTime          Float   @default(0)
+  Time            Float   @default(0) @db.Float
+  X               Int     @default(0)
+  Y               Int     @default(0)
+  H               Float   @default(0) @db.Float
+  H_BAR           Float   @default(0) @db.Float
+  VX              Float   @default(0) @db.Float
+  VY              Float   @default(0) @db.Float
+  VH              Float   @default(0) @db.Float
+  Speed           Float   @default(0) @db.Float
+  Crs             Float   @default(0) @db.Float
+  RBS_Num         Int     @default(0) @db.SmallInt
+  UVD_Num         Int     @default(0)
+  Trs_Num         Int     @default(0) @db.UnsignedSmallInt
+  Status          Int     @default(0)
+  Toplivo         Int     @default(0) @db.UnsignedTinyInt
+  OGP             Int     @default(0) @db.UnsignedTinyInt
+  UVD_Speed       Float   @default(0) @db.Float
+  UVD_Crs         Float   @default(0) @db.Float
+  FP_Source_ID    Int     @default(0) @db.SmallInt
+  FP_FLIGHT_ID    Int     @default(0)
+  FP_TypeAirCraft String? @default("") @db.VarChar(15)
+  FP_VPP_sign     String? @default("") @db.VarChar(15)
+  FP_Stand        String? @default("") @db.VarChar(15)
+  FP_StandStatus  Int     @default(0) @db.UnsignedTinyInt
+  FP_Callsign     String? @default("") @db.VarChar(15)
+  FP_Time         Int     @default(0) @db.UnsignedInt
+  FP_Time_Type    Int     @default(0) @db.SmallInt
+  Get_Status_FP   Int     @default(0) @db.UnsignedTinyInt
+  Takeoff_Land    String  @default("0") @db.Char(1)
+  id_Saddr        Int     @default(0) @db.UnsignedInt
+  id_sinhron      Int     @default(0) @db.UnsignedInt
+  tow             String  @default("0") @db.VarChar(5)
+  poo             String  @default("0") @db.VarChar(25)
+  tobtg           String  @default("0") @db.VarChar(25)
+  airport_code    String  @default("0") @db.VarChar(25)
+  taxi_out        String  @default("0") @db.VarChar(25)
+  ata             String  @default("0") @db.VarChar(25)
+  regnum          String  @default("0") @db.VarChar(25)
+  field11bg       String  @default("0") @db.VarChar(25)
+
+  @@index([TrTime], map: "TrTime")
 }

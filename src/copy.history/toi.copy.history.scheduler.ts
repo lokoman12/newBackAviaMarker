@@ -18,7 +18,7 @@ export default class ToiCopyToHistoryScheduler {
     private toiService: ToiService,
     @InjectModel(ToiHistory) private readonly toiHistoryModel: typeof ToiHistory
   ) {
-    this.logger.log('Init controller --------------------------->');
+    // this.logger.log('Init controller');
 
     if (configService.isCopyHistoryEnabled()) {
       this.logger.warn(`Включение копирования третички в историю, toiCopyToHistoryCronMask:${this.configService.getToiCopyToHistoryCronMask()}`);
@@ -31,7 +31,7 @@ export default class ToiCopyToHistoryScheduler {
       this.logger.warn('Копирование третички отключено в настройках');
     }
 
-    this.logger.log('Сервис инициализирован! ==================')
+    // this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async copyToHistory() {

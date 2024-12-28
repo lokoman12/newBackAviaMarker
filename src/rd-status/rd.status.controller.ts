@@ -14,7 +14,7 @@ export class RdStatusController {
   constructor(
     private readonly rdStatusService: RdStatusService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

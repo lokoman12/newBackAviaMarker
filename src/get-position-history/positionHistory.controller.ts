@@ -12,7 +12,7 @@ export class PositionHistoryController {
   constructor(
     @InjectModel(PositionHistory) private readonly positionHistoryModel: typeof PositionHistory,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

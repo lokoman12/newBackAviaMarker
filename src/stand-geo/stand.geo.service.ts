@@ -11,7 +11,7 @@ export default class StandGeoService {
   constructor(
     private readonly prismaService: PrismaService,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async addActualData(body: Prisma.parks_webCreateInput): Promise<parks_web> {

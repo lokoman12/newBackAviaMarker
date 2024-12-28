@@ -12,7 +12,7 @@ export class MeteoController {
   constructor(
     private readonly meteoService: MeteoService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

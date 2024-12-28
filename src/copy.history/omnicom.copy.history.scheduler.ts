@@ -19,7 +19,7 @@ export default class OmnicomCopyToHistoryScheduler {
     @InjectModel(OmnicomHistory)
     private readonly omnicomHistoryModel: typeof OmnicomHistory,
   ) {
-    this.logger.log('Init controller --------------------------->');
+    // this.logger.log('Init controller');
     if (configService.isCopyHistoryEnabled()) {
       this.logger.warn(`Включение копирования машинок в историю ${this.configService.getOmnicomCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
@@ -30,7 +30,7 @@ export default class OmnicomCopyToHistoryScheduler {
     } else {
       this.logger.warn('Копирование машинок отключено в настройках');
     }
-    this.logger.log('Сервис инициализирован! ==================');
+    // this.logger.log('Сервис инициализирован! ==================');
   }
 
   public async copyToHistory() {

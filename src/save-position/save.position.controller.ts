@@ -16,7 +16,7 @@ export class SavePositionController {
     @InjectModel(PositionAM) private readonly positionModel: typeof PositionAM,
     @InjectModel(PositionHistory) private readonly positionHistoryModel: typeof PositionHistory,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

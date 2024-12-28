@@ -29,7 +29,7 @@ export default class ToiService {
     private configService: ApiConfigService,
     private prismaService: PrismaService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   // В призме нет динамических ассоциаций. В отличие от стквалайза. Между toi и formular нет связи в базе. Потому выполняем запрос через join и выбираем колонки вручную. Чтобы не делать массив промисов, но выбирать все строки для связки toi-formular за раз

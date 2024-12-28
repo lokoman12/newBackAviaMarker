@@ -14,7 +14,7 @@ class AznbHistoryService extends HistoryService<AznbHistory> {
     @InjectModel(AznbHistory) protected readonly historyModel: typeof AznbHistory
   ) {
     super(sequelize, historyModel);
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
 }

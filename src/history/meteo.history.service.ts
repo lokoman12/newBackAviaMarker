@@ -14,7 +14,7 @@ class MeteoHistoryService extends HistoryService<MeteoHistory> {
     @InjectModel(MeteoHistory) protected readonly historyModel: typeof MeteoHistory
   ) {
     super(sequelize, historyModel);
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
 }

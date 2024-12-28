@@ -14,7 +14,7 @@ export class PositionController {
   constructor(
     private readonly positionService: PositionService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

@@ -14,7 +14,7 @@ export class PodhodController {
   constructor(
     private readonly podhodService: PodhodService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

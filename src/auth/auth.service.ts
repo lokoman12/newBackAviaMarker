@@ -94,9 +94,9 @@ export class AuthService {
       userId: user.id,
       accessToken: tokens.accessToken,
       permissions: {
-        isEngineer: hasEngineerRole(user.groups),
-        isDispatcher: hasDispatcherRole(user.groups),
-        isDirector: hasDirectorRole(user.groups),
+        isEngineer: hasEngineerRole(user.roles),
+        isDispatcher: hasDispatcherRole(user.roles),
+        isDirector: hasDirectorRole(user.roles),
       }
     };
   }

@@ -18,7 +18,7 @@ export class LineService {
     @InjectModel(Line) private readonly lineModel: typeof Line,
     @InjectModel(Photo) private readonly photoModel: typeof Photo
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<Line>> {

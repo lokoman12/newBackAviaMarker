@@ -11,7 +11,7 @@ export class StripsController {
   constructor(
     private readonly stripsService: StripsService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

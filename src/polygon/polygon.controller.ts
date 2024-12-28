@@ -11,7 +11,7 @@ export class PolygonController {
   constructor(
     @InjectModel(Polygon) private readonly polygonModel: typeof Polygon,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
   @Public()
   @Get()

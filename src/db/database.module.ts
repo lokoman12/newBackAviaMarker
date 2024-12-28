@@ -24,7 +24,7 @@ export class DatabaseModule implements NestModule {
   }
 
   async onModuleInit() {
-    this.logger.debug('Initialize');
+    // this.logger.debug('Initialize');
     // try {
     //   await this.sequelize.sync({ alter: true, });
     //   this.log.debug('Database synchronized.');
@@ -34,6 +34,6 @@ export class DatabaseModule implements NestModule {
   }
 
   configure() {
-    this.logger.debug('Configure');
+    // this.logger.debug('Configure');
   }
 }

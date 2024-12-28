@@ -11,7 +11,7 @@ export default class TaxiwayService {
   constructor(
     private prismaService: PrismaService,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<taxiway>> {

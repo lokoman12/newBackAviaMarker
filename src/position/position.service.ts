@@ -12,7 +12,7 @@ export default class PositionService {
     private readonly prismaService: PrismaService,
     @InjectModel(PositionAM) private readonly positionModel: typeof PositionAM,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<PositionAM>> {

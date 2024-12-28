@@ -18,7 +18,7 @@ export class RecordStatusService {
   constructor(
     private readonly settingsService: SettingsService,
   ) {
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
   async getUserTablenumber(username: string): Promise<number> {

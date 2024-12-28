@@ -15,7 +15,7 @@ export class AirportStateController {
   constructor(
     private readonly airportStateService: AirportStateService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

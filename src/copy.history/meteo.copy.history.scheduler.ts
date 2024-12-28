@@ -18,7 +18,7 @@ export default class MeteoCopyToHistoryScheduler {
     private meteoService: MeteoService,
     @InjectModel(MeteoHistory) private readonly meteoHistoryModel: typeof MeteoHistory
   ) {
-    this.logger.log('Init controller --------------------------->');
+    // this.logger.log('Init controller');
     if (configService.isCopyHistoryEnabled()) {
       this.logger.warn(`Включение копирования метео в историю meteoCopyToHistoryCronMask:${this.configService.getMeteoCopyToHistoryCronMask()}`);
       this.externalScheduler.addJob(
@@ -29,7 +29,7 @@ export default class MeteoCopyToHistoryScheduler {
     } else {
       this.logger.warn('Копирование метео отключено в настройках');
     }
-    this.logger.log('Сервис инициализирован! ==================')
+    // this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async copyToHistory() {

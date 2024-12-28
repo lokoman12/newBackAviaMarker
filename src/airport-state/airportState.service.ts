@@ -50,7 +50,7 @@ export default class AirportStateService {
     private readonly aznbHistoryService: AznbHistoryService,
     private readonly recordStatusService: RecordStatusService
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(username: string, isForHistory?: boolean): Promise<AirportState> {

@@ -12,7 +12,7 @@ export class RetaController {
   private readonly logger = new Logger(RetaController.name);
 
   constructor(@InjectModel(Reta) private readonly retaModel: typeof Reta) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

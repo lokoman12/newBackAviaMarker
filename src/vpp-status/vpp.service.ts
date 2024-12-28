@@ -12,7 +12,7 @@ export default class VppService {
     private readonly configService: ApiConfigService,
     private prismaService: PrismaService,
   ) {
-    this.logger.log('Init service');
+    // this.logger.log('Init service');
   }
 
   async getActualData(): Promise<Array<vpp>> {

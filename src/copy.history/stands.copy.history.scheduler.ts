@@ -18,7 +18,7 @@ export default class StandsCopyToHistoryScheduler {
     private standService: StandService,
     @InjectModel(StandsHistory) private readonly standsHistoryModel: typeof StandsHistory
   ) {
-    this.logger.log('Init controller --------------------------->');
+    this.logger.log('');
 
     if (configService.isCopyHistoryEnabled()) {
       this.logger.warn(`Включение копирования парковок в историю standsCopyToHistoryCronMask:${this.configService.getStandsCopyToHistoryCronMask()}`);
@@ -30,7 +30,7 @@ export default class StandsCopyToHistoryScheduler {
     } else {
       this.logger.warn('Копирование парковкок отключено в настройках');
     }
-    this.logger.log('Сервис инициализирован! ==================')
+    // this.logger.log('Сервис инициализирован! ==================')
   }
 
   public async copyToHistory() {

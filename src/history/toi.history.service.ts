@@ -21,7 +21,7 @@ class ToiHistoryService extends HistoryService<ToiHistory> {
     @InjectModel(ToiHistory) protected readonly historyModel: typeof ToiHistory
   ) {
     super(sequelize, historyModel);
-    this.logger.log('Сервис инициализирован!')
+    // this.logger.log('Сервис инициализирован!')
   }
 
   getNextId(status: TimelineRecordDto): number {

@@ -51,7 +51,7 @@ class HistoryUserService {
     @InjectModel(StandsHistory) private readonly standsHistoryModel: typeof StandsHistory,
     @InjectModel(AznbHistory) private readonly aznbHistoryModel: typeof AznbHistory
   ) {
-    this.logger.log('Сервис инициализирован!');
+    // this.logger.log('Сервис инициализирован!');
 
     this.allHistoryModelsWithPrepareSql = [
       {

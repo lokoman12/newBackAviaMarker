@@ -14,7 +14,7 @@ export class SaveAlarmController {
   constructor(
     @InjectModel(AlaramAM) private readonly alarmModel: typeof AlaramAM,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
   
   @Public()

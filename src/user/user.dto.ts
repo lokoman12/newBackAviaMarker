@@ -16,7 +16,7 @@ export class UserDto {
   position?: string;
   department?: string;
 
-  groups: string;
+  roles: string;
 }
 
 export class GroupDto {

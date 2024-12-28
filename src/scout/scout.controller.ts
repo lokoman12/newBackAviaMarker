@@ -14,7 +14,7 @@ export class ScoutController {
     private prismaService: PrismaService,
     private scoutService: ScoutService
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()

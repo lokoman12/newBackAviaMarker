@@ -14,7 +14,7 @@ class StandsHistoryService extends HistoryService<StandsHistory> {
     @InjectModel(StandsHistory) protected readonly historyModel: typeof StandsHistory
   ) {
     super(sequelize, historyModel)
-    this.logger.log('Сервис инициализирован!');
+    // this.logger.log('Сервис инициализирован!');
   }
 
 }

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { auth } from '@prisma/client';
+import { ENGINEER_LOGIN } from './const';
 
 @Injectable()
 export class UsersService {
@@ -40,11 +41,11 @@ export class UsersService {
     return user;
   }
 
-  async findGroupsOfUser(userId: number): Promise<string> {
+  async findRolesOfUser(userId: number): Promise<string> {
     const user = await this.prismaService.auth.findFirst({
       where: { id: userId, },
     });
-    return user?.groups || '';
+    return user?.roles || '';
   }
 
   async updateUser(
@@ -59,6 +60,16 @@ export class UsersService {
     }
     this.logger.log('Found user: ' + JSON.stringify(user));
 
+    if (user.username === ENGINEER_LOGIN) {
+      if (updateUserDto.password !== user.password) {
+        updateUserDto = {
+          password: updateUserDto.password,
+        };
+      } else {
+        return user;
+      }
+    }
+
     await this.prismaService.auth.update({
       where: {
         id: user.id,
@@ -69,6 +80,10 @@ export class UsersService {
   }
 
   async removeUser(id: number): Promise<void> {
+    const user = await this.findUserById(id);
+    if (user.username === ENGINEER_LOGIN) {
+      throw new BadRequestException(`Can not delete system user!`);
+    }
     await this.prismaService.auth.delete(
       { where: { id, }, }
     )

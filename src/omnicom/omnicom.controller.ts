@@ -14,7 +14,7 @@ export class OmnicomController {
   constructor(
     private readonly omnicomService: OmnicomService,
   ) {
-    this.logger.log('Init controller');
+    // this.logger.log('Init controller');
   }
 
   @Public()
